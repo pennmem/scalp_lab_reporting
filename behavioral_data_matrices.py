@@ -80,11 +80,8 @@ def make_data_matrices_ltpFR2():
         # Load subject's wordpool
         wordpool = np.loadtxt('/data/eeg/scalp/ltp/ltpFR2/%s/wasnorm_wordpool.txt' % subj, dtype='S32')
 
-        # Define location where the subject's data will be saved
-        outfile = '/Users/jessepazdera/Desktop/behavioral/beh_data_%s.json' % subj
-
-        if os.path.exists(outfile):
-            continue
+        # Define location where the subject's data will be saved. Participants without 24 sessions will have their data specially marked as incomplete
+        outfile = '/Users/jessepazdera/Desktop/behavioral/beh_data_%s.json' % subj if n_sessions_run == n_sess else '/Users/jessepazdera/Desktop/behavioral/beh_data_%s_incomplete.json' % subj
 
         # Initialize behavioral data matrices
         pres_words = np.zeros((total_lists, list_length), dtype='S32')
@@ -98,7 +95,6 @@ def make_data_matrices_ltpFR2():
 
         # Create data matrices for each session
         for sess_num, session_dir in enumerate(sessions_run):
-
             sess_pres_words = np.zeros((n_lists, list_length), dtype='S32')
             sess_rec_words = np.zeros((n_lists, recalls_allowed), dtype='S32')
             sess_rec_nos = np.zeros((n_lists, recalls_allowed), dtype='int16')
@@ -108,7 +104,6 @@ def make_data_matrices_ltpFR2():
             # Load presented and recalled words from that session's .lst and .par files, respectively
             for i in range(n_lists):
                 try:
-                    # print subj, sess_num, i
                     sess_pres_words[i, :] = np.loadtxt(os.path.join(session_dir, '%d.lst' % i), delimiter='\t', dtype='S32')
                     recs = np.loadtxt(os.path.join(session_dir, '%d.par' % i), delimiter='\t', dtype='S32')
                     recs = [w for w in np.atleast_2d(recs) if w[2] != 'VV'] if not recs.shape == (0,) else []
