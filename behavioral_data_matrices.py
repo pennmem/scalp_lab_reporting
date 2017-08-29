@@ -73,8 +73,11 @@ def make_data_matrices_ltpFR2():
         total_lists = n_lists * n_sessions_run
 
         # Create subject and session number arrays
-        subj_array = np.array([subj] * n_sessions_run)
-        sess_array = np.array(range(n_lists) * n_sessions_run)
+        subj_array = [subj] * n_sessions_run
+        sess_array = []
+        for i in range(n_sessions_run):
+            for j in range(n_lists):
+                sess_array.append(i)
         bad_list_array = np.zeros(total_lists, dtype=bool)
 
         # Load subject's wordpool
@@ -151,8 +154,8 @@ def make_data_matrices_ltpFR2():
 
         # Once all of a subject's data has been processed, add their completed data matrices to the data dictionary
         data[subj] = dict(
-            subject=subj_array.tolist(),
-            session=sess_array.tolist(),
+            subject=subj_array,
+            session=sess_array,
             bad_list=bad_list_array.tolist(),
 
             pres_words=pres_words.tolist(),
