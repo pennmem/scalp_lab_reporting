@@ -84,22 +84,22 @@ def make_data_matrices_ltpFR2():
         wordpool = np.loadtxt('/data/eeg/scalp/ltp/ltpFR2/%s/wasnorm_wordpool.txt' % subj, dtype='S32')
 
         # Define location where the subject's data will be saved. Participants without 24 sessions will have their data specially marked as incomplete
-        outfile = '/Users/jessepazdera/Desktop/behavioral/beh_data_%s.json' % subj if n_sessions_run == n_sess else '/Users/jessepazdera/Desktop/behavioral/beh_data_%s_incomplete.json' % subj
+        outfile = '/Users/jpazdera/Desktop/behavioral/beh_data_%s.json' % subj if n_sessions_run == n_sess else '/Users/jessepazdera/Desktop/behavioral/beh_data_%s_incomplete.json' % subj
 
         # Initialize behavioral data matrices
-        pres_words = np.zeros((total_lists, list_length), dtype='S32')
-        pres_nos = np.zeros((total_lists, list_length), dtype='S32')
-        rec_words = np.zeros((total_lists, recalls_allowed), dtype='S32')
+        pres_words = np.zeros((total_lists, list_length), dtype='U32')
+        pres_nos = np.zeros((total_lists, list_length), dtype='int16')
+        rec_words = np.zeros((total_lists, recalls_allowed), dtype='U32')
         rec_nos = np.zeros((total_lists, recalls_allowed), dtype='int16')
-        recalled = np.zeros((total_lists, list_length), dtype=bool)
+        recalled = np.zeros((total_lists, list_length), dtype='int8')
         times = np.zeros((total_lists, recalls_allowed), dtype='int32')
         serialpos = np.zeros((total_lists, recalls_allowed), dtype='int16')
         intrusions = np.zeros((total_lists, recalls_allowed), dtype='int16')
 
         # Create data matrices for each session
         for sess_num, session_dir in enumerate(sessions_run):
-            sess_pres_words = np.zeros((n_lists, list_length), dtype='S32')
-            sess_rec_words = np.zeros((n_lists, recalls_allowed), dtype='S32')
+            sess_pres_words = np.zeros((n_lists, list_length), dtype='U32')
+            sess_rec_words = np.zeros((n_lists, recalls_allowed), dtype='U32')
             sess_rec_nos = np.zeros((n_lists, recalls_allowed), dtype='int16')
             sess_recalled = np.zeros((n_lists, list_length), dtype='int8')
             sess_times = np.zeros((n_lists, recalls_allowed), dtype='int32')
@@ -107,8 +107,8 @@ def make_data_matrices_ltpFR2():
             # Load presented and recalled words from that session's .lst and .par files, respectively
             for i in range(n_lists):
                 try:
-                    sess_pres_words[i, :] = np.loadtxt(os.path.join(session_dir, '%d.lst' % i), delimiter='\t', dtype='S32')
-                    recs = np.loadtxt(os.path.join(session_dir, '%d.par' % i), delimiter='\t', dtype='S32')
+                    sess_pres_words[i, :] = np.loadtxt(os.path.join(session_dir, '%d.lst' % i), delimiter='\t', dtype='U32')
+                    recs = np.loadtxt(os.path.join(session_dir, '%d.par' % i), delimiter='\t', dtype='U32')
                     recs = [w for w in np.atleast_2d(recs) if w[2] != 'VV'] if not recs.shape == (0,) else []
                 except IOError:
                     bad_list_array[sess_num * 24 + i] = True
