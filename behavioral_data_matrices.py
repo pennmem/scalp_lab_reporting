@@ -84,7 +84,7 @@ def make_data_matrices_ltpFR2():
         wordpool = np.loadtxt('/data/eeg/scalp/ltp/ltpFR2/%s/wasnorm_wordpool.txt' % subj, dtype='S32')
 
         # Define location where the subject's data will be saved. Participants without 24 sessions will have their data specially marked as incomplete
-        outfile = '/Users/jpazdera/Desktop/behavioral/beh_data_%s.json' % subj if n_sessions_run == n_sess else '/Users/jessepazdera/Desktop/behavioral/beh_data_%s_incomplete.json' % subj
+        outfile = '/Users/jpazdera/Desktop/behavioral/beh_data_%s.json' % subj if n_sessions_run == n_sess else '/Users/jpazdera/Desktop/behavioral/beh_data_%s_incomplete.json' % subj
 
         # Initialize behavioral data matrices
         pres_words = np.zeros((total_lists, list_length), dtype='U32')
@@ -143,7 +143,8 @@ def make_data_matrices_ltpFR2():
 
         # Identify the max number of recalls the subject made on any trial of any session, as this is the number of
         # columns we should keep in our recall-related matrices
-        max_recalls = np.where(rec_nos != 0)[1].max() + 1
+        recall_columns = np.where(rec_nos != 0)[1]
+        max_recalls = recall_columns.max() + 1 if len(recall_columns) > 0 else 0
 
         # Trim unused columns of the recall-related data matrices
         rec_words = rec_words[:, :max_recalls]
@@ -162,6 +163,7 @@ def make_data_matrices_ltpFR2():
             pres_nos=pres_nos.tolist(),
             rec_words=rec_words.tolist(),
             rec_nos=rec_nos.tolist(),
+            recalled=recalled.tolist(),
             times=times.tolist(),
             serialpos=serialpos.tolist(),
             intrusions=intrusions.tolist()
