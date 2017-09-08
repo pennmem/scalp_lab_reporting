@@ -120,10 +120,11 @@ def make_data_matrices_ltpFR2():
             # Convert presented words to their ID numbers by referencing the full word pool (remember to add 1 to the IDs!)
             sess_pres_nos = np.searchsorted(wordpool, sess_pres_words) + 1
 
-            # Determine whether each presented word was subsequently recalled, either in that trial or any later trial
+            # Determine whether each presented word was recalled during its own trial (does not count if only recalled
+            # as a PLI in a later trial)
             for i, row in enumerate(sess_pres_words):
                 for j, w in enumerate(row):
-                    if w in sess_rec_words[i:]:
+                    if w in sess_rec_words[i]:
                         sess_recalled[i, j] = 1
 
             # Create matrix with the serial positions of recalls
