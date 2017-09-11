@@ -5,7 +5,7 @@ from pybeh.irt import irt
 from pybeh.crl import crl
 from pybeh.temp_fact import temp_fact
 from pybeh.dist_fact import dist_fact
-from pybeh.sem_crp import sem_crp
+# from pybeh.sem_crp import sem_crp
 from glob import glob
 from scipy.io import loadmat
 import numpy as np
@@ -20,15 +20,17 @@ def run_stats():
     stats = dict()
     for path in data_files:
         subj = os.path.basename(path)[9:15]
+        complete = not path.endswith('incomplete.json')
+
         with open(path, 'r') as f:
             # Run all stats for a single participant and add the resulting stats object to the stats dictionary
-            stats[str(subj)] = stats_for_subj(json.load(f))
+            stats[str(subj)] = stats_for_subj(json.load(f), complete=complete)
 
     return stats
 
 
-def stats_for_subj(data):
-    outfile = '/Users/jessepazdera/Desktop/stats/stats_%s.json' % data['subject'][0]
+def stats_for_subj(data, complete=True):
+    outfile = '/Users/jessepazdera/Desktop/stats/stats_%s.json' % data['subject'][0] if complete else '/Users/jessepazdera/Desktop/stats/stats_%s_incomplete.json' % data['subject'][0]
 
     pres_nos = np.array(data['pres_nos'])
     rec_nos = np.array(data['rec_nos'])
@@ -39,7 +41,7 @@ def stats_for_subj(data):
     intru = np.array(data['intrusions'])
     recw = np.array(data['rec_words'])
     ll = len(data['pres_nos'][0])
-    lsa = loadmat('pybeh/LSA.mat')
+    lsa = loadmat('pybeh/LSA.mat')['LSA']
 
     stats = dict()
     stats['prec'] = prec(recalled, sessions)
@@ -55,13 +57,17 @@ def stats_for_subj(data):
     stats['reps_perlist'] = avg_reps(spos, sessions)
     stats['temp_fact'] = temp_fact(spos, sessions, ll)
     stats['dist_fact'] = dist_fact(rec_nos, pres_nos, sessions, lsa, ll)
-    stats['sem_crp'] = sem_crp(spos, rec_nos, pres_nos, sessions, lsa, 10, ll)
-
-    # stats['nback_pli_rate'] = nback_pli(intru, sessions, 6, recw)[0]
+    # stats['sem_crp'] = sem_crp(spos, rec_nos, pres_nos, sessions, lsa, 10, ll)
+    # stats['pli_recency'] = nback_pli(intru, sessions, 6, recw)[0]
 
     # Fix CRP and CRL to have a 0-lag of NaN
     stats['crp'][ll-1] = np.nan
-    stats['crl'][ll - 1] = np.nan
+    stats['crl'][ll-1] = np.nan
+
+    # Convert numpy arrays to lists, so that they are JSON serializable
+    for stat in stats:
+        if isinstance(stats[stat], np.ndarray):
+            stats[stat] = stats[stat].tolist()
 
     with open(outfile, 'w') as f:
         json.dump(stats, f)
@@ -83,7 +89,6 @@ def prec(was_recalled, subjects):
         return np.array([]), np.array([])
     usub = np.unique(subjects)
     result = np.zeros(len(usub))
-    stderr = np.zeros(len(usub))
     for i, s in enumerate(usub):
         result[i] = float(len(np.where(was_recalled[np.where(subjects == s)] == 1)[0])) / len(
             np.where(np.logical_not(np.isnan(was_recalled[np.where(subjects == s)])))[0])
