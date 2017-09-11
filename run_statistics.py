@@ -84,7 +84,7 @@ def prec(was_recalled, subjects):
     :return: An array containing the overall probability of recall for each unique participant
     """
     if len(was_recalled) == 0:
-        return np.array([]), np.array([])
+        return []
     usub = np.unique(subjects)
     result = np.zeros(len(usub))
     for i, s in enumerate(usub):
