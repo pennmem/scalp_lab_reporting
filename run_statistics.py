@@ -1,16 +1,16 @@
+import os
+import json
+import numpy as np
+from glob import glob
 from pybeh.spc import spc
 from pybeh.pnr import pnr
 from pybeh.crp import crp
 from pybeh.irt import irt
 from pybeh.crl import crl
-from pybeh.temp_fact import temp_fact
-from pybeh.dist_fact import dist_fact
+# from pybeh.temp_fact import temp_fact
+# from pybeh.dist_fact import dist_fact
 # from pybeh.sem_crp import sem_crp
-from glob import glob
-from scipy.io import loadmat
-import numpy as np
-import json
-import os
+# from scipy.io import loadmat
 
 
 def run_stats():
@@ -32,16 +32,18 @@ def run_stats():
 def stats_for_subj(data, complete=True):
     outfile = '/Users/jessepazdera/Desktop/stats/stats_%s.json' % data['subject'][0] if complete else '/Users/jessepazdera/Desktop/stats/stats_%s_incomplete.json' % data['subject'][0]
 
-    pres_nos = np.array(data['pres_nos'])
-    rec_nos = np.array(data['rec_nos'])
-    sessions = np.array(data['session'])
-    recalled = np.array(data['recalled'])
-    spos = np.array(data['serialpos'])
-    times = np.array(data['times'])
-    intru = np.array(data['intrusions'])
-    recw = np.array(data['rec_words'])
-    ll = len(data['pres_nos'][0])
-    lsa = loadmat('pybeh/LSA.mat')['LSA']
+    good_trials = np.logical_not(np.array(data['bad_list']))
+
+    sessions = np.array(data['session'])[good_trials]
+    recalled = np.array(data['recalled'])[good_trials]
+    spos = np.array(data['serialpos'])[good_trials]
+    times = np.array(data['times'])[good_trials]
+    intru = np.array(data['intrusions'])[good_trials]
+    recw = np.array(data['rec_words'])[good_trials]
+    ll = len(data['pres_nos'][0])[good_trials]
+    # pres_nos = np.array(data['pres_nos'])[good_trials]
+    # rec_nos = np.array(data['rec_nos'])[good_trials]
+    # lsa = loadmat('pybeh/LSA.mat')['LSA']
 
     stats = dict()
     stats['prec'] = prec(recalled, sessions)
@@ -55,14 +57,10 @@ def stats_for_subj(data, complete=True):
     stats['pli_perlist'] = avg_pli(intru, sessions, recw)
     stats['eli_perlist'] = avg_eli(intru, sessions)
     stats['reps_perlist'] = avg_reps(spos, sessions)
-    stats['temp_fact'] = temp_fact(spos, sessions, ll)
-    stats['dist_fact'] = dist_fact(rec_nos, pres_nos, sessions, lsa, ll)
+    # stats['temp_fact'] = temp_fact(spos, sessions, ll)
+    # stats['dist_fact'] = dist_fact(rec_nos, pres_nos, sessions, lsa, ll)
     # stats['sem_crp'] = sem_crp(spos, rec_nos, pres_nos, sessions, lsa, 10, ll)
     # stats['pli_recency'] = nback_pli(intru, sessions, 6, recw)[0]
-
-    # Fix CRP and CRL to have a 0-lag of NaN
-    stats['crp'][ll-1] = np.nan
-    stats['crl'][ll-1] = np.nan
 
     # Convert numpy arrays to lists, so that they are JSON serializable
     for stat in stats:
