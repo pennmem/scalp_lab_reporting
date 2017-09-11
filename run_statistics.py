@@ -2,121 +2,60 @@ from stats.spc import spc
 from stats.pnr import pnr
 from stats.crp import crp
 from stats.irt import irt
+from glob import glob
 import numpy as np
+import json
+import os
 
 
-def run_stats(d):
-    stats_to_run = ['prec', 'spc', 'pfr', 'psr', 'ptr', 'crp_early', 'crp_late', 'irt',
-                    'pli_early', 'pli_late', 'eli_early', 'eli_late', 'reps', 'nback_pli_rate']
+def run_stats():
+    data_files = glob('/Users/jpazdera/Desktop/behavioral/beh_data_LTP[0-9][0-9][0-9].json') + \
+                 glob('/Users/jpazdera/Desktop/behavioral/beh_data_LTP[0-9][0-9][0-9]_incomplete.json')
 
     stats = dict()
-    for subj in d:
-        # Run all stats for a single participant and add the resulting stats object to the stats dictionary
-        stats[str(subj)] = stats_for_subj(d[subj], stats_to_run)
+    for path in data_files:
+        subj = os.path.basename(path)[9:15]
+        try:
+            with open(path, 'r') as f:
+                # Run all stats for a single participant and add the resulting stats object to the stats dictionary
+                stats[str(subj)] = stats_for_subj(json.load(f))
+        except:
+            print(subj)
 
     return stats
 
 
-def stats_for_subj(data, stats_to_run):
-    """
-    Create a stats dictionary for a single participant.
+def stats_for_subj(data):
 
-    :param sub: A subject array for the stats calculations. As we are only running stats on one participant at a time,
-    this array will simply be [subj_name] * number_of_trials.
-    :param condi: An array of tuples indicating which conditions were used on each trial (ll, pr, mod, dd)
-    :param recalls: A matrix where item (i, j) is the serial position of the ith recall in trial j
-    :param wasrec: A matrix where item (i, j) is 0 if the ith presented word in trial j was not recalled, 1 if it was
-    :param rt: A matrix where item (i, j) is the response time (in ms) of the ith recall in trial j
-    :param recw: A matrix where item (i, j) is the ith word recalled on trial j
-    :param presw: A matrix where item (i, j) is the ith word presented on trial j
-    :param intru: A list x items intrusions matrix (see recalls_to_intrusions)
-    :return:
-    """
-    stats = {stat: {} for stat in stats_to_run}
+    sessions = np.array(data['session'])
+    recalled = np.array(data['recalled'])
+    spos = np.array(data['serialpos'])
+    times = np.array(data['times'])
+    intru = np.array(data['intrusions'])
+    recw = np.array(data['rec_words'])
+    ll = len(data['pres_nos'][0])
 
-    stats['prec'] = prec(data['recalled'], data['subject'])[0]
-    stats['spc'] = spc(frecalls, fsub, ll)[0]
-    stats['pfr'] = pnr(frecalls, fsub, ll, n=0)[0]
-    stats['psr'] = pnr(frecalls, fsub, ll, n=1)[0]
-    stats['ptr'] = pnr(frecalls, fsub, ll, n=2)[0]
-    stats['crp_early'] = crp(frecalls[:, :3], fsub, ll, lag_num=3)[0]
-    stats['crp_late'] = crp(frecalls[:, 2:], fsub, ll, lag_num=3)[0]
-    stats['irt'] = irt(frt)
-    stats['pli_early'] = avg_pli(fintru[:, :3], fsub, frecw)[0]
-    stats['pli_late'] = avg_pli(fintru[:, 2:], fsub, frecw)[0]
-    stats['eli_early'] = avg_eli(fintru[:, :3], fsub)[0]
-    stats['eli_late'] = avg_eli(fintru[:, 2:], fsub)[0]
-    stats['reps'] = avg_reps(frecalls, fsub)[0]
-    stats['nback_pli_rate'] = nback_pli(fintru, fsub, 6, frecw)[0]
+    stats = dict()
+    stats['prec'] = prec(recalled, sessions)
+    stats['spc'] = spc(spos, sessions, ll)
+    stats['pfr'] = pnr(spos, sessions, ll, n=0)
+    stats['psr'] = pnr(spos, sessions, ll, n=1)
+    stats['ptr'] = pnr(spos, sessions, ll, n=2)
+    stats['crp_early'] = crp(spos[:, :3], sessions, ll, lag_num=3)
+    stats['crp_late'] = crp(spos[:, 2:], sessions, ll, lag_num=3)
+    stats['irt'] = irt(times)
+    stats['pli_early'] = avg_pli(intru[:, :3], sessions, recw)
+    stats['pli_late'] = avg_pli(intru[:, 2:], sessions, recw)
+    stats['eli_early'] = avg_eli(intru[:, :3], sessions)
+    stats['eli_late'] = avg_eli(intru[:, 2:], sessions)
+    stats['reps'] = avg_reps(spos, sessions)
+    # stats['nback_pli_rate'] = nback_pli(intru, sessions, 6, recw)[0]
 
     # Fix CRPs to have a 0-lag of NaN
     stats['crp_early'][3] = np.nan
     stats['crp_late'][3] = np.nan
 
     return stats
-
-
-def filter_by_condi(a, condi, ll=None, pr=None, mod=None, dd=None):
-    """
-    Filter a matrix of trial data to only get the data from trials that match the specified condition(s)
-    :param a: A numpy array with the data from one trial on each row
-    :param condi: A list of tuples indicating the list length, presentation rate, modality, distractor duration of each trial
-    :param ll: Return only trials with this list length condition (ignore if None)
-    :param pr: Return only trials with this presentation rate condition (ignore if None)
-    :param mod: Return only trials with this presentation modality condition (ignore if None)
-    :param dd: Return only trials with this distractor duration condition (ignore if None
-    :return: A numpy array containing only the data from trials that match the specified condition(s)
-    """
-    ind = [i for i in range(len(condi)) if (
-    (ll is None or condi[i][0] == ll) and (pr is None or condi[i][1] == pr) and (
-    mod is None or condi[i][2] == mod) and (dd is None or condi[i][3] == dd))]
-    return a[ind]
-
-
-def pad_into_array(l):
-    """
-    Turn an array of uneven lists into a numpy matrix by padding shorter lists with zeros. Modified version of a
-    function by user Divakar on Stack Overflow, here:
-    http://stackoverflow.com/questions/32037893/numpy-fix-array-with-rows-of-different-lengths-by-filling-the-empty-elements-wi
-    :param l: A list of lists
-    :return: A numpy array made from l, where all rows have been made the same length via padding
-    """
-    l = np.array(l)
-    # Get lengths of each row of data
-    lens = np.array([len(i) for i in l])
-
-    # If l was empty, we can simply return the empty numpy array we just created
-    if len(lens) == 0:
-        return lens
-
-    # Mask of valid places in each row
-    mask = np.arange(lens.max()) < lens[:, None]
-
-    # Setup output array and put elements from data into masked positions
-    out = np.zeros(mask.shape, dtype=l.dtype)
-    out[mask] = np.concatenate(l)
-
-    return out
-
-
-def recalls_to_intrusions(rec):
-    """
-    Convert a recalls matrix to an intrusions matrix. In the recalls matrix, ELIs should be denoted by -999 and PLIs
-    should be denoted by -n, where n is the number of lists back the word was originally presented. All positive numbers
-    are assumed to be correct recalls. The resulting intrusions matrix denotes correct recalls by 0, ELIs by -1, and
-    PLIs by n, where n is the number of lists back the word was originally presented.
-
-    :param rec: A lists x items recalls matrix, which is assumed to be a numpy array
-    :return: A lists x items intrusions matrix
-    """
-    intru = rec.copy()
-    # Set correct recalls to 0
-    intru[np.where(intru > 0)] = 0
-    # Convert negative numbers for PLIs to positive numbers
-    intru *= -1
-    # Convert ELIs to -1
-    intru[np.where(intru == 999)] = -1
-    return intru
 
 
 def prec(was_recalled, subjects):
@@ -131,7 +70,6 @@ def prec(was_recalled, subjects):
     """
     if len(was_recalled) == 0:
         return np.array([]), np.array([])
-    subjects = np.array(subjects)
     usub = np.unique(subjects)
     result = np.zeros(len(usub))
     stderr = np.zeros(len(usub))
@@ -170,7 +108,7 @@ def nback_pli(intrusions, subjects, nmax, rec_words):
                         else:
                             result[i, nmax] += 1
 
-    result /= result.sum(axis=1)
+    result = result / np.atleast_2d(result.sum(axis=1)).T
     return result[:, :nmax]
 
 
@@ -255,3 +193,7 @@ def avg_reps(rec_itemnos, subjects):
                 count += repetitions.sum()
         result[subject_index] = count / lists if lists > 0 else np.nan
     return result
+
+
+if __name__ == "__main__":
+    run_stats()
