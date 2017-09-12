@@ -1,39 +1,49 @@
-from stats.spc import spc
-from stats.pnr import pnr
-from stats.crp import crp
-from stats.irt import irt
-from glob import glob
-import numpy as np
-import json
 import os
+import json
+import numpy as np
+from glob import glob
+from pybeh.spc import spc
+from pybeh.pnr import pnr
+from pybeh.crp import crp
+from pybeh.irt import irt
+from pybeh.crl import crl
+# from pybeh.temp_fact import temp_fact
+# from pybeh.dist_fact import dist_fact
+# from pybeh.sem_crp import sem_crp
+# from scipy.io import loadmat
 
 
 def run_stats():
-    data_files = glob('/Users/jpazdera/Desktop/behavioral/beh_data_LTP[0-9][0-9][0-9].json') + \
-                 glob('/Users/jpazdera/Desktop/behavioral/beh_data_LTP[0-9][0-9][0-9]_incomplete.json')
+    data_files = glob('/Users/jessepazdera/Desktop/behavioral/beh_data_LTP[0-9][0-9][0-9].json') + \
+                 glob('/Users/jessepazdera/Desktop/behavioral/beh_data_LTP[0-9][0-9][0-9]_incomplete.json')
 
     stats = dict()
     for path in data_files:
         subj = os.path.basename(path)[9:15]
-        try:
-            with open(path, 'r') as f:
-                # Run all stats for a single participant and add the resulting stats object to the stats dictionary
-                stats[str(subj)] = stats_for_subj(json.load(f))
-        except:
-            print(subj)
+        complete = not path.endswith('incomplete.json')
+
+        with open(path, 'r') as f:
+            # Run all stats for a single participant and add the resulting stats object to the stats dictionary
+            stats[str(subj)] = stats_for_subj(json.load(f), complete=complete)
 
     return stats
 
 
-def stats_for_subj(data):
+def stats_for_subj(data, complete=True):
+    outfile = '/Users/jessepazdera/Desktop/stats/stats_%s.json' % data['subject'][0] if complete else '/Users/jessepazdera/Desktop/stats/stats_%s_incomplete.json' % data['subject'][0]
 
-    sessions = np.array(data['session'])
-    recalled = np.array(data['recalled'])
-    spos = np.array(data['serialpos'])
-    times = np.array(data['times'])
-    intru = np.array(data['intrusions'])
-    recw = np.array(data['rec_words'])
-    ll = len(data['pres_nos'][0])
+    good_trials = np.logical_not(np.array(data['bad_list']))
+
+    sessions = np.array(data['session'])[good_trials]
+    recalled = np.array(data['recalled'])[good_trials]
+    spos = np.array(data['serialpos'])[good_trials]
+    times = np.array(data['times'])[good_trials]
+    intru = np.array(data['intrusions'])[good_trials]
+    recw = np.array(data['rec_words'])[good_trials]
+    ll = np.array(data['pres_nos']).shape[1]
+    # pres_nos = np.array(data['pres_nos'])[good_trials]
+    # rec_nos = np.array(data['rec_nos'])[good_trials]
+    # lsa = loadmat('pybeh/LSA.mat')['LSA']
 
     stats = dict()
     stats['prec'] = prec(recalled, sessions)
@@ -41,19 +51,24 @@ def stats_for_subj(data):
     stats['pfr'] = pnr(spos, sessions, ll, n=0)
     stats['psr'] = pnr(spos, sessions, ll, n=1)
     stats['ptr'] = pnr(spos, sessions, ll, n=2)
-    stats['crp_early'] = crp(spos[:, :3], sessions, ll, lag_num=3)
-    stats['crp_late'] = crp(spos[:, 2:], sessions, ll, lag_num=3)
+    stats['crp'] = crp(spos, sessions, ll, lag_num=ll-1)
+    stats['crl'] = crl(spos, times, sessions, ll, lag_num=ll-1)
     stats['irt'] = irt(times)
-    stats['pli_early'] = avg_pli(intru[:, :3], sessions, recw)
-    stats['pli_late'] = avg_pli(intru[:, 2:], sessions, recw)
-    stats['eli_early'] = avg_eli(intru[:, :3], sessions)
-    stats['eli_late'] = avg_eli(intru[:, 2:], sessions)
-    stats['reps'] = avg_reps(spos, sessions)
-    # stats['nback_pli_rate'] = nback_pli(intru, sessions, 6, recw)[0]
+    stats['pli_perlist'] = avg_pli(intru, sessions, recw)
+    stats['eli_perlist'] = avg_eli(intru, sessions)
+    stats['reps_perlist'] = avg_reps(spos, sessions)
+    # stats['temp_fact'] = temp_fact(spos, sessions, ll)
+    # stats['dist_fact'] = dist_fact(rec_nos, pres_nos, sessions, lsa, ll)
+    # stats['sem_crp'] = sem_crp(spos, rec_nos, pres_nos, sessions, lsa, 10, ll)
+    # stats['pli_recency'] = nback_pli(intru, sessions, 6, recw)[0]
 
-    # Fix CRPs to have a 0-lag of NaN
-    stats['crp_early'][3] = np.nan
-    stats['crp_late'][3] = np.nan
+    # Convert numpy arrays to lists, so that they are JSON serializable
+    for stat in stats:
+        if isinstance(stats[stat], np.ndarray):
+            stats[stat] = stats[stat].tolist()
+
+    with open(outfile, 'w') as f:
+        json.dump(stats, f)
 
     return stats
 
@@ -69,47 +84,14 @@ def prec(was_recalled, subjects):
     :return: An array containing the overall probability of recall for each unique participant
     """
     if len(was_recalled) == 0:
-        return np.array([]), np.array([])
+        return []
     usub = np.unique(subjects)
     result = np.zeros(len(usub))
-    stderr = np.zeros(len(usub))
     for i, s in enumerate(usub):
         result[i] = float(len(np.where(was_recalled[np.where(subjects == s)] == 1)[0])) / len(
             np.where(np.logical_not(np.isnan(was_recalled[np.where(subjects == s)])))[0])
 
     return result
-
-
-def nback_pli(intrusions, subjects, nmax, rec_words):
-    """
-    Calculate the ratio of PLIs that originated from 1 list back, 2 lists back, etc. up until nmax lists back.
-
-    :param intrusions: An intrusions matrix in the format generated by recalls_to_intrusions
-    :param subjects: A list of subject codes, indicating which subject produced each row of the intrusions matrix
-    :param nmax: The maximum number of lists back to consider
-    :param rec_words: A lists x words matrix, where item (i, j) is the jth word presented on the ith list
-    :return: An array of length nmax, where item i is the ratio of PLIs that originated from i+1 lists back
-    """
-    if len(intrusions) == 0 or nmax < 1:
-        return np.array([])
-
-    usub = np.unique(subjects)
-    result = np.zeros((len(usub), nmax + 1), dtype=float)
-    ll = len(intrusions[0])
-    for i, s in enumerate(usub):
-        for j in range(len(intrusions)):
-            if subjects[j] == s:
-                encountered = []
-                for k in range(ll):
-                    if intrusions[j][k] > 0 and rec_words[j][k] not in encountered:
-                        encountered.append(rec_words[j][k])
-                        if intrusions[j][k] <= nmax:
-                            result[i, intrusions[j][k] - 1] += 1
-                        else:
-                            result[i, nmax] += 1
-
-    result = result / np.atleast_2d(result.sum(axis=1)).T
-    return result[:, :nmax]
 
 
 def avg_pli(intrusions, subjects, rec_itemnos):

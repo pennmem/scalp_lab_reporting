@@ -2,6 +2,7 @@ import os
 import json
 import numpy as np
 from glob import glob
+from pybeh.create_intrusions import intrusions as make_intrusions_matrix
 
 
 def make_serialpos_matrix(pres_nos, rec_nos):
@@ -11,29 +12,32 @@ def make_serialpos_matrix(pres_nos, rec_nos):
         for j, recall in enumerate(rec_nos[i, :]):
             if recall == 0:
                 continue
+
             positions = np.where(pres_nos[i, :] == recall)[0]
-            serialpos[i, j] = positions[0] + 1 if len(positions) != 0 else -1
+
+            if len(positions) > 1:
+                print('WARNING: A word was presented multiple times!')
+                return None
+            elif len(positions) == 1:
+                serialpos[i, j] = positions[0] + 1
+            else:
+                serialpos[i, j] = -1
 
     return serialpos
 
 
-def make_intrusions_matrix(pres_nos, rec_nos):
-    intrusions = np.zeros_like(rec_nos, dtype='int16')
+def create_session_dict(subjs, n_sess):
+    session_dict = dict()
+    for s in subjs:
+        sess_run = []
+        for i in range(n_sess):
+            sess_path = os.path.join(s, 'session_%d' % i)
+            if os.path.exists(os.path.join(sess_path, 'session.log')):
+                sess_run.append(sess_path)
+        if len(sess_run) > 0:
+            session_dict[os.path.basename(s)] = sess_run
 
-    for i in range(pres_nos.shape[0]):
-        for j, recall in enumerate(rec_nos[i, :]):
-            if recall == 0:
-                continue
-            # Check if recalled word has been presented in or prior to the current trial
-            pres = np.where(pres_nos[:i+1, :] == recall)[0]
-            if len(pres) != 0:
-                # PLIs marked as n, where n is number of lists back. Correct recalls marked as 0.
-                intrusions[i, j] = i - pres[0]
-            else:
-                # ELIs marked as -1
-                intrusions[i, j] = -1
-
-    return intrusions
+    return session_dict
 
 
 def make_data_matrices_ltpFR2():
@@ -54,15 +58,7 @@ def make_data_matrices_ltpFR2():
     subjs = glob(os.path.join(exp_dir, naming_scheme))
 
     # Create a dictionary of participants mapped to a list of their session directories (for completed sessions)
-    session_dict = dict()
-    for s in subjs:
-        sess_run = []
-        for i in range(n_sess):
-            sess_path = os.path.join(s, 'session_%d' % i)
-            if os.path.exists(os.path.join(sess_path, 'session.log')):
-                sess_run.append(sess_path)
-        if len(sess_run) > 0:
-            session_dict[os.path.basename(s)] = sess_run
+    session_dict = create_session_dict(subjs, n_sess)
 
     # Create a dictionary mapping subject numbers to their data dictionary
     data = dict()
@@ -73,7 +69,7 @@ def make_data_matrices_ltpFR2():
         total_lists = n_lists * n_sessions_run
 
         # Create subject and session number arrays
-        subj_array = [subj] * n_sessions_run
+        subj_array = [subj] * total_lists
         sess_array = []
         for i in range(n_sessions_run):
             for j in range(n_lists):
@@ -84,7 +80,7 @@ def make_data_matrices_ltpFR2():
         wordpool = np.loadtxt('/data/eeg/scalp/ltp/ltpFR2/%s/wasnorm_wordpool.txt' % subj, dtype='S32')
 
         # Define location where the subject's data will be saved. Participants without 24 sessions will have their data specially marked as incomplete
-        outfile = '/Users/jpazdera/Desktop/behavioral/beh_data_%s.json' % subj if n_sessions_run == n_sess else '/Users/jpazdera/Desktop/behavioral/beh_data_%s_incomplete.json' % subj
+        outfile = '/Users/jessepazdera/Desktop/behavioral/beh_data_%s.json' % subj if n_sessions_run == n_sess else '/Users/jessepazdera/Desktop/behavioral/beh_data_%s_incomplete.json' % subj
 
         # Initialize behavioral data matrices
         pres_words = np.zeros((total_lists, list_length), dtype='U32')
@@ -94,7 +90,6 @@ def make_data_matrices_ltpFR2():
         recalled = np.zeros((total_lists, list_length), dtype='int8')
         times = np.zeros((total_lists, recalls_allowed), dtype='int32')
         serialpos = np.zeros((total_lists, recalls_allowed), dtype='int16')
-        intrusions = np.zeros((total_lists, recalls_allowed), dtype='int16')
 
         # Create data matrices for each session
         for sess_num, session_dir in enumerate(sessions_run):
@@ -107,15 +102,18 @@ def make_data_matrices_ltpFR2():
             # Load presented and recalled words from that session's .lst and .par files, respectively
             for i in range(n_lists):
                 try:
-                    sess_pres_words[i, :] = np.loadtxt(os.path.join(session_dir, '%d.lst' % i), delimiter='\t', dtype='U32')
-                    recs = np.loadtxt(os.path.join(session_dir, '%d.par' % i), delimiter='\t', dtype='U32')
-                    recs = [w for w in np.atleast_2d(recs) if w[2] != 'VV'] if not recs.shape == (0,) else []
+                    sess_pres_words[i, :] = np.loadtxt(os.path.join(session_dir, '%d.lst' % i), delimiter='\t', dtype='S32').view(np.chararray).decode('utf-8')
+                    recs = np.atleast_2d(np.loadtxt(os.path.join(session_dir, '%d.par' % i), delimiter='\t', dtype='S32').view(np.chararray).decode('utf-8'))
                 except IOError:
-                    bad_list_array[sess_num * 24 + i] = True
+                    bad_list_array[sess_num * n_lists + i] = True
                     continue
-                sess_rec_words[i, :len(recs)] = [w[2] for w in recs]
-                sess_rec_nos[i, :len(recs)] = [w[1] for w in recs]
-                sess_times[i, :len(recs)] = [int(w[0]) for w in recs]
+
+                # We can skip the steps below for trials with no recalls, which will produce a recs of shape (1, 0)
+                if recs.shape[1] >= 3:
+                    recs = recs[np.where(recs[:, 2] != 'VV')]
+                    sess_rec_words[i, :len(recs)] = recs[:, 2]
+                    sess_rec_nos[i, :len(recs)] = recs[:, 1]
+                    sess_times[i, :len(recs)] = recs[:, 0]
 
             # Convert presented words to their ID numbers by referencing the full word pool (remember to add 1 to the IDs!)
             sess_pres_nos = np.searchsorted(wordpool, sess_pres_words) + 1
@@ -130,17 +128,27 @@ def make_data_matrices_ltpFR2():
             # Create matrix with the serial positions of recalls
             sess_serialpos = make_serialpos_matrix(sess_pres_nos, sess_rec_nos)
 
-            # Create matrix with intrusion info
-            sess_intrusions = make_intrusions_matrix(sess_pres_nos, sess_rec_nos)
-
-            # Place that session's behavioral data into the appropriate rows of the subject's full data matrices
+            # Identify first row of the current session and first row of the following session
             start_row = sess_num * n_lists
             end_row = start_row + n_lists
+
+
             mat_pairs = [(pres_words, sess_pres_words), (pres_nos, sess_pres_nos), (rec_words, sess_rec_words),
-                         (rec_nos, sess_rec_nos), (recalled, sess_recalled), (times, sess_times),
-                         (serialpos, sess_serialpos), (intrusions, sess_intrusions)]
+                         (rec_nos, sess_rec_nos), (recalled, sess_recalled), (times, sess_times)]
+            # sess_serialpos == None occurs only if a word was presented multiple times. If this happens, mark the
+            # whole session as bad and leave the serialpos matrix as zeros.
+            if sess_serialpos is None:
+                bad_list_array[start_row:end_row] = True
+            else:
+                mat_pairs.append((serialpos, sess_serialpos))
+
+            # Place that session's behavioral data into the appropriate rows of the subject's full data matrices
             for pair in mat_pairs:
                 pair[0][start_row:end_row, :] = pair[1]
+
+
+        # Create matrix with intrusion info
+        intrusions = make_intrusions_matrix(rec_nos, pres_nos, subj_array, sess_array)
 
         # Identify the max number of recalls the subject made on any trial of any session, as this is the number of
         # columns we should keep in our recall-related matrices
