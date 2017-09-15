@@ -31,7 +31,7 @@ def run_bonus(subjects, exp, upload=True):
             if upload:
                 upload_bonus_report(pdf_path, exp)
     else:
-        print('Experiment name not recognized! Exiting...')
+        raise Exception('Experiment name not recognized!')
 
 
 if __name__ == "__main__":

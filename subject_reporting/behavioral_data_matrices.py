@@ -16,7 +16,7 @@ def make_serialpos_matrix(pres_nos, rec_nos):
             positions = np.where(pres_nos[i, :] == recall)[0]
 
             if len(positions) > 1:
-                print('WARNING: A word was presented multiple times!')
+                # print('WARNING: A word was presented multiple times!')
                 return None
             elif len(positions) == 1:
                 serialpos[i, j] = positions[0] + 1
