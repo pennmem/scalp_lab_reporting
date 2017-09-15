@@ -11,7 +11,7 @@ def upload_bonus_report(report_path, exp):
     :param report_path: The local file path to the report being uploaded.
     :param exp: The name of the experiment. Used for determining the destination path.
     """
-    os.system('scp %s maint@memory.psych.upenn.edu:/var/www/html/ltp_reports/%s_Bonus/' % (report_path, exp))
+    os.system('scp %s reports@memory.psych.upenn.edu:/var/www/html/ltp_reports/%s_Bonus/' % (report_path, exp))
 
 
 def run_bonus(subjects, exp, upload=True):
