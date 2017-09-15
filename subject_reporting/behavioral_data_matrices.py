@@ -102,8 +102,8 @@ def make_data_matrices_ltpFR2():
             # Load presented and recalled words from that session's .lst and .par files, respectively
             for i in range(n_lists):
                 try:
-                    sess_pres_words[i, :] = np.loadtxt(os.path.join(session_dir, '%d.lst' % i), delimiter='\t', dtype='S32').view(np.chararray).decode('utf-8')
-                    recs = np.atleast_2d(np.loadtxt(os.path.join(session_dir, '%d.par' % i), delimiter='\t', dtype='S32').view(np.chararray).decode('utf-8'))
+                    sess_pres_words[i, :] = np.char.strip(np.loadtxt(os.path.join(session_dir, '%d.lst' % i), delimiter='\t', dtype='S32').view(np.chararray).decode('utf-8'))
+                    recs = np.char.strip(np.atleast_2d(np.loadtxt(os.path.join(session_dir, '%d.par' % i), delimiter='\t', dtype='S32').view(np.chararray).decode('utf-8')))
                 except IOError:
                     bad_list_array[sess_num * n_lists + i] = True
                     continue
