@@ -15,6 +15,7 @@ def bonus_report_ltpFR2(subj, scores, bonuses, nans_blank=True):
     :param bonuses: A session x bonus_reporting array. Recall bonus_reporting should be in column 0, blink bonus_reporting in column 1, math bonus_reporting
     in column 2, and total bonus_reporting in column 3.
     :param nans_blank: Indicates whether or not to replace NaNs in the report with empty cell entries. (Default=True)
+    :return: The paths to the TSV and PDF report, respectively
     """
     ###############
     #
@@ -22,8 +23,7 @@ def bonus_report_ltpFR2(subj, scores, bonuses, nans_blank=True):
     #
     ###############
 
-    # outfile = '/data/eeg/scalp/ltp/ltpFR2/bonus/%s_bonus_report.tsv' % subj
-    outfile = '/Users/jessepazdera/Desktop/bonus/%s_bonus_report.tsv' % subj
+    outfile = '/data/eeg/scalp/ltp/ltpFR2/bonus/%s_bonus_report.tsv' % subj
 
     # Create report header
     report = 'Session\tRecall\tRecall Bonus\tBlink Rate\tBlink Bonus\tMath Score\tMath Bonus\tTotal\n'
@@ -50,8 +50,7 @@ def bonus_report_ltpFR2(subj, scores, bonuses, nans_blank=True):
     #
     ###############
 
-    # tex_outfile = '/data/eeg/scalp/ltp/ltpFR2/bonus/%s_bonus_report.tex' % subj
-    tex_outfile = '/Users/jessepazdera/Desktop/bonus/%s_bonus_report' % subj
+    tex_outfile = '/data/eeg/scalp/ltp/ltpFR2/bonus/%s_bonus_report' % subj
     # Divide report into rows
     report = report.split('\n')
     # Create list of column names
@@ -80,3 +79,5 @@ def bonus_report_ltpFR2(subj, scores, bonuses, nans_blank=True):
             for row in report:
                 data_table.add_row(row.split('\t'))
     doc.generate_pdf(tex_outfile, compiler='pdflatex')
+
+    return outfile, tex_outfile + '.tex'
