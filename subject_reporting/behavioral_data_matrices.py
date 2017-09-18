@@ -86,7 +86,7 @@ def make_data_matrices_ltpFR2(run_all=False):
     #
     ###############
     exp_dir = '/data/eeg/scalp/ltp/ltpFR2/'
-    out_dir = '/Users/jessepazdera/Desktop/behavioral/'  # '/data/eeg/scalp/ltp/ltpFR2/behavioral/data/'
+    out_dir = '/data/eeg/scalp/ltp/ltpFR2/behavioral/data/'
     naming_scheme = 'LTP[0-9][0-9][0-9]'
     list_length = 24
     n_lists = 24
