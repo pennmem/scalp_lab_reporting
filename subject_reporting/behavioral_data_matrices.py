@@ -103,7 +103,7 @@ def make_data_matrices_ltpFR2(run_all=False):
     if run_all:
         subjs = glob(os.path.join(exp_dir, naming_scheme))
     else:
-        with open(os.path.join(exp_dir, 'recently_modified.json', 'r')) as f:
+        with open(os.path.join(exp_dir, 'recently_modified.json'), 'r') as f:
             subjs = [os.path.join(exp_dir, s) for s in json.load(f).keys()]
 
     # Create a dictionary of participants mapped to a list of their session directories (for completed sessions)
