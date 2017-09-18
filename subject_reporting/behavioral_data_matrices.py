@@ -228,7 +228,7 @@ def make_data_matrices_ltpFR2(run_all=False):
         data[subj] = dict(
             subject=subj_array,
             session=sess_array,
-            bad_list=bad_list_array.tolist(),
+            good_trial=np.logical_not(bad_list_array).tolist(),
 
             pres_words=pres_words.tolist(),
             pres_nos=pres_nos.tolist(),
