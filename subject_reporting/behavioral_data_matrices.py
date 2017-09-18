@@ -99,17 +99,12 @@ def make_data_matrices_ltpFR2(run_all=False):
     #
     ###############
 
+    # If run_all is true, run on all ltpFR2 participants, otherwise only run on subjects in recently_modified.json
     if run_all:
         subjs = glob(os.path.join(exp_dir, naming_scheme))
     else:
-        # Try to load current participants from recently_modified.json. If this is not possible, simply run on all
-        # participants instead.
-        try:
-            with open(os.path.join(exp_dir, 'recently_modified.json', 'r')) as f:
-                subjs = [os.path.join(exp_dir, s) for s in json.load(f).keys()]
-        except IOError:
-            # Find all ltpFR2 subject directories
-            subjs = glob(os.path.join(exp_dir, naming_scheme))
+        with open(os.path.join(exp_dir, 'recently_modified.json', 'r')) as f:
+            subjs = [os.path.join(exp_dir, s) for s in json.load(f).keys()]
 
     # Create a dictionary of participants mapped to a list of their session directories (for completed sessions)
     session_dict = create_session_dict(subjs, n_sess)
@@ -265,4 +260,4 @@ def make_data_matrices_ltpFR2(run_all=False):
 
 
 if __name__ == "__main__":
-    make_data_matrices_ltpFR2(run_all=True)
+    make_data_matrices_ltpFR2()
