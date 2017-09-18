@@ -4,15 +4,15 @@ from pylatex.utils import bold
 
 def bonus_report_ltpFR2(subj, scores, bonuses, nans_blank=True):
     """
-    Takes in bonus_reporting information and produces two versions of a bonus_reporting report for a participant. First, it creates a
-    tab-delimited text file, designed to provide an easy way to read bonus_reporting score information into a script/software in
+    Takes in bonus information and produces two versions of a bonus report for a participant. First, it creates a
+    tab-delimited text file, designed to provide an easy way to read bonus score information into a script/software in
     the future. Second, it uses LaTeX (via PyLaTeX) to create a PDF report that can easily be viewed by researchers
     or shown to participants.
 
     :param subj: A string containing the subject ID of the person for whom to make a report.
-    :param scores: A session x score array. Recall scores should be in column 0, blink rates in column 1, and math scores
-    in column 2.
-    :param bonuses: A session x bonus_reporting array. Recall bonus_reporting should be in column 0, blink bonus_reporting in column 1, math bonus_reporting
+    :param scores: A session x score array. Recall scores should be in column 0, blink rates in column 1, and math
+    scores in column 2.
+    :param bonuses: A session x bonus array. Recall bonus should be in column 0, blink bonus in column 1, math bonus
     in column 2, and total bonus_reporting in column 3.
     :param nans_blank: Indicates whether or not to replace NaNs in the report with empty cell entries. (Default=True)
     :return: The paths to the TSV and PDF report, respectively

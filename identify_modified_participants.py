@@ -6,6 +6,14 @@ from glob import glob
 
 
 def identify_modified_participants_ltpFR(day_limit=7):
+    """
+    Identifies any ltpFR sessions with *.ann, session.log, events.mat, or *.bz2 (eeg) files that have been changed in
+    the last day_limit days. Creates a json file containing a dictionary with one entry for each participant with at
+    least 1 recently modified session, containing a list of which session numbers have recently been modified.
+
+    :param day_limit: The maximum number of days since last modification that is considered to be recently modified.
+    :return: A dictionary with recently modified participants' IDs mapped to their recently modified sessions.
+    """
     # Define parameters of experiment
     exp_dir = '/data/eeg/scalp/ltp/ltpFR/'
     naming_scheme = 'LTP[0-9][0-9][0-9]_*'
@@ -49,6 +57,14 @@ def identify_modified_participants_ltpFR(day_limit=7):
 
 
 def identify_modified_participants_ltpFR2(day_limit=7):
+    """
+    Identifies any ltpFR2 sessions with *.ann, session.log, events.mat, or *.bz2 (eeg) files that have been changed in
+    the last day_limit days. Creates a json file containing a dictionary with one entry for each participant with at
+    least 1 recently modified session, containing a list of which session numbers have recently been modified.
+
+    :param day_limit: The maximum number of days since last modification that is considered to be recently modified.
+    :return: A dictionary with recently modified participants' IDs mapped to their recently modified sessions.
+    """
 
     # Define parameters of experiment
     exp_dir = '/data/eeg/scalp/ltp/ltpFR2/'

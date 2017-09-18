@@ -20,8 +20,8 @@ def run_bonus(exp, subjects=None, upload=True):
     Runs the bonus pipeline on a list of subjects. First calculates the performance scores and bonus payments for each
     of the participants' sessions, then generates a report for each participant.
 
-    :param subjects: A list of subject IDs on whom to run the bonus reporting pipeline.
     :param exp: The name of the experiment in which the subjects were run.
+    :param subjects: A list of subject IDs on whom to run the bonus reporting pipeline.
     :param upload: Indicates whether or not reports should be uploaded to memory.psych.upenn.edu after being generated.
     """
     if subjects is None:
