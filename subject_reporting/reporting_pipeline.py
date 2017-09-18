@@ -5,8 +5,8 @@ from subject_reporting.ltpFR2_report import subject_report_ltpFR2
 
 def run_pipeline():
     make_data_matrices_ltpFR2()
-    run_stats()
-    subject_report_ltpFR2()
+    # run_stats()
+    # subject_report_ltpFR2()
 
 
 if __name__ == "__main__":
