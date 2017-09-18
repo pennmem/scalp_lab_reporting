@@ -1,7 +1,7 @@
 import os
 import json
-from bonus_reporting.calculation.bonus_ltpFR2 import calculate_bonus_ltpFR2
-from bonus_reporting.reports.bonus_report_ltpFR2 import bonus_report_ltpFR2
+from calculation.bonus_ltpFR2 import calculate_bonus_ltpFR2
+from reports.bonus_report_ltpFR2 import bonus_report_ltpFR2
 
 
 def upload_bonus_report(report_path, exp):
