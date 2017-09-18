@@ -144,7 +144,7 @@ def make_data_matrices_ltpFR2(run_all=False):
         pres_nos = np.zeros((total_lists, list_length), dtype='int16')
         rec_words = np.zeros((total_lists, recalls_allowed), dtype='U32')
         rec_nos = np.zeros((total_lists, recalls_allowed), dtype='int16')
-        recalled = np.zeros((total_lists, list_length), dtype='int8')
+        recalled = np.zeros((total_lists, list_length), dtype='float16')
         times = np.zeros((total_lists, recalls_allowed), dtype='int32')
         serialpos = np.zeros((total_lists, recalls_allowed), dtype='int16')
 
@@ -153,7 +153,7 @@ def make_data_matrices_ltpFR2(run_all=False):
             sess_pres_words = np.zeros((n_lists, list_length), dtype='U32')
             sess_rec_words = np.zeros((n_lists, recalls_allowed), dtype='U32')
             sess_rec_nos = np.zeros((n_lists, recalls_allowed), dtype='int16')
-            sess_recalled = np.zeros((n_lists, list_length), dtype='int8')
+            sess_recalled = np.zeros((n_lists, list_length), dtype='float16')
             sess_times = np.zeros((n_lists, recalls_allowed), dtype='int32')
 
             # Load presented and recalled words from that session's .lst and .par files, respectively
@@ -165,6 +165,7 @@ def make_data_matrices_ltpFR2(run_all=False):
                                                                   delimiter='\t', dtype='S32').view(np.chararray).decode('utf-8'))
                 except IOError:
                     bad_list_array[sess_num * n_lists + i] = True
+                    sess_recalled[i, :].fill(np.nan)
                     continue
 
                 # We can skip the steps below for trials with no recalls, which will produce a recs of shape (1, 0)
