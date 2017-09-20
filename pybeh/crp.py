@@ -71,7 +71,7 @@ def crp(recalls=None, subjects=None, listLength=None, lag_num=None):
         actual.fill(0)
         poss.fill(0)
         # Create trials x items matrix where item j, k indicates whether the kth recall on trial j was a correct recall
-        clean_recalls_mask = np.array(make_clean_recalls_mask2d(recalls))
+        clean_recalls_mask = np.array(make_clean_recalls_mask2d(recalls[subjects == subj]))
         # For each trial that matches that identifier
         for j, trial_recs in enumerate(recalls[subjects == subj]):
             seen = set()
