@@ -2,18 +2,13 @@ import os
 import json
 import numpy as np
 from pybeh.spc import spc
-from pybeh.pnr import pnr
+from pybeh.pfr import pfr
 from pybeh.crp import crp
 from pybeh.irt import irt
 from pybeh.crl import crl
-from pybeh.custom.prec import prec
-from pybeh.custom.avg_pli import avg_pli
-from pybeh.custom.avg_eli import avg_eli
-from pybeh.custom.avg_reps import avg_reps
-# from pybeh.temp_fact import temp_fact
-# from pybeh.dist_fact import dist_fact
-# from pybeh.sem_crp import sem_crp
-# from scipy.io import loadmat
+from pybeh.pli import pli
+from pybeh.xli import xli
+from subject_reporting.statistics.p_rec import p_rec
 
 
 def run_stats_ltpFR2(subj, data=None):
@@ -67,9 +62,6 @@ def run_stats_ltpFR2(subj, data=None):
     intru = np.array(data['intrusions'])[good_trials]
     recw = np.array(data['rec_words'])[good_trials]
     ll = np.array(data['pres_nos']).shape[1]
-    # pres_nos = np.array(data['pres_nos'])[good_trials]
-    # rec_nos = np.array(data['rec_nos'])[good_trials]
-    # lsa = loadmat('pybeh/LSA.mat')['LSA']
 
     ###############
     #
@@ -77,21 +69,16 @@ def run_stats_ltpFR2(subj, data=None):
     #
     ###############
     stats = dict()
-    stats['prec'] = prec(recalled, sessions)
+    stats['p_rec'] = p_rec(recalled, sessions)
     stats['spc'] = spc(spos, sessions, ll)
-    stats['pfr'] = pnr(spos, sessions, ll, n=0)
-    stats['psr'] = pnr(spos, sessions, ll, n=1)
-    stats['ptr'] = pnr(spos, sessions, ll, n=2)
+    stats['pfr'] = pfr(spos, sessions, ll)
     stats['crp'] = crp(spos, sessions, ll, lag_num=ll - 1)
     stats['crl'] = crl(spos, times, sessions, ll, lag_num=ll - 1)
     stats['irt'] = irt(times)
-    stats['pli_perlist'] = avg_pli(intru, sessions, recw)
-    stats['eli_perlist'] = avg_eli(intru, sessions)
-    stats['reps_perlist'] = avg_reps(spos, sessions)
-    # stats['temp_fact'] = temp_fact(spos, sessions, ll)
-    # stats['dist_fact'] = dist_fact(rec_nos, pres_nos, sessions, lsa, ll)
-    # stats['sem_crp'] = sem_crp(spos, rec_nos, pres_nos, sessions, lsa, 10, ll)
-    # stats['pli_recency'] = nback_pli(intru, sessions, 6, recw)[0]
+    stats['eli'] = xli(intru, sessions)
+    stats['pli_perlist'] = pli(intru, sessions, per_list=True)
+    stats['xli_perlist'] = xli(intru, sessions, per_list=True)
+    # stats['rep_perlist'] = avg_reps(spos, sessions)
 
     ###############
     #

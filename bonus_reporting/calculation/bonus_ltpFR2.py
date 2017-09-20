@@ -173,7 +173,7 @@ def calculate_bonus_ltpFR2_continuous(subj_list, sess_list):
     """
     Calculate bonus payments based on a participant's percentile rank among all sessions ever run. Not currently used,
     but was implemented in case we wish to move from performance brackets to a continuous function. To use, it will need
-    to be revised to fit with newer versions of the ltpFR2 bonus reporting script.
+    to be revised to fit with newer versions of the ltpFR2 bonus reporting script.3333
     """
 
     if len(subj_list) != len(sess_list):
