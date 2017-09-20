@@ -38,6 +38,7 @@ def make_data_matrices_ltpFR2(subj):
     ###############
     exp_dir = '/data/eeg/scalp/ltp/ltpFR2/'
     out_dir = '/data/eeg/scalp/ltp/ltpFR2/behavioral/data/'
+    out_dir = '/Users/jessepazdera/Desktop/behavioral/'
     list_length = 24
     n_lists = 24
     n_sess = 24
@@ -204,3 +205,8 @@ def make_data_matrices_ltpFR2(subj):
             json.dump(data, f)
 
     return data
+
+
+if __name__ == "__main__":
+    s = input('Enter a subject ID: ')
+    make_data_matrices_ltpFR2(s)

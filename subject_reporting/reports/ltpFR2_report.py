@@ -21,3 +21,8 @@ def subject_report_ltpFR2(subj, stats=None):
 
     outfile = os.path.join(out_dir, '%s_report.pdf' % subj)
     return outfile
+
+
+if __name__ == "__main__":
+    s = input('Enter a subject ID: ')
+    subject_report_ltpFR2(s)

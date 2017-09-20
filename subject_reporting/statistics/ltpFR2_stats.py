@@ -32,6 +32,7 @@ def run_stats_ltpFR2(subj, data=None):
     ###############
     data_dir = '/data/eeg/scalp/ltp/ltpFR2/behavioral/data/'
     out_dir = '/data/eeg/scalp/ltp/ltpFR2/behavioral/stats/'
+    out_dir = '/Users/jessepazdera/Desktop/stats/'
     n_sess = 24
 
     ###############
@@ -109,3 +110,8 @@ def run_stats_ltpFR2(subj, data=None):
         json.dump(stats, f)
 
     return stats
+
+
+if __name__ == "__main__":
+    s = input('Enter a subject ID: ')
+    run_stats_ltpFR2(s)
