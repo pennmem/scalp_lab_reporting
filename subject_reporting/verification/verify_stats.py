@@ -21,11 +21,11 @@ def verify_stats():
         except IOError:
             continue
 
-        fields_to_check = [f for f in stats.keys() if f not in ('crl', 'irt')]
+        fields_to_check = [f for f in stats.keys() if f not in ('p_rec', 'crl')]
         try:
             for field in fields_to_check:
                 new = np.array(stats[field])
-                old = matstat[field][0][0] if field != 'eli_perlist' else matstat['xli_perlist'][0][0]
+                old = matstat[field][0][0] if field not in ('p_rec', 'pli_perlist', 'xli_perlist') else matstat[field][0][0].T
                 match = ((new == old) | (np.isnan(new) & np.isnan(old))).all()
                 if not match:
                     print(field)

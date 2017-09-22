@@ -4,10 +4,10 @@ import numpy as np
 from pybeh.spc import spc
 from pybeh.pfr import pfr
 from pybeh.crp import crp
-from pybeh.irt import irt
 from pybeh.crl import crl
 from pybeh.pli import pli
 from pybeh.xli import xli
+from pybeh.reps import reps
 from subject_reporting.statistics.p_rec import p_rec
 
 
@@ -74,10 +74,9 @@ def run_stats_ltpFR2(subj, data=None):
     stats['pfr'] = pfr(spos, sessions, ll)
     stats['crp'] = crp(spos, sessions, ll, lag_num=ll - 1)
     stats['crl'] = crl(spos, times, sessions, ll, lag_num=ll - 1)
-    # stats['irt'] = irt(times)
-    stats['pli_perlist'] = pli(intru, sessions, per_list=True)
-    stats['xli_perlist'] = xli(intru, sessions, per_list=True)
-    # stats['rep_perlist'] = avg_reps(spos, sessions)
+    stats['pli_perlist'] = pli(intru, sessions, recw, exclude_reps=True, per_list=True)
+    stats['xli_perlist'] = xli(intru, sessions, recw, exclude_reps=True, per_list=True)
+    stats['rep_perlist'] = reps(spos, sessions, unique_reps=False, per_list=True)
 
     ###############
     #
