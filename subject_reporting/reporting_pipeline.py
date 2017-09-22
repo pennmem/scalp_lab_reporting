@@ -67,4 +67,4 @@ def run_pipeline(exp, subjects=None, upload=True):
 
 
 if __name__ == "__main__":
-    run_pipeline()
+    run_pipeline('ltpFR2')
