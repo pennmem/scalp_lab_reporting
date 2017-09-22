@@ -80,7 +80,7 @@ def make_data_matrices_ltpFR2(subj):
     sess_dirs = []
     for i in range(n_sess):
         sess_path = os.path.join(exp_dir, subj, 'session_%d' % i)
-        if os.path.exists(os.path.join(sess_path, 'session.log')):
+        if os.path.exists(os.path.join(sess_path, 'session.log')) or os.path.exists(os.path.join(sess_path, 'instruct.log')):
             sess_dirs.append(sess_path)
     if len(sess_dirs) == 0:
         return dict()
