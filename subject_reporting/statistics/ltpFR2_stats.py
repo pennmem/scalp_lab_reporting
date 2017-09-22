@@ -90,9 +90,19 @@ def run_stats_ltpFR2(subj, data=None):
 
     # Write stats to file, marking the file as incomplete if the participant has not completed all sessions
     complete = True if len(np.unique(data['session'])) == n_sess else False
-    outfile = os.path.join(out_dir, 'stats_%s.json' % subj) if complete else os.path.join(out_dir, 'stats_%s_incomplete.json' % subj)
-    with open(outfile, 'w') as f:
-        json.dump(stats, f)
+    outfile_complete = os.path.join(out_dir, 'stats_%s.json' % subj)
+    outfile_incomplete = os.path.join(out_dir, 'stats_%s_incomplete.json' % subj)
+
+    # Save data as a json file with one of two names, depending on whether the participant has finished all sessions
+    if complete:
+        with open(outfile_complete, 'w') as f:
+            json.dump(data, f)
+        # After the person runs their final session, we can remove the old data file labelled with "incomplete"
+        if os.path.exists(outfile_incomplete):
+            os.remove(outfile_incomplete)
+    else:
+        with open(outfile_incomplete, 'w') as f:
+            json.dump(data, f)
 
     return stats
 
