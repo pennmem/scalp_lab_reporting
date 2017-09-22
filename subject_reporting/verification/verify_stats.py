@@ -25,7 +25,7 @@ def verify_stats():
         try:
             for field in fields_to_check:
                 new = np.array(stats[field])
-                old = matstat[field][0][0] if field not in ('p_rec', 'pli_perlist', 'xli_perlist') else matstat[field][0][0].T
+                old = matstat[field][0][0] if field not in ('p_rec', 'pli_perlist', 'xli_perlist', 'rep_perlist') else matstat[field][0][0].T
                 match = ((new == old) | (np.isnan(new) & np.isnan(old))).all()
                 if not match:
                     print(field)
