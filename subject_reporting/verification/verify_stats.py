@@ -21,7 +21,7 @@ def verify_stats():
         except IOError:
             continue
 
-        fields_to_check = [f for f in stats.keys() if f not in ('p_rec', 'num_good_trials')]
+        fields_to_check = [f for f in stats.keys() if f not in ('p_rec', 'num_good_trials', 'session')]
         try:
             for field in fields_to_check:
                 new = np.array(stats[field])
