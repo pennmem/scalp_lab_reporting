@@ -65,7 +65,6 @@ def make_data_matrices_ltpFR2(subj):
     ###############
     exp_dir = '/data/eeg/scalp/ltp/ltpFR2/'
     out_dir = '/data/eeg/scalp/ltp/ltpFR2/behavioral/data/'
-    out_dir = '/Users/jessepazdera/Desktop/behavioral/'
     list_length = 24
     n_lists = 24
     n_sess = 24

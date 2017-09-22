@@ -27,7 +27,6 @@ def run_stats_ltpFR2(subj, data=None):
     ###############
     data_dir = '/data/eeg/scalp/ltp/ltpFR2/behavioral/data/'
     out_dir = '/data/eeg/scalp/ltp/ltpFR2/behavioral/stats/'
-    out_dir = '/Users/jessepazdera/Desktop/stats/'
     n_sess = 24
 
     ###############

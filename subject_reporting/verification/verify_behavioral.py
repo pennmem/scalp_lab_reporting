@@ -6,7 +6,7 @@ import numpy as np
 
 fields_to_check = (('rec_nos', 'rec_itemnos'), ('pres_nos', 'pres_itemnos'), ('serialpos', 'recalls'), ('times', 'times'), ('intrusions', 'intrusions'), ('recalled', 'recalled'))
 
-files = glob('/Users/jessepazdera/Desktop/behavioral/beh_data_LTP[0-9][0-9][0-9].json')
+files = glob('/data/eeg/scalp/ltp/ltpFR2/behavioral/data/beh_data_LTP[0-9][0-9][0-9].json')
 for path in files:
     with open(path) as f:
         data = json.load(f)
