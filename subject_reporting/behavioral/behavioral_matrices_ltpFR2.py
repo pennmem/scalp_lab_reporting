@@ -35,27 +35,21 @@ def make_serialpos_matrix(pres_nos, rec_nos):
 def make_data_matrices_ltpFR2(subj):
     """
     Creates behavioral data matrices for ltpFR2 participants. These include the following:
-    - Presented words
-    - Presented word IDs
-    - Recalled words
-    - Recalled word IDs
-    - "Recalled" matrix (whether each presented item was correctly recalled)
-    - "Times" matrix (number of ms after start of recall period that each recall was made)
-    - "Serialpos" matrix (the original serial position of each recalled word)
-    - "Intrusions" matrix (whether each recall was an intrusion, and if so which type: ELI = -1, PLI = n > 0 )
+    - Presented words (pres_words)
+    - Presented word IDs (pres_nos)
+    - Recalled words (rec_words)
+    - Recalled word IDs (rec_nos)
+    - "Recalled" matrix (whether each presented item was correctly recalled) (recalled)
+    - "Times" matrix (number of ms after start of recall period that each recall was made) (times)
+    - "Serialpos" matrix (the original serial position of each recalled word) (serialpos)
+    - "Intrusions" matrix (whether each recall was an intrusion: ELI = -1, PLI = n > 0 ) (intrusions)
 
-    Also creates a subject array, a session array, and a bad trial array for each participant. Each of these contain
+    Also creates a subject array, a session array, and a good trial array for each participant. Each of these contain
     one entry for each row of the behavioral matrices, and are used to record which participant performed that trial,
     which session the trial occurred during, and whether that trial's data is known to be bad and should be excluded.
 
-    Consider adding the following extra matrices:
-    - "Intruded" matrix
-    - Distractor duration matrix
-
-    :param run_all: If true, generate behavioral matrices for all ltpFR2 participants. If false, only generate matrices
-    for recently modified participants (based on what is written in recently_modified.json). Default is false.
-    :return: A dictionary with one entry for each participant processed, with a participant's entry being a
-    sub-dictionary with all of their data matrices inside.
+    :param subj: A string containing the subject ID for a participant.
+    :return: A dictionary containing each of the data matrices for the specified participant.
     """
 
     ###############
