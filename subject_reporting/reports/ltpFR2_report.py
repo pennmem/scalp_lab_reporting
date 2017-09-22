@@ -51,8 +51,42 @@ def subject_report_ltpFR2(subj, stats=None):
     xli_perlist = np.array(stats['xli_perlist'])
     rep_perlist = np.array(stats['rep_perlist'])
 
+    ###############
+    #
+    # Initialize LaTeX report document
+    #
+    ###############
+    geometry_options = dict(
+        paperheight='6.5in',
+        paperwidth='8in',
+        margin='.5in'
+    )
+    doc = ltx.Document(page_numbers=False, geometry_options=geometry_options)
 
-
+    ###############
+    #
+    # Create first tabular (PRec, PLIs, XLIs, Reps, NumTrials)
+    #
+    ###############
+    header = []
+    # Define the format of the LaTeX tabular -- one column for each item in the header
+    fmt = ('X[r] ' * len(header)).strip()
+    '''
+    with doc.create(ltx.Center()) as centered:
+        doc.append(ltx.LargeText('Bonus Report: %s' % subj))
+        doc.append(ltx.Command('par'))
+        with centered.create(ltx.Tabu(fmt)) as data_table:
+            data_table.add_row([''] * len(header))
+            data_table.add_hline()
+            data_table.add_row([''] * len(header))
+            data_table.add_row(header, mapper=[ltx.utils.bold])
+            data_table.add_row([''] * len(header))
+            data_table.add_hline()
+            data_table.add_row([''] * len(header))
+            for row in report:
+                data_table.add_row(row.split('\t'))
+    doc.generate_pdf(tex_outfile, compiler='pdflatex')
+    '''
 
     outfile = os.path.join(out_dir, '%s_report.pdf' % subj)
     return outfile
