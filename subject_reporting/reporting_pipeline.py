@@ -2,6 +2,7 @@ import os
 import json
 from subject_reporting.behavioral.behavioral_matrices_ltpFR2 import make_data_matrices_ltpFR2
 from subject_reporting.statistics.ltpFR2_stats import run_stats_ltpFR2
+from subject_reporting.statistics.ltpFR2_ERP import erp_ltpFR2
 from subject_reporting.reports.ltpFR2_report import subject_report_ltpFR2
 
 
@@ -62,6 +63,7 @@ def run_pipeline(exp, subjects=None, upload=True):
             if beh_data == {}:
                 continue
             stat_data = run_stats_ltpFR2(s, data=beh_data)
+            erps = erp_ltpFR2(s, data=beh_data)
             # report_path = subject_report_ltpFR2(s, stats=stat_data)
             # upload_subject_report(report_path, exp)
 
