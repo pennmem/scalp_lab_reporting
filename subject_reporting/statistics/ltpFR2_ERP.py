@@ -58,8 +58,8 @@ if __name__ == "__main__":
     names = ['Fz', 'Cz', 'Pz']
     for i, erp in enumerate((fz, cz, pz)):
         lim = ceil(np.abs(erp.data).max() * 1000000)  # Dynamically adjust the Y-axis
-        title = '%s (%d -- %d ms)' % (names[i], tmin * 1000, tmax * 1000)
-        fig = erp.plot(ylim={'eeg': (-lim, lim)}, hline=[0], window_title=title, selectable=False)
+        fig = erp.plot(ylim={'eeg': (-lim, lim)}, hline=[0], selectable=False)
+        plt.title('%s (%d -- %d ms)' % (names[i], tmin * 1000, tmax * 1000))
         plt.axvline(x=0, ls='--')
         plt.axvline(x=1600, ls='--')
         fig.savefig('%s_erp.pdf' % names[i])
