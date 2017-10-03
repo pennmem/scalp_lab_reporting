@@ -1,10 +1,12 @@
 import os
 import mne
 import numpy as np
-from ptsa.data.readers import BaseEventReader, EEGReader
+import matplotlib.pyplot as plt
+from ptsa.data.readers import BaseEventReader
+from math import ceil
 
 
-def erp_ltpFR2(subj, stats=None):
+def erp_ltpFR2(subj):
     exp_dir = '/data/eeg/scalp/ltp/ltpFR2/'
     n_sess = 24
 
@@ -30,33 +32,50 @@ def erp_ltpFR2(subj, stats=None):
             eeg = mne.Epochs(eeg, mne_evs, event_id=1, tmin=-.5, tmax=2.1, baseline=(None, 0))
 
 
+if __name__ == "__main__":
+    # ERP timing settings
+    tmin = -.5
+    tmax = 2.4
 
+    # Load behavioral data -> eeg offsets
+    ev = BaseEventReader(filename='/Users/jpazdera/rhino_mount/data/eeg/scalp/ltp/ltpFR2/LTP342/session_10/events.mat', normalize_eeg_path=False, eliminate_events_with_no_eeg=True).read()
+    ev = ev[ev.type == 'WORD']
+    offsets = ev.eegoffset
+    mne_evs = np.array([[int(o/2), 0, 1] for o in offsets])
 
+    # Load EEG data
+    fname = '/Users/jpazdera/rhino_mount/home1/jpazdera/ICA/LTP342_10/raw.fif'
+    eeg = mne.io.read_raw_fif(fname, preload=True)
+    eeg.apply_proj()
 
-import os
-import mne
-import numpy as np
-import matplotlib.pyplot as plt
-from ptsa.data.readers import BaseEventReader
-from math import ceil
+    # Create ERPs for Fz, Cz, and Pz electrodes
+    pres_eeg = mne.Epochs(eeg, mne_evs, event_id=1, tmin=tmin, tmax=tmax, baseline=(None, 0), preload=True)
+    fz = pres_eeg.average(picks=mne.pick_types(pres_eeg.info, include=['C21']))
+    cz = pres_eeg.average(picks=mne.pick_types(pres_eeg.info, include=['A1']))
+    pz = pres_eeg.average(picks=mne.pick_types(pres_eeg.info, include=['A19']))
 
-ev = BaseEventReader(filename='/data/eeg/scalp/ltp/ltpFR2/LTP342/session_10/events.mat', normalize_eeg_path=False, eliminate_events_with_no_eeg=True).read()
-ev = ev[ev.type == 'WORD']
-fname = '/Users/jessepazdera/rhino_mount/home1/jpazdera/ICA/LTP342_10/raw.fif'
-eeg = mne.io.read_raw_fif(fname, preload=True)
-eeg.apply_proj()
-offsets = ev.eegoffset
-mne_evs = np.array([[int(o/2), 0, 1] for o in offsets])
-eeg = mne.Epochs(eeg, mne_evs, event_id=1, tmin=-.5, tmax=2.1, baseline=(None, 0), preload=True)
-fz = eeg.average(picks=mne.pick_types(eeg.info, include=['C21']))
-cz = eeg.average(picks=mne.pick_types(eeg.info, include=['A1']))
-pz = eeg.average(picks=mne.pick_types(eeg.info, include=['A19']))
+    # Plot ERP for each of the three electrodes
+    names = ['Fz', 'Cz', 'Pz']
+    for i, erp in enumerate((fz, cz, pz)):
+        lim = ceil(np.abs(erp.data).max() * 1000000)  # Dynamically adjust the Y-axis
+        title = '%s (%d -- %d ms)' % (names[i], tmin * 1000, tmax * 1000)
+        fig = erp.plot(ylim={'eeg': (-lim, lim)}, hline=[0], window_title=title, selectable=False)
+        plt.axvline(x=0, ls='--')
+        plt.axvline(x=1600, ls='--')
+        fig.savefig('%s_erp.pdf' % names[i])
 
-for erp in (fz, cz, pz):
-    erp.plot(show=False)
-    plt.axvline(x=0)
-    plt.axvline(x=1600)
-    plt.axhline(y=0)
-    lim = max(3, ceil(1000000 * np.abs(erp.data).max()))
-    plt.ylim((-lim, lim))
-    plt.show()
+    """
+    # ICA CODE
+    ica_fname = '/home1/jpazdera/ICA/LTP342_10/reref-ica.fif'
+    ica = mne.preprocessing.read_ica(ica_fname)
+    ica.apply(eeg)
+    fz_ica = pres_eeg.average(picks=mne.pick_types(pres_eeg.info, include=['C21']))
+    cz_ica = pres_eeg.average(picks=mne.pick_types(pres_eeg.info, include=['A1']))
+    pz_ica = pres_eeg.average(picks=mne.pick_types(pres_eeg.info, include=['A19']))
+    fz_ica.rename_channels({chan: (chan + '_ica') for chan in fz_ica.info['ch_names']})
+    fz.add_channels([fz_ica])
+    cz_ica.rename_channels({chan: (chan + '_ica') for chan in cz_ica.info['ch_names']})
+    cz.add_channels([cz_ica])
+    pz_ica.rename_channels({chan: (chan + '_ica') for chan in pz_ica.info['ch_names']})
+    pz.add_channels([pz_ica])
+    """
