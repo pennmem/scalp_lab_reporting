@@ -129,11 +129,11 @@ def run_stats_ltpFR2(subj, data=None):
     # Plot stats
     #
     ###############
-    fig_dir = '/data/eeg/scalp/ltp/ltpFR2/%s/session_%d/figs/'
-    if not os.path.exists(fig_dir):  # Make sure figure directory exists
-        os.mkdir(fig_dir)
-
     for i, sess in enumerate(stats['session']):
+        fig_dir = '/data/eeg/scalp/ltp/ltpFR2/%s/session_%d/figs/' % (subj, sess)
+        if not os.path.exists(fig_dir):  # Make sure figure directory exists
+            os.mkdir(fig_dir)
+            
         # SPC
         s = stats['spc']
         fig = plt.figure()
