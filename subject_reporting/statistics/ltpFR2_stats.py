@@ -146,6 +146,7 @@ def run_stats_ltpFR2(subj, data=None):
         plt.xlim(1, ll)
         plt.ylim(0, 1)
         fig.savefig(os.path.join(fig_dir, 'spc.pdf'))
+        plt.close(fig)
 
         # PFR
         s = stats['pfr']
@@ -157,6 +158,7 @@ def run_stats_ltpFR2(subj, data=None):
         plt.xlim(1, ll)
         plt.ylim(0, 1)
         fig.savefig(os.path.join(fig_dir, 'pfr.pdf'))
+        plt.close(fig)
 
         # CRP
         s = stats['crp']
@@ -168,6 +170,7 @@ def run_stats_ltpFR2(subj, data=None):
         plt.ylabel('Cond. Resp. Probability')
         plt.ylim(0, 1)
         fig.savefig(os.path.join(fig_dir, 'crp.pdf'))
+        plt.close(fig)
 
     return stats
 

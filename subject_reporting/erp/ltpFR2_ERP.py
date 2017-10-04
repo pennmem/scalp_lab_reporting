@@ -74,6 +74,7 @@ def erp_ltpFR2(subj):
                 # Save ERP to <ID>_<SESS>_<CHAN>_erp.pdf; add extra number at end if session has multiple recordings
                 fig_name = '%s_erp_%d.pdf' % (names[j], i) if len(eegfiles) > 1 else '%s_erp.pdf' % names[j]
                 fig.savefig(os.path.join(fig_dir, fig_name))
+                plt.close(fig)
 
             """
             # EXAMPLE ICA CODE
