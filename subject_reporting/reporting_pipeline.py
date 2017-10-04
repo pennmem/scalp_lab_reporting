@@ -63,7 +63,7 @@ def run_pipeline(exp, subjects=None, upload=True):
             if beh_data == {}:
                 continue
             run_stats_ltpFR2(s, data=beh_data)
-            erp_ltpFR2(s)
+            # erp_ltpFR2(s)
             # report_path = subject_report_ltpFR2(s)
             # if upload:
             #   upload_subject_report(report_path, exp)
