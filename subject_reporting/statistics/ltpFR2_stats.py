@@ -1,6 +1,8 @@
 import os
 import json
 import numpy as np
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from pybeh.spc import spc
 from pybeh.pfr import pfr
@@ -133,7 +135,7 @@ def run_stats_ltpFR2(subj, data=None):
         fig_dir = '/data/eeg/scalp/ltp/ltpFR2/%s/session_%d/figs/' % (subj, sess)
         if not os.path.exists(fig_dir):  # Make sure figure directory exists
             os.mkdir(fig_dir)
-            
+
         # SPC
         s = stats['spc']
         fig = plt.figure()
