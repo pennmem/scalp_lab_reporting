@@ -1,6 +1,7 @@
 import os
 import json
 import numpy as np
+import matplotlib.pyplot as plt
 from pybeh.spc import spc
 from pybeh.pfr import pfr
 from pybeh.crp import crp
@@ -96,7 +97,7 @@ def run_stats_ltpFR2(subj, data=None):
 
     ###############
     #
-    # Save and return results
+    # Save results
     #
     ###############
     # Convert numpy arrays to lists, so that they are JSON serializable
@@ -119,6 +120,49 @@ def run_stats_ltpFR2(subj, data=None):
     else:
         with open(outfile_incomplete, 'w') as f:
             json.dump(data, f)
+
+    ###############
+    #
+    # Plot stats
+    #
+    ###############
+    fig_dir = '/data/eeg/scalp/ltp/ltpFR2/%s/session_%d/figs/'
+    if not os.path.exists(fig_dir):  # Make sure figure directory exists
+        os.mkdir(fig_dir)
+
+    for i, sess in enumerate(stats['session']):
+        # SPC
+        s = stats['spc']
+        fig = plt.figure()
+        plt.plot(range(1, ll+1), s[i], '-ko')
+        plt.title('%s -- Session %d' % (subj, sess))
+        plt.xlabel('Serial Position')
+        plt.ylabel('Recall Probability')
+        plt.xlim(1, ll)
+        plt.ylim(0, 1)
+        fig.savefig(os.path.join(fig_dir, 'spc.pdf'))
+
+        # PFR
+        s = stats['pfr']
+        fig = plt.figure()
+        plt.plot(range(1, ll+1), s[i], '-ko')
+        plt.title('%s -- Session %d' % (subj, sess))
+        plt.xlabel('Serial Position')
+        plt.ylabel('Probability of First Recall')
+        plt.xlim(1, ll)
+        plt.ylim(0, 1)
+        fig.savefig(os.path.join(fig_dir, 'pfr.pdf'))
+
+        # CRP
+        s = stats['crp']
+        lag_num = 6
+        fig = plt.figure()
+        plt.plot(range(-lag_num, lag_num+1), s[i][ll - lag_num - 1:ll + lag_num], '-ko')
+        plt.title('%s -- Session %d' % (subj, sess))
+        plt.xlabel('Lag')
+        plt.ylabel('Cond. Resp. Probability')
+        plt.ylim(0, 1)
+        fig.savefig(os.path.join(fig_dir, 'crp.pdf'))
 
     return stats
 
