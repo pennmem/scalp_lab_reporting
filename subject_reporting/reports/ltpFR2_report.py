@@ -18,7 +18,8 @@ def subject_report_ltpFR2(subj, stats=None):
     #
     ###############
     stat_dir = '/data/eeg/scalp/ltp/ltpFR2/behavioral/stats/'
-    out_dir = '/data/eeg/scalp/ltp/ltpFR2/report/'
+    tex_outfile = '/data/eeg/scalp/ltp/ltpFR2/%s/%s_report' % (subj, subj)
+    tex_outfile = '/Users/jessepazdera/Desktop/testfigs/%s_report' % subj
 
     ###############
     #
@@ -68,12 +69,11 @@ def subject_report_ltpFR2(subj, stats=None):
     # Create first tabular (PRec, PLIs, XLIs, Reps, NumTrials)
     #
     ###############
-    header = []
+    header = ['Session', 'PRec', 'PLI', 'XLI', 'Rep', 'Good Trials']
     # Define the format of the LaTeX tabular -- one column for each item in the header
     fmt = ('X[r] ' * len(header)).strip()
-    '''
     with doc.create(ltx.Center()) as centered:
-        doc.append(ltx.LargeText('Bonus Report: %s' % subj))
+        doc.append(ltx.LargeText('Subject Report: %s' % subj))
         doc.append(ltx.Command('par'))
         with centered.create(ltx.Tabu(fmt)) as data_table:
             data_table.add_row([''] * len(header))
@@ -83,13 +83,12 @@ def subject_report_ltpFR2(subj, stats=None):
             data_table.add_row([''] * len(header))
             data_table.add_hline()
             data_table.add_row([''] * len(header))
-            for row in report:
-                data_table.add_row(row.split('\t'))
-    doc.generate_pdf(tex_outfile, compiler='pdflatex')
-    '''
+            for i, sess in enumerate(sessions):
+                data_table.add_row([sess, p_rec[i], pli_perlist[i], xli_perlist[i], rep_perlist[i]], num_good_trials[i])
 
-    outfile = os.path.join(out_dir, '%s_report.pdf' % subj)
-    return outfile
+    doc.generate_pdf(tex_outfile, compiler='pdflatex')
+
+    return tex_outfile + '.pdf'
 
 
 if __name__ == "__main__":
