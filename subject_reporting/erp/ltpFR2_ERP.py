@@ -7,6 +7,12 @@ from math import ceil
 
 
 def erp_ltpFR2(subj):
+    """
+    TBA
+
+    :param subj:
+    :return:
+    """
     # Settings
     exp_dir = '/data/eeg/scalp/ltp/ltpFR2/'
     out_dir = '/data/eeg/scalp/ltp/ltpFR2/'
