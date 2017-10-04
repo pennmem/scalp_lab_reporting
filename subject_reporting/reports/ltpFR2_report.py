@@ -84,7 +84,7 @@ def subject_report_ltpFR2(subj, stats=None):
             data_table.add_hline()
             data_table.add_row([''] * len(header))
             for i, sess in enumerate(sessions):
-                data_table.add_row([sess, p_rec[i], pli_perlist[i], xli_perlist[i], rep_perlist[i]], num_good_trials[i])
+                data_table.add_row([sess, round(p_rec[i], 2), round(pli_perlist[i], 2), round(xli_perlist[i], 2), round(rep_perlist[i], 2), num_good_trials[i]])
 
     doc.generate_pdf(tex_outfile, compiler='pdflatex')
 
