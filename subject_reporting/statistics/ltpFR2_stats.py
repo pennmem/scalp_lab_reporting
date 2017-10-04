@@ -88,7 +88,7 @@ def run_stats_ltpFR2(subj, data=None):
     ###############
     stats = dict()
     stats['session'] = np.unique(sessions)
-    stats['num_good_trials'] = [np.sum(sessions == i) for i in np.unique(sessions)]
+    stats['num_good_trials'] = [int(np.sum(sessions == i)) for i in np.unique(sessions)]
     stats['p_rec'] = p_rec(recalled, sessions)
     stats['spc'] = spc(spos, sessions, ll)
     stats['pfr'] = pfr(spos, sessions, ll)
