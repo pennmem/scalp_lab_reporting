@@ -140,7 +140,7 @@ def run_stats_ltpFR2(subj, data=None):
     #
     ###############
     fig_dir = '/data/eeg/scalp/ltp/ltpFR2/%s/figs/' % subj
-    fig_dir = '/Users/jessepazdera/Desktop/testfigs/'
+    # fig_dir = '/Users/jessepazdera/Desktop/testfigs/'
     if not os.path.exists(fig_dir):  # Make sure figure directory exists
         os.mkdir(fig_dir)
 
@@ -188,7 +188,7 @@ def run_stats_ltpFR2(subj, data=None):
 
     for i, sess in enumerate(stats['session']):
         fig_dir = '/data/eeg/scalp/ltp/ltpFR2/%s/session_%d/figs/' % (subj, sess)
-        fig_dir = '/Users/jessepazdera/Desktop/testfigs/'
+        # fig_dir = '/Users/jessepazdera/Desktop/testfigs/'
         if not os.path.exists(fig_dir):  # Make sure figure directory exists
             os.mkdir(fig_dir)
 
