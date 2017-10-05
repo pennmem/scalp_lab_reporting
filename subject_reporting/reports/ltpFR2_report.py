@@ -86,6 +86,7 @@ def subject_report_ltpFR2(subj, stats=None):
             data_table.add_row([''] * len(header))
             data_table.add_hline()
             data_table.add_row([''] * len(header))
+            data_table.add_row(['Avg', round(np.mean(p_rec), 2), round(np.mean(pli_perlist), 2), round(np.mean(xli_perlist), 2), round(np.mean(rep_perlist), 2), np.sum(num_good_trials)])
             for i, sess in enumerate(sessions):
                 data_table.add_row([sess, round(p_rec[i], 2), round(pli_perlist[i], 2), round(xli_perlist[i], 2), round(rep_perlist[i], 2), num_good_trials[i]])
             data_table.add_row([''] * len(header))
@@ -110,11 +111,36 @@ def subject_report_ltpFR2(subj, stats=None):
             data_table.add_row([''] * len(header))
             data_table.add_hline()
             data_table.add_row([''] * len(header))
+
+            # Average plot
+            sesstext = ltx.Command('raisebox', arguments=[ltx.NoEscape('0.072\\textwidth'), 'Avg'])
+            spc_path = os.path.join(subj_dir, 'figs', 'spc.pdf')
+            pfr_path = os.path.join(subj_dir, 'figs', 'pfr.pdf')
+            crp_path = os.path.join(subj_dir, 'figs', 'crp.pdf')
+            # spc_path = '/Users/jessepazdera/Desktop/testfigs/spc.pdf'
+            # pfr_path = '/Users/jessepazdera/Desktop/testfigs/pfr.pdf'
+            # crp_path = '/Users/jessepazdera/Desktop/testfigs/crp.pdf'
+            spcfig = pfrfig = crpfig = ''
+            if os.path.exists(spc_path):
+                spcfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'),
+                                     arguments=ltx.NoEscape(spc_path))
+            if os.path.exists(pfr_path):
+                pfrfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'),
+                                     arguments=ltx.NoEscape(pfr_path))
+            if os.path.exists(crp_path):
+                crpfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'),
+                                     arguments=ltx.NoEscape(crp_path))
+            data_table.add_row([sesstext, spcfig, pfrfig, crpfig])
+
+            # Session plots
             for i, sess in enumerate(sessions):
-                sesstext = ltx.Command('raisebox', arguments=[ltx.NoEscape('0.07\\textwidth'), sess])
+                sesstext = ltx.Command('raisebox', arguments=[ltx.NoEscape('0.072\\textwidth'), sess])
                 spc_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'spc.pdf')
                 pfr_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'pfr.pdf')
                 crp_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'crp.pdf')
+                # spc_path = '/Users/jessepazdera/Desktop/testfigs/spc.pdf'
+                # pfr_path = '/Users/jessepazdera/Desktop/testfigs/pfr.pdf'
+                # crp_path = '/Users/jessepazdera/Desktop/testfigs/crp.pdf'
                 spcfig = pfrfig = crpfig = ''
                 if os.path.exists(spc_path):
                     spcfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'), arguments=ltx.NoEscape(spc_path))

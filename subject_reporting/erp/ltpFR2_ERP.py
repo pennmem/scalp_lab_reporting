@@ -1,9 +1,18 @@
 import os
 import mne
 import numpy as np
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from ptsa.data.readers import BaseEventReader
 from math import ceil
+
+matplotlib.rc('font', size=22)  # default text sizes
+matplotlib.rc('axes', titlesize=22)  # fontsize of the axes title
+matplotlib.rc('axes', labelsize=22)  # fontsize of the x and y labels
+matplotlib.rc('xtick', labelsize=24)  # fontsize of the x-axis tick labels
+matplotlib.rc('ytick', labelsize=24)  # fontsize of the y-axis tick labels
+matplotlib.rc('figure', titlesize=22)  # fontsize of the figure title
 
 
 def erp_ltpFR2(subj):
