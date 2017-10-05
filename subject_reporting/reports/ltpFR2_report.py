@@ -18,6 +18,7 @@ def subject_report_ltpFR2(subj, stats=None):
     #
     ###############
     stat_dir = '/data/eeg/scalp/ltp/ltpFR2/behavioral/stats/'
+    subj_dir = '/data/eeg/scalp/ltp/ltpFR2/%s/' % subj
     tex_outfile = '/data/eeg/scalp/ltp/ltpFR2/%s/%s_report' % (subj, subj)
     tex_outfile = '/Users/jessepazdera/Desktop/testfigs/%s_report' % subj
 
@@ -44,10 +45,6 @@ def subject_report_ltpFR2(subj, stats=None):
     sessions = np.array(stats['session'])
     num_good_trials = np.array(stats['num_good_trials'])
     p_rec = np.array(stats['p_rec'])
-    spc = np.array(stats['spc'])
-    pfr = np.array(stats['pfr'])
-    crp = np.array(stats['crp'])
-    crl = np.array(stats['crl'])
     pli_perlist = np.array(stats['pli_perlist'])
     xli_perlist = np.array(stats['xli_perlist'])
     rep_perlist = np.array(stats['rep_perlist'])
@@ -58,25 +55,31 @@ def subject_report_ltpFR2(subj, stats=None):
     #
     ###############
     geometry_options = dict(
-        paperheight='6.5in',
-        paperwidth='8in',
+        paperheight='11in',
+        paperwidth='8.5in',
         margin='.5in'
     )
     doc = ltx.Document(page_numbers=False, geometry_options=geometry_options)
+    doc.preamble.append(ltx.Package('graphicx'))  # Load graphicx package so that we can use \includegraphics
 
-    ###############
-    #
-    # Create first tabular (PRec, PLIs, XLIs, Reps, NumTrials)
-    #
-    ###############
-    header = ['Session', 'PRec', 'PLI', 'XLI', 'Rep', 'Good Trials']
-    # Define the format of the LaTeX tabular -- one column for each item in the header
-    fmt = ('X[r] ' * len(header)).strip()
+
     with doc.create(ltx.Center()) as centered:
-        doc.append(ltx.LargeText('Subject Report: %s' % subj))
+        doc.append(ltx.LargeText(ltx.Command('underline', arguments='Subject Report: %s' % subj)))
+        doc.append(ltx.Command('break'))
+        doc.append(ltx.Command('break'))
         doc.append(ltx.Command('par'))
+        doc.append(ltx.MediumText('Recall Statistics'))
+        doc.append(ltx.Command('break'))
+        doc.append(ltx.Command('par'))
+
+        ###############
+        #
+        # Create first table (PRec, PLIs, XLIs, Reps, Trials)
+        #
+        ###############
+        header = ['Sess', 'PRec', 'PLI', 'XLI', 'Rep', 'Trials']
+        fmt = '|c' * len(header) + '|'
         with centered.create(ltx.Tabu(fmt)) as data_table:
-            data_table.add_row([''] * len(header))
             data_table.add_hline()
             data_table.add_row([''] * len(header))
             data_table.add_row(header, mapper=[ltx.utils.bold])
@@ -85,12 +88,90 @@ def subject_report_ltpFR2(subj, stats=None):
             data_table.add_row([''] * len(header))
             for i, sess in enumerate(sessions):
                 data_table.add_row([sess, round(p_rec[i], 2), round(pli_perlist[i], 2), round(xli_perlist[i], 2), round(rep_perlist[i], 2), num_good_trials[i]])
+            data_table.add_row([''] * len(header))
+            data_table.add_hline()
 
+        ###############
+        #
+        # Create second table (SPC, PFR, CRP plots)
+        #
+        ###############
+        doc.append(ltx.Command('break'))
+        doc.append(ltx.Command('break'))
+        doc.append(ltx.Command('break'))
+        doc.append(ltx.Command('break'))
+        doc.append(ltx.MediumText('Dynamics of Recall'))
+        header = ['Session', 'SPC', 'PFR', 'CRP']
+        fmt = 'c' * len(header)
+        with centered.create(ltx.LongTabu(fmt)) as data_table:
+            data_table.add_hline()
+            data_table.add_row([''] * len(header))
+            data_table.add_row(header, mapper=[ltx.utils.bold])
+            data_table.add_row([''] * len(header))
+            data_table.add_hline()
+            data_table.add_row([''] * len(header))
+            for i, sess in enumerate(sessions):
+                sesstext = ltx.Command('raisebox', arguments=[ltx.NoEscape('0.07\\textwidth'), sess])
+                spc_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'spc.pdf')
+                pfr_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'pfr.pdf')
+                crp_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'crp.pdf')
+                spcfig = pfrfig = crpfig = ''
+                if os.path.exists(spc_path):
+                    spcfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'), arguments=ltx.NoEscape(spc_path))
+                if os.path.exists(pfr_path):
+                    pfrfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'), arguments=ltx.NoEscape(pfr_path))
+                if os.path.exists(crp_path):
+                    crpfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'), arguments=ltx.NoEscape(crp_path))
+                data_table.add_row([sesstext, spcfig, pfrfig, crpfig])
+
+        ###############
+        #
+        # Create third table (ERP plots)
+        #
+        ###############
+        doc.append(ltx.Command('break'))
+        doc.append(ltx.Command('break'))
+        doc.append(ltx.Command('break'))
+        doc.append(ltx.Command('break'))
+        doc.append(ltx.MediumText('Event-Related Potentials'))
+        header = ['Session', 'Fz', 'Cz', 'Pz']
+        fmt = 'c' * len(header)
+        with centered.create(ltx.LongTabu(fmt)) as data_table:
+            data_table.add_hline()
+            data_table.add_row([''] * len(header))
+            data_table.add_row(header, mapper=[ltx.utils.bold])
+            data_table.add_row([''] * len(header))
+            data_table.add_hline()
+            data_table.add_row([''] * len(header))
+            for i, sess in enumerate(sessions):
+                sesstext = ltx.Command('raisebox', arguments=[ltx.NoEscape('0.0615\\textwidth'), sess])
+                fz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'fz.pdf')
+                cz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'cz.pdf')
+                pz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'pz.pdf')
+                # fz_path = '/Users/jessepazdera/rhino_mount/home1/jpazdera/jupyter/Fz_erp.pdf'
+                # cz_path = '/Users/jessepazdera/rhino_mount/home1/jpazdera/jupyter/Cz_erp.pdf'
+                # pz_path = '/Users/jessepazdera/rhino_mount/home1/jpazdera/jupyter/Pz_erp.pdf'
+                fz = cz = pz = ''
+                if os.path.exists(fz_path):
+                    fz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'), arguments=ltx.NoEscape(fz_path))
+                if os.path.exists(cz_path):
+                    cz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'), arguments=ltx.NoEscape(cz_path))
+                if os.path.exists(pz_path):
+                    pz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'), arguments=ltx.NoEscape(pz_path))
+
+                data_table.add_row([sesstext, fz, cz, pz])
+
+    ###############
+    #
+    # Compile LaTeX and produce a PDF report
+    #
+    ###############
     doc.generate_pdf(tex_outfile, compiler='pdflatex')
 
     return tex_outfile + '.pdf'
 
 
 if __name__ == "__main__":
-    s = input('Enter a subject ID: ')
+    # s = input('Enter a subject ID: ')
+    s = 'LTP365'
     subject_report_ltpFR2(s)
