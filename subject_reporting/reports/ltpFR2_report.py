@@ -144,7 +144,7 @@ def subject_report_ltpFR2(subj, stats=None):
             data_table.add_hline()
             data_table.add_row([''] * len(header))
             for i, sess in enumerate(sessions):
-                sesstext = ltx.Command('raisebox', arguments=[ltx.NoEscape('0.0615\\textwidth'), sess])
+                sesstext = ltx.Command('raisebox', arguments=[ltx.NoEscape('0.045\\textwidth'), sess])
                 fz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'fz.pdf')
                 cz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'cz.pdf')
                 pz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'pz.pdf')
