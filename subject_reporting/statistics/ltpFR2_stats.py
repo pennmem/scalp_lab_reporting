@@ -13,6 +13,13 @@ from pybeh.xli import xli
 from pybeh.reps import reps
 from subject_reporting.statistics.p_rec import p_rec
 
+matplotlib.rc('font', size=22)  # default text sizes
+matplotlib.rc('axes', titlesize=22)  # fontsize of the axes title
+matplotlib.rc('axes', labelsize=22)  # fontsize of the x and y labels
+matplotlib.rc('xtick', labelsize=24)  # fontsize of the x-axis tick labels
+matplotlib.rc('ytick', labelsize=24)  # fontsize of the y-axis tick labels
+matplotlib.rc('figure', titlesize=22)  # fontsize of the figure title
+
 
 def run_stats_ltpFR2(subj, data=None):
     """
@@ -105,6 +112,7 @@ def run_stats_ltpFR2(subj, data=None):
     # Save results
     #
     ###############
+    """
     # Convert numpy arrays to lists, so that they are JSON serializable
     for stat in stats:
         if isinstance(stats[stat], np.ndarray):
@@ -125,14 +133,60 @@ def run_stats_ltpFR2(subj, data=None):
     else:
         with open(outfile_incomplete, 'w') as f:
             json.dump(stats, f)
-
+    """
     ###############
     #
     # Plot stats
     #
     ###############
+    fig_dir = '/data/eeg/scalp/ltp/ltpFR2/%s/figs/' % subj
+    fig_dir = '/Users/jessepazdera/Desktop/testfigs/'
+    if not os.path.exists(fig_dir):  # Make sure figure directory exists
+        os.mkdir(fig_dir)
+
+    # Average SPC
+    s = stats['spc']
+    fig = plt.figure()
+    plt.plot(range(1, ll + 1), np.mean(s, axis=0), '-ko')
+    plt.title('%s -- Average' % subj)
+    plt.xlabel('Serial Position')
+    plt.ylabel('Recall Probability')
+    plt.xlim(1, ll)
+    plt.ylim(0, 1)
+    plt.tight_layout()
+    fig.savefig(os.path.join(fig_dir, 'spc.pdf'))
+    plt.close(fig)
+
+    # Average PFR
+    s = stats['pfr']
+    fig = plt.figure()
+    plt.plot(range(1, ll + 1), np.mean(s, axis=0), '-ko')
+    plt.title('%s -- Average' % subj)
+    plt.xlabel('Serial Position')
+    plt.ylabel('Probability of First Recall')
+    plt.xlim(1, ll)
+    plt.ylim(0, 1)
+    plt.tight_layout()
+    fig.savefig(os.path.join(fig_dir, 'pfr.pdf'))
+    plt.close(fig)
+
+    # Average CRP
+    s = stats['crp']
+    lag_num = 6
+    fig = plt.figure()
+    plt.plot(range(-lag_num, lag_num + 1), np.mean(s, axis=0)[ll - lag_num - 1:ll + lag_num], '-ko')
+    plt.title('%s -- Average' % subj)
+    plt.xlabel('Lag')
+    plt.ylabel('Cond. Resp. Probability')
+    plt.ylim(0, 1)
+    plt.tight_layout()
+    fig.savefig(os.path.join(fig_dir, 'crp.pdf'))
+    plt.close(fig)
+
+
     for i, sess in enumerate(stats['session']):
         fig_dir = '/data/eeg/scalp/ltp/ltpFR2/%s/session_%d/figs/' % (subj, sess)
+        fig_dir = '/Users/jessepazdera/Desktop/testfigs/'
         if not os.path.exists(fig_dir):  # Make sure figure directory exists
             os.mkdir(fig_dir)
 
@@ -145,6 +199,7 @@ def run_stats_ltpFR2(subj, data=None):
         plt.ylabel('Recall Probability')
         plt.xlim(1, ll)
         plt.ylim(0, 1)
+        plt.tight_layout()
         fig.savefig(os.path.join(fig_dir, 'spc.pdf'))
         plt.close(fig)
 
@@ -157,6 +212,7 @@ def run_stats_ltpFR2(subj, data=None):
         plt.ylabel('Probability of First Recall')
         plt.xlim(1, ll)
         plt.ylim(0, 1)
+        plt.tight_layout()
         fig.savefig(os.path.join(fig_dir, 'pfr.pdf'))
         plt.close(fig)
 
@@ -169,6 +225,7 @@ def run_stats_ltpFR2(subj, data=None):
         plt.xlabel('Lag')
         plt.ylabel('Cond. Resp. Probability')
         plt.ylim(0, 1)
+        plt.tight_layout()
         fig.savefig(os.path.join(fig_dir, 'crp.pdf'))
         plt.close(fig)
 
