@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 from ptsa.data.readers import BaseEventReader
 from math import ceil
 
-matplotlib.rc('font', size=22)  # default text sizes
-matplotlib.rc('axes', titlesize=22)  # fontsize of the axes title
-matplotlib.rc('axes', labelsize=22)  # fontsize of the x and y labels
-matplotlib.rc('xtick', labelsize=24)  # fontsize of the x-axis tick labels
-matplotlib.rc('ytick', labelsize=24)  # fontsize of the y-axis tick labels
-matplotlib.rc('figure', titlesize=22)  # fontsize of the figure title
+matplotlib.rc('font', size=14)  # default text sizes
+matplotlib.rc('axes', titlesize=14)  # fontsize of the axes title
+matplotlib.rc('axes', labelsize=14)  # fontsize of the x and y labels
+matplotlib.rc('xtick', labelsize=14)  # fontsize of the x-axis tick labels
+matplotlib.rc('ytick', labelsize=14)  # fontsize of the y-axis tick labels
+matplotlib.rc('figure', titlesize=16)  # fontsize of the figure title
 
 
 def erp_ltpFR2(subj):
