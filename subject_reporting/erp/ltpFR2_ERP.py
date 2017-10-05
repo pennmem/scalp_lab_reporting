@@ -21,7 +21,7 @@ def erp_ltpFR2(subj):
     cz_chans = ['A1']  # Channel(s) to plot under Cz
     pz_chans = ['A19']  # Channel(s) to plot under Pz
     tmin = -.5  # Start time of ERP in seconds
-    tmax = 2.4  # End time of ERP in seconds
+    tmax = 2.1  # End time of ERP in seconds
 
     for sess in range(n_sess):
         # Make directory for figures/ERP plots if it does not exist
