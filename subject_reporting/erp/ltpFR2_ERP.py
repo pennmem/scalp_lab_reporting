@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 from ptsa.data.readers import BaseEventReader
 from math import ceil
 
-matplotlib.rc('font', size=14)  # default text sizes
-matplotlib.rc('axes', titlesize=14)  # fontsize of the axes title
-matplotlib.rc('axes', labelsize=14)  # fontsize of the x and y labels
-matplotlib.rc('xtick', labelsize=14)  # fontsize of the x-axis tick labels
-matplotlib.rc('ytick', labelsize=14)  # fontsize of the y-axis tick labels
-matplotlib.rc('figure', titlesize=16)  # fontsize of the figure title
+matplotlib.rc('font', size=18)  # default text sizes
+matplotlib.rc('axes', titlesize=18)  # fontsize of the axes title
+matplotlib.rc('axes', labelsize=18)  # fontsize of the x and y labels
+matplotlib.rc('xtick', labelsize=18)  # fontsize of the x-axis tick labels
+matplotlib.rc('ytick', labelsize=18)  # fontsize of the y-axis tick labels
+matplotlib.rc('figure', titlesize=20)  # fontsize of the figure title
 
 
 def erp_ltpFR2(subj):
@@ -102,7 +102,7 @@ def erp_ltpFR2(subj):
 if __name__ == "__main__":
 
     tmin = -.5  # Start time of ERP in seconds
-    tmax = 2.4  # End time of ERP in seconds
+    tmax = 2.1  # End time of ERP in seconds
 
     # Load behavioral data -> eeg offsets
     evfile = '/data/eeg/scalp/ltp/ltpFR2/LTP342/session_10/events.mat'
@@ -129,4 +129,5 @@ if __name__ == "__main__":
         plt.title('%s (%d -- %d ms)' % (names[i], tmin * 1000, tmax * 1000))
         plt.axvline(x=0, ls='--')
         plt.axvline(x=1600, ls='--')
-        fig.savefig('%s_erp.pdf' % names[i])
+        fig.savefig('/Users/jessepazdera/rhino_mount/home1/jpazdera/jupyter/%s_erp.pdf' % names[i])
+        plt.close(fig)

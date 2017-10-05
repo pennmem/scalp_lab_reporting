@@ -113,7 +113,7 @@ def subject_report_ltpFR2(subj, stats=None):
             data_table.add_row([''] * len(header))
 
             # Average plot
-            sesstext = ltx.Command('raisebox', arguments=[ltx.NoEscape('0.072\\textwidth'), 'Avg'])
+            sesstext = ltx.Command('raisebox', arguments=[ltx.NoEscape('0.105\\textwidth'), 'Avg'])
             spc_path = os.path.join(subj_dir, 'figs', 'spc.pdf')
             pfr_path = os.path.join(subj_dir, 'figs', 'pfr.pdf')
             crp_path = os.path.join(subj_dir, 'figs', 'crp.pdf')
@@ -122,19 +122,19 @@ def subject_report_ltpFR2(subj, stats=None):
             # crp_path = '/Users/jessepazdera/Desktop/testfigs/crp.pdf'
             spcfig = pfrfig = crpfig = ''
             if os.path.exists(spc_path):
-                spcfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'),
+                spcfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'),
                                      arguments=ltx.NoEscape(spc_path))
             if os.path.exists(pfr_path):
-                pfrfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'),
+                pfrfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'),
                                      arguments=ltx.NoEscape(pfr_path))
             if os.path.exists(crp_path):
-                crpfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'),
+                crpfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'),
                                      arguments=ltx.NoEscape(crp_path))
             data_table.add_row([sesstext, spcfig, pfrfig, crpfig])
 
             # Session plots
             for i, sess in enumerate(sessions):
-                sesstext = ltx.Command('raisebox', arguments=[ltx.NoEscape('0.072\\textwidth'), sess])
+                sesstext = ltx.Command('raisebox', arguments=[ltx.NoEscape('0.105\\textwidth'), sess])
                 spc_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'spc.pdf')
                 pfr_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'pfr.pdf')
                 crp_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'crp.pdf')
@@ -143,11 +143,11 @@ def subject_report_ltpFR2(subj, stats=None):
                 # crp_path = '/Users/jessepazdera/Desktop/testfigs/crp.pdf'
                 spcfig = pfrfig = crpfig = ''
                 if os.path.exists(spc_path):
-                    spcfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'), arguments=ltx.NoEscape(spc_path))
+                    spcfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'), arguments=ltx.NoEscape(spc_path))
                 if os.path.exists(pfr_path):
-                    pfrfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'), arguments=ltx.NoEscape(pfr_path))
+                    pfrfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'), arguments=ltx.NoEscape(pfr_path))
                 if os.path.exists(crp_path):
-                    crpfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'), arguments=ltx.NoEscape(crp_path))
+                    crpfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'), arguments=ltx.NoEscape(crp_path))
                 data_table.add_row([sesstext, spcfig, pfrfig, crpfig])
 
         ###############
@@ -170,20 +170,20 @@ def subject_report_ltpFR2(subj, stats=None):
             data_table.add_hline()
             data_table.add_row([''] * len(header))
             for i, sess in enumerate(sessions):
-                sesstext = ltx.Command('raisebox', arguments=[ltx.NoEscape('0.045\\textwidth'), sess])
+                sesstext = ltx.Command('raisebox', arguments=[ltx.NoEscape('0.067\\textwidth'), sess])
                 fz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'fz.pdf')
                 cz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'cz.pdf')
                 pz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'pz.pdf')
-                # fz_path = '/Users/jessepazdera/rhino_mount/home1/jpazdera/jupyter/Fz_erp.pdf'
-                # cz_path = '/Users/jessepazdera/rhino_mount/home1/jpazdera/jupyter/Cz_erp.pdf'
-                # pz_path = '/Users/jessepazdera/rhino_mount/home1/jpazdera/jupyter/Pz_erp.pdf'
+                fz_path = '/Users/jessepazdera/rhino_mount/home1/jpazdera/jupyter/Fz_erp.pdf'
+                cz_path = '/Users/jessepazdera/rhino_mount/home1/jpazdera/jupyter/Cz_erp.pdf'
+                pz_path = '/Users/jessepazdera/rhino_mount/home1/jpazdera/jupyter/Pz_erp.pdf'
                 fz = cz = pz = ''
                 if os.path.exists(fz_path):
-                    fz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'), arguments=ltx.NoEscape(fz_path))
+                    fz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'), arguments=ltx.NoEscape(fz_path))
                 if os.path.exists(cz_path):
-                    cz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'), arguments=ltx.NoEscape(cz_path))
+                    cz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'), arguments=ltx.NoEscape(cz_path))
                 if os.path.exists(pz_path):
-                    pz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.2\\textwidth'), arguments=ltx.NoEscape(pz_path))
+                    pz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'), arguments=ltx.NoEscape(pz_path))
 
                 data_table.add_row([sesstext, fz, cz, pz])
 
