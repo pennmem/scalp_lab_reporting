@@ -112,7 +112,6 @@ def run_stats_ltpFR2(subj, data=None):
     # Save results
     #
     ###############
-    """
     # Convert numpy arrays to lists, so that they are JSON serializable
     for stat in stats:
         if isinstance(stats[stat], np.ndarray):
@@ -133,7 +132,7 @@ def run_stats_ltpFR2(subj, data=None):
     else:
         with open(outfile_incomplete, 'w') as f:
             json.dump(stats, f)
-    """
+
     ###############
     #
     # Plot stats
