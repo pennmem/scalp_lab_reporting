@@ -34,11 +34,11 @@ def erp_ltpFR2(subj):
 
     for sess in range(n_sess):
         # Make directory for figures/ERP plots if it does not exist
-        fig_dir = os.path.join(out_dir, subj, sess, 'figs')
+        fig_dir = os.path.join(out_dir, subj, str(sess), 'figs')
         if not os.path.exists(fig_dir):
             os.mkdir(fig_dir)
 
-        evfile = os.path.join(exp_dir, subj, sess, 'events.json')
+        evfile = os.path.join(exp_dir, subj, str(sess), 'events.json')
         if not os.path.exists(evfile):  # Skip session if events have not been processed
             continue
         # Load word presentation events from target session
@@ -48,7 +48,7 @@ def erp_ltpFR2(subj):
         # Get list of all unique EEG files that have been aligned to the events from the target session
         eegfiles = [f for f in np.unique(ev.eegfile) if f != '']
         for i, fname in enumerate(eegfiles):
-            eegfile = os.path.join(exp_dir, subj, 'session_' + sess, 'eeg', fname)
+            eegfile = os.path.join(exp_dir, subj, 'session_' + str(sess), 'eeg', fname)
             # Skip EEG file if it cannot be found (only happens if EEG file was moved/deleted after alignment)
             if not os.path.exists(eegfile):
                 continue
