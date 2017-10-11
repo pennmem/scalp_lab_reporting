@@ -20,7 +20,6 @@ def subject_report_ltpFR2(subj, stats=None):
     stat_dir = '/data/eeg/scalp/ltp/ltpFR2/behavioral/stats/'
     subj_dir = '/data/eeg/scalp/ltp/ltpFR2/%s/' % subj
     tex_outfile = '/data/eeg/scalp/ltp/ltpFR2/%s/%s_report' % (subj, subj)
-    tex_outfile = '/Users/jessepazdera/Desktop/testfigs/%s_report' % subj
 
     ###############
     #
@@ -117,9 +116,6 @@ def subject_report_ltpFR2(subj, stats=None):
             spc_path = os.path.join(subj_dir, 'figs', 'spc.pdf')
             pfr_path = os.path.join(subj_dir, 'figs', 'pfr.pdf')
             crp_path = os.path.join(subj_dir, 'figs', 'crp.pdf')
-            # spc_path = '/Users/jessepazdera/Desktop/testfigs/spc.pdf'
-            # pfr_path = '/Users/jessepazdera/Desktop/testfigs/pfr.pdf'
-            # crp_path = '/Users/jessepazdera/Desktop/testfigs/crp.pdf'
             spcfig = pfrfig = crpfig = ''
             if os.path.exists(spc_path):
                 spcfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'),
@@ -138,9 +134,6 @@ def subject_report_ltpFR2(subj, stats=None):
                 spc_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'spc.pdf')
                 pfr_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'pfr.pdf')
                 crp_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'crp.pdf')
-                # spc_path = '/Users/jessepazdera/Desktop/testfigs/spc.pdf'
-                # pfr_path = '/Users/jessepazdera/Desktop/testfigs/pfr.pdf'
-                # crp_path = '/Users/jessepazdera/Desktop/testfigs/crp.pdf'
                 spcfig = pfrfig = crpfig = ''
                 if os.path.exists(spc_path):
                     spcfig = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'), arguments=ltx.NoEscape(spc_path))
@@ -174,9 +167,6 @@ def subject_report_ltpFR2(subj, stats=None):
                 fz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'fz.pdf')
                 cz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'cz.pdf')
                 pz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'pz.pdf')
-                fz_path = '/Users/jessepazdera/rhino_mount/home1/jpazdera/jupyter/Fz_erp.pdf'
-                cz_path = '/Users/jessepazdera/rhino_mount/home1/jpazdera/jupyter/Cz_erp.pdf'
-                pz_path = '/Users/jessepazdera/rhino_mount/home1/jpazdera/jupyter/Pz_erp.pdf'
                 fz = cz = pz = ''
                 if os.path.exists(fz_path):
                     fz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'), arguments=ltx.NoEscape(fz_path))
@@ -198,6 +188,5 @@ def subject_report_ltpFR2(subj, stats=None):
 
 
 if __name__ == "__main__":
-    # s = input('Enter a subject ID: ')
-    s = 'LTP365'
+    s = input('Enter a subject ID: ')
     subject_report_ltpFR2(s)
