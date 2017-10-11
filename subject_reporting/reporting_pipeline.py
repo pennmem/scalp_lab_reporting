@@ -18,7 +18,7 @@ def upload_subject_report(report_path, exp):
         os.system('scp %s reports@memory.psych.upenn.edu:/var/www/html/ltp_reports/%s/' % (report_path, exp))
 
 
-def run_pipeline(exp, subjects=None, upload=True):
+def run_pipeline(experiment=None, subjects=None, upload=True):
     """
     Runs the subject report pipeline on a list of participants. The pipeline has three major steps:
     1) Create behavioral data matrices containing presentation and recall information needed for analyses.
@@ -34,41 +34,58 @@ def run_pipeline(exp, subjects=None, upload=True):
     Step 3 creates a PDF report for each participant in
     /data/eeg/scalp/ltp/<exp_name>/report/
 
-    :param exp: The name of the experiment for which to generate reports.
+    :param experiment: A string containing the name of the experiment for which to generate reports. If None, run on all
+    active experiments.
     :param subjects: A list of subject IDs on whom to run the reporting pipeline. If None, run on all recently modified
     participants in the target experiment.
     :param upload: Indicates whether or not reports should be uploaded to memory.psych.upenn.edu after being generated.
     """
+    ###############
+    #
+    # Set reporting functions to use for each supported experiment here
+    #
+    ###############
+    REPORTING_SCRIPTS = dict(
+        ltpFR2=(make_data_matrices_ltpFR2, run_stats_ltpFR2, erp_ltpFR2, subject_report_ltpFR2)
+    )
 
     ###############
     #
-    # Determine list of participants to run
+    # Determine experiment list
     #
     ###############
-    if subjects is None:
-        with open('/data/eeg/scalp/ltp/%s/recently_modified.json' % exp, 'r') as f:
-            subjects = json.load(f).keys()
-    elif subjects == 'all':
-        # TODO: Add support for running on all subjects
-        subjects = []
+    if experiment is None:
+        # Load list of supported active experiments
+        with open('/data/eeg/scalp/ltp/ACTIVE_EXPERIMENTS.txt', 'r') as f:
+            experiments = [s.strip() for s in f.readlines() if s in REPORTING_SCRIPTS]
+    else:
+        if experiment in REPORTING_SCRIPTS:
+            experiments = [experiment]
+        else:
+            raise ('Unsupported experiment! Supported experiments are: ', REPORTING_SCRIPTS.keys())
 
     ###############
     #
-    # ltpFR2 Reporting Pipeline
+    # Run subject reporting pipeline
     #
     ###############
-    if exp == 'ltpFR2':
+    for exp in experiments:
+        # Run on recently modified subjects unless user specified both the experiment and subjects to use
+        if subjects is None or experiment is None:
+            with open('/data/eeg/scalp/ltp/%s/recently_modified.json' % exp, 'r') as f:
+                subjects = json.load(f).keys()
+
         for s in subjects:
-            beh_data = make_data_matrices_ltpFR2(s)
+            beh_data = REPORTING_SCRIPTS[exp][0](s)  # Create behavioral data matrices
             # Skip participant if they haven't actually completed any sessions
             if beh_data == {}:
                 continue
-            run_stats_ltpFR2(s, data=beh_data)
-            # erp_ltpFR2(s)
-            # report_path = subject_report_ltpFR2(s)
-            # if upload:
-            #   upload_subject_report(report_path, exp)
+            REPORTING_SCRIPTS[exp][1](s, data=beh_data)  # Run behavioral statistics
+            REPORTING_SCRIPTS[exp][2](s)  # Generate ERP plots
+            report_path = REPORTING_SCRIPTS[exp][3](s)  # Create subject report
+            if upload:
+                upload_subject_report(report_path, exp)
 
 
 if __name__ == "__main__":
-    run_pipeline('ltpFR2')
+    run_pipeline()

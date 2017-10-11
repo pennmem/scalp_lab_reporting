@@ -16,29 +16,46 @@ def upload_bonus_report(report_path, exp):
         os.system('scp %s reports@memory.psych.upenn.edu:/var/www/html/ltp_reports/%s_Bonus/' % (report_path, exp))
 
 
-def run_bonus(exp, subjects=None, upload=True):
+def run_bonus(experiment=None, subjects=None, upload=True):
     """
     Runs the bonus pipeline on a list of subjects. First calculates the performance scores and bonus payments for each
     of the participants' sessions, then generates a report for each participant.
 
-    :param exp: The name of the experiment in which the subjects were run.
-    :param subjects: A list of subject IDs on whom to run the bonus reporting pipeline.
+    :param experiment: A string containing the name of the experiment for which to run bonus reports. If None, run on
+    all active experiments.
+    :param subjects: A list of subject IDs on whom to run the bonus reporting pipeline. (Can only be used when
+    specifying an experiment)
     :param upload: Indicates whether or not reports should be uploaded to memory.psych.upenn.edu after being generated.
     """
-    if subjects is None:
-        with open('/data/eeg/scalp/ltp/%s/recently_modified.json' % exp, 'r') as f:
-            subjects = json.load(f).keys()
+    # Set bonus calculation and bonus report functions to use for each supported experiment here
+    BONUS_SCRIPTS = dict(
+        ltpFR2=(calculate_bonus_ltpFR2, bonus_report_ltpFR2)
+    )
 
-    # ltpFR2 reporting
-    if exp == 'ltpFR2':
+    # Determine experiment list
+    if experiment is None:
+        # Load list of supported active experiments
+        with open('/data/eeg/scalp/ltp/ACTIVE_EXPERIMENTS.txt', 'r') as f:
+            experiments = [s.strip() for s in f.readlines() if s in BONUS_SCRIPTS]
+    else:
+        if experiment in BONUS_SCRIPTS:
+            experiments = [experiment]
+        else:
+            raise('Unsupported experiment! Supported experiments are: ', BONUS_SCRIPTS.keys())
+
+    # Run bonus reporting
+    for exp in experiments:
+        # Run on recently modified subjects unless user specified both the experiment and subjects to use
+        if subjects is None or experiment is None:
+            with open('/data/eeg/scalp/ltp/%s/recently_modified.json' % exp, 'r') as f:
+                subjects = json.load(f).keys()
+
         for s in subjects:
-            scores, bonuses = calculate_bonus_ltpFR2(s)
-            _, pdf_path = bonus_report_ltpFR2(s, scores, bonuses)
+            scores, bonuses = BONUS_SCRIPTS[exp][0](s)
+            _, pdf_path = BONUS_SCRIPTS[exp][1](s, scores, bonuses)
             if upload:
                 upload_bonus_report(pdf_path, exp)
-    else:
-        raise Exception('Experiment name not recognized!')
 
 
 if __name__ == "__main__":
-    run_bonus('ltpFR2')
+    run_bonus()
