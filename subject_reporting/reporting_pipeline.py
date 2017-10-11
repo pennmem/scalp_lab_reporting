@@ -57,7 +57,7 @@ def run_pipeline(experiment=None, subjects=None, upload=True):
     if experiment is None:
         # Load list of supported active experiments
         with open('/data/eeg/scalp/ltp/ACTIVE_EXPERIMENTS.txt', 'r') as f:
-            experiments = [s.strip() for s in f.readlines() if s in REPORTING_SCRIPTS]
+            experiments = [s.strip() for s in f.readlines() if s.strip() in REPORTING_SCRIPTS]
     else:
         if experiment in REPORTING_SCRIPTS:
             experiments = [experiment]

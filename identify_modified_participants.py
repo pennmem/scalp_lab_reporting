@@ -64,7 +64,7 @@ def identify_modified_participants(day_limit=7):
     )
 
     with open('/data/eeg/scalp/ltp/ACTIVE_EXPERIMENTS.txt', 'r') as f:
-        experiments = [s.strip() for s in f.readlines() if s in IDENTIFIERS]
+        experiments = [s.strip() for s in f.readlines() if s.strip() in IDENTIFIERS]
 
     for exp in experiments:
         modified = IDENTIFIERS[exp](day_limit)
