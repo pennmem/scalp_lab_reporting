@@ -42,11 +42,11 @@ def erp_ltpFR2(subj):
         if not os.path.exists(evfile):  # Skip session if events have not been processed
             continue
         # Load word presentation events from target session
-        ev = BaseEventReader(filename=evfile, normalize_eeg_path=False, eliminate_events_with_no_eeg=True).read()
+        ev = BaseEventReader(filename=evfile, eliminate_events_with_no_eeg=True).read()
         ev = ev[ev.type == 'WORD']
 
         # Get list of all unique EEG files that have been aligned to the events from the target session
-        eegfiles = [f for f in np.unique(ev.eegfile) if f != '']
+        eegfiles = [os.path.basename(f) for f in np.unique(ev.eegfile) if f != '']
         for i, fname in enumerate(eegfiles):
             eegfile = os.path.join(db_dir, str(sess), 'ephys', 'current_processed', fname + '.fif')
             # Skip EEG file if it cannot be found (only happens if EEG file was moved/deleted after alignment)
@@ -100,7 +100,9 @@ def erp_ltpFR2(subj):
 
 
 if __name__ == "__main__":
+    erp_ltpFR2('LTP367')
 
+    """
     tmin = -.5  # Start time of ERP in seconds
     tmax = 2.1  # End time of ERP in seconds
 
@@ -131,3 +133,4 @@ if __name__ == "__main__":
         plt.axvline(x=1600, ls='--')
         fig.savefig('/Users/jessepazdera/rhino_mount/home1/jpazdera/jupyter/%s_erp.pdf' % names[i])
         plt.close(fig)
+    """
