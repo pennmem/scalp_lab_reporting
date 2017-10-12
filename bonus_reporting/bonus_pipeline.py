@@ -61,7 +61,7 @@ def run_bonus(experiment=None, subjects=None, upload=True):
                 subjects = json.load(f).keys()
 
         for s in subjects:
-            scores, bonuses = calculation_func[exp][0](s)
+            scores, bonuses = calculation_func(s)
             if report_func is None:
                 continue
             _, pdf_path = report_func(s, scores, bonuses)
