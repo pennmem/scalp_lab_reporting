@@ -91,9 +91,8 @@ def run_pipeline(experiment=None, subjects=None, upload=True):
             if beh_data == {} or statistics_func is None:
                 continue
             statistics_func(s, data=beh_data)  # Run behavioral statistics
-            if erp_func is None:
-                continue
-            erp_func(s)  # Generate ERP plots
+            if erp_func is not None:
+                erp_func(s)  # Generate ERP plots
             if report_func is None:
                 continue
             report_path = report_func(s)  # Create subject report
