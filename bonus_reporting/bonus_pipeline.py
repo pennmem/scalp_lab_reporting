@@ -34,8 +34,8 @@ def run_bonus(experiment=None, subjects=None, upload=True):
     # Set bonus calculation and bonus report functions to use for each supported experiment here
     BONUS_SCRIPTS = dict(
         ltpFR2=(calculate_bonus_ltpFR2, bonus_report_ltpFR2, True),
-        SFR=(calculate_bonus_SFR, bonus_report_SFR, False),
-        FR1_scalp=(calculate_bonus_FR1_scalp, bonus_report_FR1_scalp, False)
+        SFR=(calculate_bonus_SFR, bonus_report_SFR, True),
+        FR1_scalp=(calculate_bonus_FR1_scalp, bonus_report_FR1_scalp, True)
     )
 
     # Determine experiment list
