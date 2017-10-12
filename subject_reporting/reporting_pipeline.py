@@ -4,6 +4,8 @@ from subject_reporting.behavioral.behavioral_matrices_ltpFR2 import make_data_ma
 from subject_reporting.statistics.ltpFR2_stats import run_stats_ltpFR2
 from subject_reporting.erp.ltpFR2_ERP import erp_ltpFR2
 from subject_reporting.reports.ltpFR2_report import subject_report_ltpFR2
+from subject_reporting.behavioral.behavioral_matrices_SFR import make_data_matrices_SFR
+from subject_reporting.behavioral.behavioral_matrices_FR1_scalp import make_data_matrices_FR1_scalp
 
 
 def upload_subject_report(report_path, exp):
@@ -46,7 +48,9 @@ def run_pipeline(experiment=None, subjects=None, upload=True):
     #
     ###############
     REPORTING_SCRIPTS = dict(
-        ltpFR2=(make_data_matrices_ltpFR2, run_stats_ltpFR2, erp_ltpFR2, subject_report_ltpFR2)
+        ltpFR2=(make_data_matrices_ltpFR2, run_stats_ltpFR2, erp_ltpFR2, subject_report_ltpFR2, True),
+        SFR=(make_data_matrices_SFR, None, None, None, False),
+        FR1_scalp=(make_data_matrices_FR1_scalp, None, None, None, False)
     )
 
     ###############
@@ -70,19 +74,29 @@ def run_pipeline(experiment=None, subjects=None, upload=True):
     #
     ###############
     for exp in experiments:
+        behavioral_func = REPORTING_SCRIPTS[exp][0]
+        statistics_func = REPORTING_SCRIPTS[exp][1]
+        erp_func = REPORTING_SCRIPTS[exp][2]
+        report_func = REPORTING_SCRIPTS[exp][3]
+        upload = REPORTING_SCRIPTS[exp][4]
+
         # Run on recently modified subjects unless user specified both the experiment and subjects to use
         if subjects is None or experiment is None:
             with open('/data/eeg/scalp/ltp/%s/recently_modified.json' % exp, 'r') as f:
                 subjects = json.load(f).keys()
 
         for s in subjects:
-            beh_data = REPORTING_SCRIPTS[exp][0](s)  # Create behavioral data matrices
+            beh_data = behavioral_func(s)  # Create behavioral data matrices
             # Skip participant if they haven't actually completed any sessions
-            if beh_data == {}:
+            if beh_data == {} or statistics_func is None:
                 continue
-            REPORTING_SCRIPTS[exp][1](s, data=beh_data)  # Run behavioral statistics
-            REPORTING_SCRIPTS[exp][2](s)  # Generate ERP plots
-            report_path = REPORTING_SCRIPTS[exp][3](s)  # Create subject report
+            statistics_func(s, data=beh_data)  # Run behavioral statistics
+            if erp_func is None:
+                continue
+            erp_func(s)  # Generate ERP plots
+            if report_func is None:
+                continue
+            report_path = report_func(s)  # Create subject report
             if upload:
                 upload_subject_report(report_path, exp)
 
