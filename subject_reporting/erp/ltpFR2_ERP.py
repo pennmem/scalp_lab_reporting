@@ -60,7 +60,7 @@ def erp_ltpFR2(subj):
             offsets = ev.eegoffset[ev.eegfile == fname]
 
             # Use offsets to get data from presentation events (baseline corrected using timing tmin -> 0)
-            mne_evs = np.array([[o, 0, 1] for o in offsets])
+            mne_evs = np.array([[o, 0, 1] for o in offsets], dtype=int)
             pres_eeg = mne.Epochs(eeg, mne_evs, event_id=1, tmin=tmin, tmax=tmax, baseline=(None, 0), preload=True)
 
             # Save ERP plots for Fz, Cz, and Pz electrodes
