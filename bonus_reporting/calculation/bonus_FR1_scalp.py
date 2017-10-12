@@ -57,10 +57,15 @@ def calculate_bonus_FR1_scalp(subj):
             sess_precs.append(np.mean(recalled))
         prec = np.mean(sess_precs) * 100 if len(sess_precs) == n_trials else np.nan
 
-        log = glob(os.path.join(sess_dir, '*.json'))[0]
-        with open(log, 'r') as f:
-            log = f.read()
-        mc = len([x for x in re.finditer('"correctness":true', log)])
+        log = glob(os.path.join(sess_dir, '*.json'))
+        if len(log) == 0:
+            mc = np.nan
+        else:
+            mc = 0
+            for l in log:
+                with open(l, 'r') as f:
+                    log_text = f.read()
+                mc += len([x for x in re.finditer('"correctness":true', log_text)])
 
         # Calculate bonuses based on performance brackets
         prec_bonus = np.searchsorted(brackets['prec'], prec, side='right') if not np.isnan(prec) else np.nan
