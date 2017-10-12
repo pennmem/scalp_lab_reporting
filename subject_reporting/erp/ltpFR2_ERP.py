@@ -46,9 +46,9 @@ def erp_ltpFR2(subj):
         ev = ev[ev.type == 'WORD']
 
         # Get list of all unique EEG files that have been aligned to the events from the target session
-        eegfiles = [os.path.basename(f) for f in np.unique(ev.eegfile) if f != '']
+        eegfiles = [f for f in np.unique(ev.eegfile) if f != '']
         for i, fname in enumerate(eegfiles):
-            eegfile = os.path.join(db_dir, str(sess), 'ephys', 'current_processed', fname + '.fif')
+            eegfile = os.path.join(db_dir, str(sess), 'ephys', 'current_processed', os.path.basename(fname) + '.fif')
             # Skip EEG file if it cannot be found (only happens if EEG file was moved/deleted after alignment)
             if not os.path.exists(eegfile):
                 continue
