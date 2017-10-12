@@ -73,6 +73,7 @@ def calculate_bonus_FR1_scalp(subj):
         total_bonus = prec_bonus + math_bonus
 
         # Record scores and bonuses from session
+        scores[sess] = [prec, mc]
         bonuses[sess] = [prec_bonus, math_bonus, total_bonus]
 
     return scores, bonuses
