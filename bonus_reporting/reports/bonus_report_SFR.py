@@ -2,7 +2,7 @@ from pylatex import Document, Tabu, Center, LargeText, Command
 from pylatex.utils import bold
 
 
-def bonus_report_ltpFR2(subj, scores, bonuses, nans_blank=True):
+def bonus_report_SFR(subj, scores, bonuses, nans_blank=True):
     """
     Takes in bonus information and produces two versions of a bonus report for a participant. First, it creates a
     tab-delimited text file, designed to provide an easy way to read bonus score information into a script/software in
@@ -10,10 +10,9 @@ def bonus_report_ltpFR2(subj, scores, bonuses, nans_blank=True):
     or shown to participants.
 
     :param subj: A string containing the subject ID of the person for whom to make a report.
-    :param scores: A session x score array. Recall scores should be in column 0, blink rates in column 1, and math
-    scores in column 2.
-    :param bonuses: A session x bonus array. Recall bonus should be in column 0, blink bonus in column 1, math bonus
-    in column 2, and total bonus in column 3.
+    :param scores: A session x score array. Recall scores should be in column 0 and math scores in column 1.
+    :param bonuses: A session x bonus array. Recall bonus should be in column 0, math bonus in column 1, and total
+    bonus in column 2.
     :param nans_blank: Indicates whether or not to replace NaNs in the report with empty cell entries. (Default=True)
     :return: The paths to the TSV and PDF report, respectively
     """
@@ -23,16 +22,16 @@ def bonus_report_ltpFR2(subj, scores, bonuses, nans_blank=True):
     #
     ###############
 
-    outfile = '/data/eeg/scalp/ltp/ltpFR2/bonus/%s_bonus_report.tsv' % subj
+    outfile = '/data/eeg/scalp/ltp/SFR/bonus/%s_bonus_report.tsv' % subj
 
     # Create report header
-    report = 'Session\tRecall\tRecall Bonus\tBlink Rate\tBlink Bonus\tMath Score\tMath Bonus\tTotal\n'
+    report = 'Session\tRecall\tRecall Bonus\tMath Score\tMath Bonus\tTotal\n'
 
     # Fill in report
     for i in range(len(bonuses)):
-        report += '%d\t%.1f%%\t$%.2f\t%.1f%%\t$%.2f\t%.0f\t$%.2f\t$%.2f\n' % \
+        report += '%d\t%.1f%%\t$%.2f\t%.0f\t$%.2f\t$%.2f\n' % \
                   (i, scores[i][0], bonuses[i][0], scores[i][1],
-                   bonuses[i][1], scores[i][2], bonuses[i][2], bonuses[i][3])
+                   bonuses[i][1], bonuses[i][2])
     report = report.strip()
 
     # Replace nans with blank entries if desired
@@ -50,7 +49,7 @@ def bonus_report_ltpFR2(subj, scores, bonuses, nans_blank=True):
     #
     ###############
 
-    tex_outfile = '/data/eeg/scalp/ltp/ltpFR2/bonus/%s_bonus_report' % subj
+    tex_outfile = '/data/eeg/scalp/ltp/SFR/bonus/%s_bonus_report' % subj
     # Divide report into rows
     report = report.split('\n')
     # Create list of column names
@@ -60,7 +59,7 @@ def bonus_report_ltpFR2(subj, scores, bonuses, nans_blank=True):
     # Create LaTeX document
     geometry_options = dict(
         paperheight='6.5in',
-        paperwidth='8in',
+        paperwidth='6in',
         margin='.5in'
     )
     doc = Document(page_numbers=False, geometry_options=geometry_options)
