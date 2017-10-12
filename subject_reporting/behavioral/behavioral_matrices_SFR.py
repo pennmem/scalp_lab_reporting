@@ -118,9 +118,9 @@ def make_data_matrices_SFR(subj):
         # Load presented and recalled words from that session's .lst and .par files, respectively
         for i in range(n_lists):
             try:
-                sess_pres_words[i, :] = np.char.strip(np.loadtxt(os.path.join(session_dir, '%d.lst' % i + 1),
+                sess_pres_words[i, :] = np.char.strip(np.loadtxt(os.path.join(session_dir, '%d.lst' % (i + 1)),
                                                         delimiter='\t', dtype='S32').view(np.chararray).decode('utf-8'))
-                recs = np.atleast_2d(np.loadtxt(os.path.join(session_dir, '%d.par' % i + 1),
+                recs = np.atleast_2d(np.loadtxt(os.path.join(session_dir, '%d.par' % (i + 1)),
                                                         delimiter='\t', dtype='S32').view(np.chararray).decode('utf-8'))
             except IOError:
                 bad_list_array[sess_num * n_lists + i] = True
