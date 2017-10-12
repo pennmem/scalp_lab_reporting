@@ -23,7 +23,7 @@ def erp_ltpFR2(subj):
     :return:
     """
     # Settings
-    db_dir = '/protocols/ltp/subjects/%s/experiments/ltpFR2/sessions/'
+    db_dir = '/protocols/ltp/subjects/%s/experiments/ltpFR2/sessions/' % subj
     out_dir = '/data/eeg/scalp/ltp/ltpFR2/'
     n_sess = 24  # Max number of sessions in experiment
     fz_chans = ['C21']  # Channel(s) to plot under Fz
