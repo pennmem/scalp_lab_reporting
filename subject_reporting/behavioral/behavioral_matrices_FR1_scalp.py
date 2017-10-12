@@ -34,7 +34,7 @@ def make_serialpos_matrix(pres_nos, rec_nos):
 
 def make_data_matrices_FR1_scalp(subj):
     """
-    Creates behavioral data matrices for SFR participants. These include the following:
+    Creates behavioral data matrices for FR1_scalp participants. These include the following:
     - Presented words (pres_words)
     - Presented word IDs (pres_nos)
     - Recalled words (rec_words)
