@@ -57,7 +57,7 @@ def erp_ltpFR2(subj):
             eeg.apply_proj()
 
             # Get offsets for events from the current EEG file
-            offsets = ev.offsets[ev.eegfile == fname]
+            offsets = ev.eegoffset[ev.eegfile == fname]
 
             # Use offsets to get data from presentation events (baseline corrected using timing tmin -> 0)
             mne_evs = np.array([[o, 0, 1] for o in offsets])
