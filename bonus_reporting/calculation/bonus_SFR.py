@@ -44,7 +44,7 @@ def calculate_bonus_SFR(subj):
     bonuses = np.zeros((n_sessions, 3))
 
     for sess in range(n_sessions):
-        sess_dir = '/Users/jpazdera/rhino_mount/data/eeg/scalp/ltp/SFR/%s/session_%d/' % (subj, sess)
+        sess_dir = '/data/eeg/scalp/ltp/SFR/%s/session_%d/' % (subj, sess)
         sess_precs = []
         pars = glob(os.path.join(sess_dir, '*.par'))
         for par in pars:
