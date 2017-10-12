@@ -164,9 +164,9 @@ def subject_report_ltpFR2(subj, stats=None):
             data_table.add_row([''] * len(header))
             for i, sess in enumerate(sessions):
                 sesstext = ltx.Command('raisebox', arguments=[ltx.NoEscape('0.067\\textwidth'), sess])
-                fz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'fz.pdf')
-                cz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'cz.pdf')
-                pz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'pz.pdf')
+                fz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'Fz_erp.pdf')
+                cz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'Cz_erp.pdf')
+                pz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'Pz_erp.pdf')
                 fz = cz = pz = ''
                 if os.path.exists(fz_path):
                     fz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'), arguments=ltx.NoEscape(fz_path))
