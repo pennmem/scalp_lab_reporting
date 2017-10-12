@@ -1,6 +1,8 @@
 import os
 import json
 from bonus_reporting.calculation.bonus_ltpFR2 import calculate_bonus_ltpFR2
+from bonus_reporting.calculation.bonus_SFR import calculate_bonus_SFR
+from bonus_reporting.calculation.bonus_FR1_scalp import calculate_bonus_FR1_scalp
 from bonus_reporting.reports.bonus_report_ltpFR2 import bonus_report_ltpFR2
 
 
@@ -29,7 +31,9 @@ def run_bonus(experiment=None, subjects=None, upload=True):
     """
     # Set bonus calculation and bonus report functions to use for each supported experiment here
     BONUS_SCRIPTS = dict(
-        ltpFR2=(calculate_bonus_ltpFR2, bonus_report_ltpFR2)
+        ltpFR2=(calculate_bonus_ltpFR2, bonus_report_ltpFR2, True),
+        SFR=(calculate_bonus_SFR, None, False),
+        FR1_scalp=(calculate_bonus_FR1_scalp, None, False)
     )
 
     # Determine experiment list
@@ -45,14 +49,20 @@ def run_bonus(experiment=None, subjects=None, upload=True):
 
     # Run bonus reporting
     for exp in experiments:
+        calculation_func = BONUS_SCRIPTS[exp][0]
+        report_func = BONUS_SCRIPTS[exp][1]
+        upload = BONUS_SCRIPTS[exp][2]
+
         # Run on recently modified subjects unless user specified both the experiment and subjects to use
         if subjects is None or experiment is None:
             with open('/data/eeg/scalp/ltp/%s/recently_modified.json' % exp, 'r') as f:
                 subjects = json.load(f).keys()
 
         for s in subjects:
-            scores, bonuses = BONUS_SCRIPTS[exp][0](s)
-            _, pdf_path = BONUS_SCRIPTS[exp][1](s, scores, bonuses)
+            scores, bonuses = calculation_func[exp][0](s)
+            if report_func is None:
+                continue
+            _, pdf_path = report_func(s, scores, bonuses)
             if upload:
                 upload_bonus_report(pdf_path, exp)
 
