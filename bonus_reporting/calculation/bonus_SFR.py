@@ -17,12 +17,12 @@ def calculate_bonus_SFR(subj):
     $5 --> 83% - 100%
 
     Math Correct:
-    $0 --> < 158
-    $1 --> 158 - 173
-    $2 --> 174 - 210
-    $3 --> 211 - 231
-    $4 --> 232 - 274
-    $5 --> > 275
+    $0 --> < 118
+    $1 --> 118 - 126
+    $2 --> 127 - 146
+    $3 --> 147 - 156
+    $4 --> 157 - 176
+    $5 --> > 177
 
     Recall scores and bonuses can only be calculated once the session has been annotated.
 
@@ -37,7 +37,7 @@ def calculate_bonus_SFR(subj):
     n_trials = 26
     brackets = dict(
         prec=[35, 47, 61, 70, 83],
-        mc=[158, 174, 211, 232, 275]
+        mc=[188, 127, 147, 157, 177]
     )
 
     scores = np.zeros((n_sessions, 2))
