@@ -37,7 +37,7 @@ def calculate_bonus_FR1_scalp(subj):
     n_trials = 26
     brackets = dict(
         prec=[35, 47, 61, 70, 83],
-        mc=[188, 127, 147, 157, 177]
+        mc=[118, 127, 147, 157, 177]
     )
 
     scores = np.zeros((n_sessions, 2))
