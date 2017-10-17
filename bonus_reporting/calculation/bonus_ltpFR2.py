@@ -44,8 +44,8 @@ def calculate_blink_rate(events, pres_duration, return_percent=False):
     # If blink detection has not been run for this session, blink rate cannot be calculated
     if 'artifactMS' not in events.dtype.fields:
         return np.nan
-    # Get only word presentation events with artifactMS info
-    pres_events = events[np.logical_and(events['type'] == 'WORD', np.logical_not(np.isnan(events['artifactMS'])))]
+    # Get only word presentation events with eeg
+    pres_events = events[np.logical_and(events['type'] == 'WORD', np.logical_not(events['eegfile'] == ''))]
     # Count number of word presentations with artifactMS info
     total_pres = float(pres_events.shape[0])
     # If there are no presentation events with artifactMS info, blink rate cannot be calculated
@@ -136,13 +136,13 @@ def calculate_bonus_ltpFR2(subj):
     # Calculate scores and bonuses for each session
     for sess in range(n_sessions):
         # If session has exists and has been post-processed, calculate prec and blink rate, otherwise, set as nan
-        event_file = '/data/eeg/scalp/ltp/ltpFR2/%s/session_%d/events.mat' % (subj, sess)
+        event_file = '/protocols/ltp/subjects/%s/experiments/ltpFR2/sessions/%d/behavioral/current_processed/task_events.json' % (subj, sess)
         if not os.path.exists(event_file):
             prec = np.nan
             br = np.nan
         else:
             # Load events for given subejct and session
-            ev = BaseEventReader(filename=event_file, common_root='data', eliminate_nans=False).read()
+            ev = BaseEventReader(filename=event_file, eliminate_events_with_no_eeg=False).read()
 
             # Calculate performance from the target session
             prec = calculate_prec(ev, return_percent=True)
