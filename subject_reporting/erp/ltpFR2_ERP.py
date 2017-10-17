@@ -53,7 +53,7 @@ def erp_ltpFR2(subj):
             if not os.path.exists(eegfile):
                 continue
             # Add full path to an EEG file, load it, and re-reference to the common average
-            eeg = mne.io.read_raw_fif(eegfile, preload=True)
+            eeg = mne.io.read_raw_fif(eegfile, preload=False)
             eeg.apply_proj()
 
             # Get offsets for events from the current EEG file
@@ -100,7 +100,7 @@ def erp_ltpFR2(subj):
 
 
 if __name__ == "__main__":
-    erp_ltpFR2('LTP367')
+    erp_ltpFR2('LTP373')
 
     """
     tmin = -.5  # Start time of ERP in seconds
