@@ -144,7 +144,7 @@ def calculate_bonus_ltpFR2(subj):
             br = np.nan
         else:
             # Load events for given subejct and session
-            ev = BaseEventReader(filename=event_file, eliminate_events_with_no_eeg=False).read()
+            ev = BaseEventReader(filename=event_file, common_root='data', eliminate_nans=False, eliminate_events_with_no_eeg=False).read()
 
             # Calculate performance from the target session
             prec = calculate_prec(ev, return_percent=True)
