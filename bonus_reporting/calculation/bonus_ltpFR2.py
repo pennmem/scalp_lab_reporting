@@ -136,9 +136,9 @@ def calculate_bonus_ltpFR2(subj):
     # Calculate scores and bonuses for each session
     for sess in range(n_sessions):
         # If session has exists and has been post-processed, calculate prec and blink rate, otherwise, set as nan
-        event_file = '/protocols/ltp/subjects/%s/experiments/ltpFR2/sessions/%d/behavioral/current_processed/task_events.json' % (subj, sess)
+        event_file = '/data/eeg/scalp/ltp/ltpFR2/%s/session_%d/events.mat' % (subj, sess)
         if not os.path.exists(event_file):  # Look for the MATLAB event file if we can't find the JSON one
-            event_file = '/data/eeg/scalp/ltp/ltpFR2/%s/session_%d/events.mat' % (subj, sess)
+            event_file = '/protocols/ltp/subjects/%s/experiments/ltpFR2/sessions/%d/behavioral/current_processed/task_events.json' % (subj, sess)
         if not os.path.exists(event_file):
             prec = np.nan
             br = np.nan
