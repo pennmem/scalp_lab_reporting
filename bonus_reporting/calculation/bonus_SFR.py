@@ -46,16 +46,17 @@ def calculate_bonus_SFR(subj):
     for sess in range(n_sessions):
         sess_dir = '/data/eeg/scalp/ltp/SFR/%s/session_%d/' % (subj, sess)
         sess_precs = []
-        pars = glob(os.path.join(sess_dir, '*.par'))
-        for par in pars:
-            lst = os.path.splitext(par)[0] + '.lst'
+        lsts = glob(os.path.join(sess_dir, '*.lst'))
+        for lst in lsts:
+            par = os.path.splitext(lst)[0] + '.par'
             with open(lst, 'r') as f:
                 pres = [w.strip() for w in f.readlines()]
-            with open(par, 'r') as f:
-                rec = [w.split('\t')[2].strip() for w in f.readlines()]
-            recalled = [(w in rec) for w in pres]
-            sess_precs.append(np.mean(recalled))
-        prec = np.mean(sess_precs) * 100 if len(sess_precs) == n_trials else np.nan
+            if os.path.exists(par):
+                with open(par, 'r') as f:
+                    rec = [w.split('\t')[2].strip() for w in f.readlines()]
+                    recalled = [(w in rec) for w in pres]
+                    sess_precs.append(np.mean(recalled))
+        prec = np.mean(sess_precs) * 100 if len(sess_precs) == len(lsts) else np.nan  # Leave as nan if any missing annotations
 
         log = glob(os.path.join(sess_dir, '*.json'))
         if len(log) == 0:
