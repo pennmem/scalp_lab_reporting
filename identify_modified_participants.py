@@ -128,6 +128,7 @@ def identify_modified_participants_FR1_scalp(day_limit=7):
             # Locate files to check for modifications
             sess_dir = os.path.join(path, 'session_%d' % i)
             files_of_interest = glob(os.path.join(sess_dir, '*.ann')) + \
+                                glob(os.path.join(sess_dir, '*.par')) + \
                                 glob(os.path.join(sess_dir, '*.json')) + \
                                 glob(os.path.join(sess_dir, '*.wav'))
 
