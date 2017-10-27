@@ -81,8 +81,10 @@ def bonus_report_ltpFR2(subj, scores, bonuses, nans_blank=True):
             data_table.add_row([''] * len(header))
             data_table.add_hline()
             data_table.add_row([''] * len(header))
-            for row in report:
+            for row in report[:-1]:
                 data_table.add_row(row.split('\t'))
+            data_table.add_hline()
+            data_table.add_row(report[-1].split('\t'))
     doc.generate_pdf(tex_outfile, compiler='pdflatex')
 
     return outfile, tex_outfile + '.pdf'
