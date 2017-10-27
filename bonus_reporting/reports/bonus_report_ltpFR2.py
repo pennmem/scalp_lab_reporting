@@ -1,3 +1,4 @@
+import numpy as np
 from pylatex import Document, Tabu, Center, LargeText, Command
 from pylatex.utils import bold
 
@@ -33,6 +34,10 @@ def bonus_report_ltpFR2(subj, scores, bonuses, nans_blank=True):
         report += '%d\t%.1f%%\t$%.2f\t%.1f%%\t$%.2f\t%.0f\t$%.2f\t$%.2f\n' % \
                   (i, scores[i][0], bonuses[i][0], scores[i][1],
                    bonuses[i][1], scores[i][2], bonuses[i][2], bonuses[i][3])
+    report += 'Total\t%.1f%%\t$%.2f\t%.1f%%\t$%.2f\t%.0f\t$%.2f\t$%.2f\n' % \
+              (np.nanmean([s[0] for s in scores]), np.nansum([b[0] for b in bonuses]), np.nanmean([s[1] for s in scores]),
+               np.nansum([b[1] for b in bonuses]), np.nansum([s[2] for s in scores]), np.nansum([b[2] for b in bonuses]),
+               np.nansum([b[3] for b in bonuses]))
     report = report.strip()
 
     # Replace nans with blank entries if desired
