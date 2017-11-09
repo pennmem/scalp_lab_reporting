@@ -64,7 +64,7 @@ def bonus_report_ltpFR2(subj, scores, bonuses, nans_blank=True):
     fmt = ('X[r] ' * len(header)).strip()
     # Create LaTeX document
     geometry_options = dict(
-        paperheight='6.5in',
+        paperheight='7in',
         paperwidth='8in',
         margin='.5in'
     )
