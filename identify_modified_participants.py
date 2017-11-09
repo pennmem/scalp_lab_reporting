@@ -36,7 +36,7 @@ def identify_modified_participants_ltpFR2(day_limit=7):
             files_of_interest = glob(os.path.join(sess_dir, '*.ann')) + \
                                 glob(os.path.join(sess_dir, '*.par')) + \
                                 glob(os.path.join(sess_dir, 'session.log')) + \
-                                glob(os.path.join(sess_dir, 'eeg', '*.bz2'))
+                                glob(os.path.join(sess_dir, 'eeg', '*.bdf'))
 
             # Check each file for recent modifications
             for f in files_of_interest:
