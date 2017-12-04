@@ -1,5 +1,7 @@
+from __future__ import print_function
 import os
 import json
+from glob import glob
 from subject_reporting.behavioral.behavioral_matrices_ltpFR2 import make_data_matrices_ltpFR2
 from subject_reporting.statistics.ltpFR2_stats import run_stats_ltpFR2
 from subject_reporting.erp.ltpFR2_ERP import erp_ltpFR2
@@ -48,9 +50,9 @@ def run_pipeline(experiment=None, subjects=None, upload=True):
     #
     ###############
     REPORTING_SCRIPTS = dict(
-        ltpFR2=(make_data_matrices_ltpFR2, run_stats_ltpFR2, erp_ltpFR2, subject_report_ltpFR2, True),
-        SFR=(make_data_matrices_SFR, None, None, None, False),
-        FR1_scalp=(make_data_matrices_FR1_scalp, None, None, None, False)
+        ltpFR2=(make_data_matrices_ltpFR2, run_stats_ltpFR2, erp_ltpFR2, subject_report_ltpFR2, True, 'LTP'),
+        SFR=(make_data_matrices_SFR, None, None, None, False, 'RAA'),
+        FR1_scalp=(make_data_matrices_FR1_scalp, None, None, None, False, 'RAA')
     )
 
     ###############
@@ -79,11 +81,14 @@ def run_pipeline(experiment=None, subjects=None, upload=True):
         erp_func = REPORTING_SCRIPTS[exp][2]
         report_func = REPORTING_SCRIPTS[exp][3]
         upload = REPORTING_SCRIPTS[exp][4]
+        subj_prefix = REPORTING_SCRIPTS[exp][5]
 
-        # Run on recently modified subjects unless user specified both the experiment and subjects to use
-        if subjects is None or experiment is None:
+        # Run on recently modified subjects unless user specified the subjects to use
+        if subjects is None:
             with open('/data/eeg/scalp/ltp/%s/recently_modified.json' % exp, 'r') as f:
                 subjects = json.load(f).keys()
+        elif subjects == 'all':
+            subjects = [os.path.basename(s) for s in glob('/data/eeg/scalp/ltp/%s/%s[0-9][0-9][0-9]') % (exp, subj_prefix)]
 
         for s in subjects:
             beh_data = behavioral_func(s)  # Create behavioral data matrices
