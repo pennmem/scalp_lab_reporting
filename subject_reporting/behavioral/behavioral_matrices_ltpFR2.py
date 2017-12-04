@@ -127,7 +127,15 @@ def make_data_matrices_ltpFR2(subj):
                                                         delimiter='\t', dtype='S32').view(np.chararray).decode('utf-8'))
                 recs = np.atleast_2d(np.loadtxt(os.path.join(session_dir, '%d.par' % i),
                                                         delimiter='\t', dtype='S32').view(np.chararray).decode('utf-8'))
-            except IOError as e:
+                # I noticed LTP331 session_5 had some wav files that were only 44 bytes in size. In order to distinguish
+                # trials where the subject made no recalls from trials where no annotations could be made due to wav
+                # problems, I added a check for whether the wav file does not exist or is less than .5 MB in size
+                # (normal size is >6 MB)
+                wav = os.path.join(session_dir, '%d.wav' % i)
+                if recs.shape == (1,0) and ((not os.path.exists(wav)) or (os.stat(wav).st_size < 500000)):
+                    raise Exception('Wav file %s appears corrupted or missing -- marking as bad trial!' % wav)
+
+            except Exception as e:
                 print(e)
                 bad_list_array[sess_num * n_lists + i] = True
                 sess_recalled[i, :].fill(np.nan)
