@@ -88,7 +88,7 @@ def run_pipeline(experiment=None, subjects=None, upload=True):
             with open('/data/eeg/scalp/ltp/%s/recently_modified.json' % exp, 'r') as f:
                 subjects = json.load(f).keys()
         elif subjects == 'all':
-            subjects = [os.path.basename(s) for s in glob('/data/eeg/scalp/ltp/%s/%s[0-9][0-9][0-9]') % (exp, subj_prefix)]
+            subjects = [os.path.basename(s) for s in glob('/data/eeg/scalp/ltp/%s/%s[0-9][0-9][0-9]' % (exp, subj_prefix))]
 
         for s in subjects:
             beh_data = behavioral_func(s)  # Create behavioral data matrices
