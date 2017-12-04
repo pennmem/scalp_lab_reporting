@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import json
 import numpy as np
@@ -126,7 +127,8 @@ def make_data_matrices_ltpFR2(subj):
                                                         delimiter='\t', dtype='S32').view(np.chararray).decode('utf-8'))
                 recs = np.atleast_2d(np.loadtxt(os.path.join(session_dir, '%d.par' % i),
                                                         delimiter='\t', dtype='S32').view(np.chararray).decode('utf-8'))
-            except IOError:
+            except IOError as e:
+                print(e)
                 bad_list_array[sess_num * n_lists + i] = True
                 sess_recalled[i, :].fill(np.nan)
                 continue
@@ -162,6 +164,7 @@ def make_data_matrices_ltpFR2(subj):
         # sess_serialpos == None occurs only if a word was presented multiple times. If this happens, mark the
         # whole session as bad and leave the serialpos matrix as zeros.
         if sess_serialpos is None:
+            print('Word presented multiple times in %s, session_%s! Marking entire session as bad...' % (subj, sess_num))
             bad_list_array[start_row:end_row] = True
         else:
             mat_pairs.append((serialpos, sess_serialpos))
