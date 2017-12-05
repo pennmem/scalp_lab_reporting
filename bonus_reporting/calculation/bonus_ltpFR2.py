@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import csv
 import numpy as np
@@ -80,6 +81,7 @@ def get_math_correct(subj, sess):
         total = [r[3] for r in sess_log if len(r) >= 4 and r[2] == 'MATH_TOTAL_SCORE']
         mc = int(total[-1]) if len(total) > 0 else np.nan
     else:
+        print('Session log %s cannot be found! Leaving math score as NaN!' % session_log)
         mc = np.nan
     return mc
 
@@ -135,20 +137,24 @@ def calculate_bonus_ltpFR2(subj):
     bonuses = np.zeros((24, 4))
     # Calculate scores and bonuses for each session
     for sess in range(n_sessions):
+        print(subj, sess)
         # If session has exists and has been post-processed, calculate prec and blink rate, otherwise, set as nan
         event_file = '/data/eeg/scalp/ltp/ltpFR2/%s/session_%d/events.mat' % (subj, sess)
         if not os.path.exists(event_file):  # Look for the MATLAB event file if we can't find the JSON one
             event_file = '/protocols/ltp/subjects/%s/experiments/ltpFR2/sessions/%d/behavioral/current_processed/task_events.json' % (subj, sess)
-        if not os.path.exists(event_file):
-            prec = np.nan
-            br = np.nan
-        else:
-            # Load events for given subejct and session
+        try:
+            # Load events for given subject and session
             ev = BaseEventReader(filename=event_file, common_root='data', eliminate_nans=False, eliminate_events_with_no_eeg=False).read()
 
             # Calculate performance from the target session
             prec = calculate_prec(ev, return_percent=True)
             br = calculate_blink_rate(ev, pres_duration, return_percent=True)
+        except Exception as e:
+            # Exceptions here are caused by a nonexistent, empty, or otherwise unreadable event file.
+            print(e)
+            print('PTSA was unable to read event file %s... Leaving blink rate and recall probability as NaN!' % event_file)
+            prec = np.nan
+            br = np.nan
 
         # Math score can be calculated even before the session has been post-processed, as it only relies on the log
         mc = get_math_correct(subj, sess)
