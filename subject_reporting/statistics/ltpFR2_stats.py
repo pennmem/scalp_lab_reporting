@@ -89,6 +89,9 @@ def run_stats_ltpFR2(subj, data=None):
     intru = np.array(data['intrusions'])[good_trials]
     recw = np.array(data['rec_words'])[good_trials]
     ll = np.array(data['pres_nos']).shape[1]
+    # If participant never made any recalls, don't try to calculate stats
+    if recw.shape[1] == 0:
+        return dict()
 
     ###############
     #
