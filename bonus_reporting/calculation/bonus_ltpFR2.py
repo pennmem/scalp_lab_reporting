@@ -2,49 +2,23 @@ from __future__ import print_function
 import os
 import csv
 import numpy as np
+from glob import glob
 from ptsa.data.readers import BaseEventReader
 
 
-def calculate_prec(events, return_percent=False):
+def calculate_blink_rate(events, return_percent=False):
     """
-    Calculates a participant's probability of recall based on their events structure. Any words lacking recall
-    information are excluded from the calculation.
-
-    :param events: An events structure
-    :param return_percent: If true, returns the prec as a percentage. If false, returns the prec as a ratio.
-    (Default = False)
-    :return: The participant's probability of recall, or np.nan if no recall information was available.
-    """
-    # Get only word presentation events with info on whether they were recalled
-    pres_events = events[np.logical_and(events['type'] == 'WORD', np.logical_not(np.isnan(events['recalled'])))]
-    # Count number of word presentations with recall info
-    total_pres = pres_events.shape[0]
-    # If no words have recall info, prec cannot be calculated
-    if total_pres == 0:
-        return np.nan
-    # Calculate probability of recall across entire session
-    prec = np.sum(pres_events['recalled']) / total_pres if total_pres > 0 else np.nan
-    # Convert probability of recall to a percentage if specified
-    prec = prec * 100 if return_percent else prec
-    return prec
-
-
-def calculate_blink_rate(events, pres_duration, return_percent=False):
-    """
-    Calculates a participant's blink rate based on an events structure. This requires alignment and blink detection to
-    have already been run on the session's EEG data. The blink rate is defined as the fraction of presentation events
+    Calculates a participant's blink rate based on an events structure. This requires alignment and artifact detection
+    to have already been run on the session's EEG data. The blink rate is defined as the fraction of presentation events
     during which the participant blinked or showed other EOG artifacts while the presented item was on the screen. For
-    sessions where some presentation events lack EEG data, only the presentation events with artifactMS info are
-    included in the calculation.
+    sessions where some presentation events lack EEG data, only the presentation events with data are counted.
 
     :param events: An events structure
     :param pres_duration: The number of milliseconds for which each item was presented on the screen (1600 for ltpFR2)
     :param return_percent: If true, returns the blink rate as a percentage. If false, returns the blink rate as a ratio.
-    :return: The participant's blink rate, or np.nan if no artifactMS information was available.
+    :return: The participant's left-eye, right-eye, and combined blink rates, or np.nan if no presentation events with
+    EEG data are available.
     """
-    # If blink detection has not been run for this session, blink rate cannot be calculated
-    if 'artifactMS' not in events.dtype.fields:
-        return np.nan
     # Get only word presentation events with eeg
     pres_events = events[np.logical_and(events['type'] == 'WORD', np.logical_not(events['eegfile'] == ''))]
     # Count number of word presentations with artifactMS info
@@ -52,13 +26,21 @@ def calculate_blink_rate(events, pres_duration, return_percent=False):
     # If there are no presentation events with artifactMS info, blink rate cannot be calculated
     if total_pres == 0:
         return np.nan
-    # Count number of word presentations where the participant blinked while the word was on the screen
-    pres_with_blink = pres_events[np.logical_and(pres_events['artifactMS'] >= 0, pres_events['artifactMS'] <= pres_duration)].shape[0]
+
+    # Count number of word presentations where eye movements were detected while the word was on the screen
+    pres_with_left_blink = np.logical_or(pres_events['eogArtifact'] == 1, pres_events['eogArtifact'] == 3).sum()
+    pres_with_right_blink = np.logical_or(pres_events['eogArtifact'] == 2, pres_events['eogArtifact'] == 3).sum()
+    pres_with_blink = np.sum(pres_events['eogArtifact'] > 0)
+
     # Calculate blink rate as presentations with blinks / total presentations
+    lbr = pres_with_left_blink / total_pres if total_pres > 0 else np.nan
+    rbr = pres_with_right_blink / total_pres if total_pres > 0 else np.nan
     br = pres_with_blink / total_pres if total_pres > 0 else np.nan
-    # Convert blink rate to a percentage if specified
-    br = br * 100 if return_percent else br
-    return br
+
+    if return_percent:
+        return lbr * 100, rbr * 100, br * 100
+    else:
+        return lbr, rbr, br
 
 
 def get_math_correct(subj, sess):
@@ -119,42 +101,55 @@ def calculate_bonus_ltpFR2(subj):
     events have EEG data, the blink rate is calculated only over the events that do.
 
     :param subj: A string containing the subject ID of the participant for whom to calculate bonuses.
-    :return: Returns two numpy arrays. The first is a session x score matrix, with prec in column 0, blink rate in
-    column 1, and math score in column 2. The second is a session x bonus matrix, with recall bonus in column 0, blink
-    bonus in column 1, math bonus in column 2, and total bonus in column 3.
+    :return: Returns two numpy arrays. The first is a session x score matrix, with prec in column 0, blink rates in
+    columns 1-3, and math score in column 4. The second is a session x bonus matrix, with recall bonus in column 0,
+    blink bonus in column 1, math bonus in column 2, and total bonus in column 3.
     """
 
     # Set experiment parameters and performance bracket boundaries
     n_sessions = 24
-    pres_duration = 1600
     brackets = dict(
         prec=[20, 30, 40, 50, 70],
         br=[10, 20, 30, 40, 50],
         mc=[200, 350, 400, 450, 500]
     )
 
-    scores = np.zeros((24, 3))
+    scores = np.zeros((24, 5))
     bonuses = np.zeros((24, 4))
     # Calculate scores and bonuses for each session
     for sess in range(n_sessions):
         print(subj, sess)
         # If session has exists and has been post-processed, calculate prec and blink rate, otherwise, set as nan
-        event_file = '/data/eeg/scalp/ltp/ltpFR2/%s/session_%d/events.mat' % (subj, sess)
-        if not os.path.exists(event_file):  # Look for the MATLAB event file if we can't find the JSON one
-            event_file = '/protocols/ltp/subjects/%s/experiments/ltpFR2/sessions/%d/behavioral/current_processed/task_events.json' % (subj, sess)
+        event_file = '/protocols/ltp/subjects/%s/experiments/ltpFR2/sessions/%d/behavioral/current_processed/task_events.json' % (subj, sess)
+        prec = np.nan
+        lbr = np.nan
+        rbr = np.nan
+        br = np.nan
         try:
+            # Calculate performance from the target session
+            sess_dir = '/data/eeg/scalp/ltp/ltpFR2/%s/session_%d/' % (subj, sess)
+            sess_precs = []
+            lsts = glob(os.path.join(sess_dir, '*.lst'))
+            for lst in lsts:
+                par = os.path.splitext(lst)[0] + '.par'
+                with open(lst, 'r') as f:
+                    pres = [w.strip() for w in f.readlines()]
+                if os.path.exists(par):
+                    with open(par, 'r') as f:
+                        rec = [w.split('\t')[2].strip() for w in f.readlines()]
+                        recalled = [(w in rec) for w in pres]
+                        sess_precs.append(np.mean(recalled))
+            # Leave as nan if any missing annotations
+            prec = np.mean(sess_precs) * 100 if len(sess_precs) == len(lsts) else np.nan
+
             # Load events for given subject and session
             ev = BaseEventReader(filename=event_file, common_root='data', eliminate_nans=False, eliminate_events_with_no_eeg=False).read()
-
-            # Calculate performance from the target session
-            prec = calculate_prec(ev, return_percent=True)
-            br = calculate_blink_rate(ev, pres_duration, return_percent=True)
+            lbr, rbr, br = calculate_blink_rate(ev, return_percent=True)
+            del ev
         except Exception as e:
             # Exceptions here are caused by a nonexistent, empty, or otherwise unreadable event file.
             print(e)
             print('PTSA was unable to read event file %s... Leaving blink rate and recall probability as NaN!' % event_file)
-            prec = np.nan
-            br = np.nan
 
         # Math score can be calculated even before the session has been post-processed, as it only relies on the log
         mc = get_math_correct(subj, sess)
@@ -166,83 +161,7 @@ def calculate_bonus_ltpFR2(subj):
         total_bonus = prec_bonus + blink_bonus + math_bonus
 
         # Record scores and bonuses from session
-        scores[sess] = [prec, br, mc]
+        scores[sess] = [prec, round(lbr, 1), round(rbr, 1), round(br, 1), mc]
         bonuses[sess] = [prec_bonus, blink_bonus, math_bonus, total_bonus]
 
     return scores, bonuses
-
-
-'''
-from scipy.io import loadmat
-from scipy.stats import percentileofscore
-from glob import glob
-
-def calculate_bonus_ltpFR2_continuous(subj_list, sess_list):
-    """
-    Calculate bonus payments based on a participant's percentile rank among all sessions ever run. Not currently used,
-    but was implemented in case we wish to move from performance brackets to a continuous function. To use, it will need
-    to be revised to fit with newer versions of the ltpFR2 bonus reporting script.3333
-    """
-
-    if len(subj_list) != len(sess_list):
-        print 'subj_list and sess_list parameters must be the same length!'
-
-    # Set experiment parameters
-    pres_duration = 1600
-
-    # Load performance scores from all past subjects and sessions
-    precs = []
-    blink_rates = []
-    math_correct = []
-
-    res_files = glob('/data/eeg/scalp/ltp/ltpFR2/behavioral/stats/res_LTP*')
-    print '%d res structures found!' % len(res_files)
-
-    for f in res_files:
-        res = loadmat(f, squeeze_me=True)['res']
-        if res is None:
-            print 'Bad file: %s' % f
-            continue
-
-        # Extract the stats table that is written on subject reports, then pull the PRec, blink rate, and math correct
-        res = np.array(res['stats_table_cell_all'].tolist().tolist()[1:], dtype=float)
-        precs += [n for n in res[:, 1] if not np.isnan(n)]
-        blink_rates += [n for n in res[:, 10] if not np.isnan(n)]
-        math_correct += [n for n in res[:, 11] if not np.isnan(n)]
-
-    precs = np.array(precs)
-    blink_rates = np.array(blink_rates)
-    math_correct = np.array(math_correct)
-
-    # Recently blink rates were changed from ratios to percentages on our reports. Therefore, we need to convert blink 
-    # rates that are still expressed as ratios to percentages. (Note that this assumes all blink rates are above 1%)
-    blink_rates[np.where(blink_rates <= 1)] *= 100
-
-    # Calculate bonuses from each session that was input
-    scores = []
-    bonuses = []
-    for i in range(len(subj_list)):
-        subj = subj_list[i]
-        sess = sess_list[i]
-
-        # Load events for given subejct and session
-        ev = BaseEventReader(filename='/data/eeg/scalp/ltp/ltpFR2/%s/session_%d/events.mat' % (subj, sess),
-                             common_root='data').read()
-
-        # Calculate performance from the target session
-        sess_prec = calculate_prec(ev)
-        sess_br = calculate_blink_rate(ev, pres_duration, return_percent=True)
-        sess_mc = get_math_correct(subj, sess)
-
-        # Calculate bonus based on percentile where the target session falls among performance on all past sessions
-        prec_bonus = round(percentileofscore(precs, sess_prec) / 100. * 5, 2)
-        blink_bonus = round((1 - percentileofscore(blink_rates, sess_br) / 100.) * 5, 2)
-        math_bonus = round(percentileofscore(math_correct, sess_mc) / 100. * 5, 2)
-        total_bonus = prec_bonus + blink_bonus + math_bonus
-
-        # Add bonuses from session to running list
-        scores.append((sess_prec, sess_br, sess_mc))
-        bonuses.append((prec_bonus, blink_bonus, math_bonus, total_bonus))
-
-    return scores, bonuses
-'''

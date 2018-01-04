@@ -20,7 +20,7 @@ def upload_bonus_report(report_path, exp):
         os.system('scp %s reports@memory.psych.upenn.edu:/var/www/html/ltp_reports/%s_Bonus/' % (report_path, exp))
 
 
-def run_bonus(experiment=None, subjects=None, upload=True):
+def run_bonus(experiment=None, subjects=None):
     """
     Runs the bonus pipeline on a list of subjects. First calculates the performance scores and bonus payments for each
     of the participants' sessions, then generates a report for each participant.

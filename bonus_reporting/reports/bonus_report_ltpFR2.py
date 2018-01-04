@@ -31,12 +31,15 @@ def bonus_report_ltpFR2(subj, scores, bonuses, nans_blank=True):
 
     # Fill in report
     for i in range(len(bonuses)):
-        report += '%d\t%.1f%%\t$%.2f\t%.1f%%\t$%.2f\t%.0f\t$%.2f\t$%.2f\n' % \
-                  (i, scores[i][0], bonuses[i][0], scores[i][1],
-                   bonuses[i][1], scores[i][2], bonuses[i][2], bonuses[i][3])
-    report += 'Total\t%.1f%%\t$%.2f\t%.1f%%\t$%.2f\t%.0f\t$%.2f\t$%.2f\n' % \
-              (np.nanmean([s[0] for s in scores]), np.nansum([b[0] for b in bonuses]), np.nanmean([s[1] for s in scores]),
-               np.nansum([b[1] for b in bonuses]), np.nansum([s[2] for s in scores]), np.nansum([b[2] for b in bonuses]),
+        report += '%d\t%.1f%%\t$%.2f\t%s\t$%.2f\t%.0f\t$%.2f\t$%.2f\n' % \
+                  (i, scores[i][0], bonuses[i][0], str(scores[i][1]) + '%/' + str(scores[i][2]) + '%/' +
+                   str(scores[i][3]) + '%', bonuses[i][1], scores[i][4], bonuses[i][2], bonuses[i][3])
+    report += 'Total\t%.1f%%\t$%.2f\t%s\t$%.2f\t%.0f\t$%.2f\t$%.2f\n' % \
+              (np.nanmean([s[0] for s in scores]), np.nansum([b[0] for b in bonuses]),
+               str(round(np.nanmean([s[1] for s in scores]), 1)) + '%/' +
+               str(round(np.nanmean([s[2] for s in scores]), 1)) + '%/' +
+               str(round(np.nanmean([s[3] for s in scores]), 1)) + '%',
+               np.nansum([b[1] for b in bonuses]), np.nansum([s[4] for s in scores]), np.nansum([b[2] for b in bonuses]),
                np.nansum([b[3] for b in bonuses]))
     report = report.strip()
 
@@ -56,6 +59,7 @@ def bonus_report_ltpFR2(subj, scores, bonuses, nans_blank=True):
     ###############
 
     tex_outfile = '/data/eeg/scalp/ltp/ltpFR2/bonus/%s_bonus_report' % subj
+
     # Divide report into rows
     report = report.split('\n')
     # Create list of column names
@@ -65,7 +69,7 @@ def bonus_report_ltpFR2(subj, scores, bonuses, nans_blank=True):
     # Create LaTeX document
     geometry_options = dict(
         paperheight='7in',
-        paperwidth='8in',
+        paperwidth='10in',
         margin='.5in'
     )
     doc = Document(page_numbers=False, geometry_options=geometry_options)
