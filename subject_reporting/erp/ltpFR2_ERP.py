@@ -69,9 +69,9 @@ def erp_ltpFR2(subj):
     # Settings
     exp = 'ltpFR2'
     n_sess = 24  # Max number of sessions in experiment
-    fz_chans = ['C21']  # Channel(s) to plot under Fz
-    cz_chans = ['A1']  # Channel(s) to plot under Cz
-    pz_chans = ['A19']  # Channel(s) to plot under Pz
+    fz_chans = ['C21'] if int(subj[-3:]) > 330 else ['E11']  # Channel(s) to plot under Fz
+    cz_chans = ['A1'] if int(subj[-3:]) > 330 else ['E55']  # Channel(s) to plot under Cz
+    pz_chans = ['A19'] if int(subj[-3:]) > 330 else ['E62']  # Channel(s) to plot under Pz
     tmin = -.5  # Start time of ERP in seconds
     tmax = 2.1  # End time of ERP in seconds
 
