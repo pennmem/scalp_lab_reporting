@@ -15,6 +15,50 @@ matplotlib.rc('ytick', labelsize=18)  # fontsize of the y-axis tick labels
 matplotlib.rc('figure', titlesize=20)  # fontsize of the figure title
 
 
+def get_scalp_data(subj, sess, exp, tmin=0, tmax=1.6):
+    evfile = '/protocols/ltp/subjects/%s/experiments/%s/sessions/%d/behavioral/current_processed/task_events.json' % (subj, exp, sess)
+    if not os.path.exists(evfile):
+        print('Warning: No events available for %s session %d!' % (subj, sess))
+        return None
+    evs = BaseEventReader(filename=evfile, eliminate_events_with_no_eeg=True).read()
+
+    # Check for EEG problems
+    eegfiles = np.unique(evs.eegfile)
+    eegfiles = [f for f in eegfiles if f != '']
+    if len(eegfiles) == 0:
+        print('Warning: %s session %d not aligned with any EEG files! No EEG data will be returned.' % (subj, sess))
+        return None
+    elif len(eegfiles) > 1:
+        print('Warning: %s session %d has multiple EEG recordings! Multi-recording sessions are not currently supported. No EEG data will be returned.' % (subj, sess))
+    eegfile = eegfiles[0]
+
+    if eegfile.endswith('.bdf'):
+        raw = mne.io.read_raw_edf(eegfile, eog=['EXG1', 'EXG2', 'EXG3', 'EXG4'], misc=['EXG5', 'EXG6', 'EXG7', 'EXG8'], stim_channel='Status', montage='biosemi128', preload=False)
+    elif eegfile.endswith('.mff') or eegfile.endswith('.raw'):
+        raw = mne.io.read_raw_egi(eegfile, preload=False)
+        raw.rename_channels({'E129': 'Cz'})
+        raw.set_montage(mne.channels.read_montage('GSN-HydroCel-129'))
+        raw.set_channel_types({'E8': 'eog', 'E25': 'eog', 'E126': 'eog', 'E127': 'eog', 'Cz': 'misc'})
+    else:
+        print('Warning: Unable to determine EEG recording type for %s session %d!' % (subj, sess))
+
+    # Get event onsets and format them as MNE events
+    mne_evs = np.zeros((len([t for t in evs.type if t == 'WORD']), 3), dtype=int)
+    mne_evs[:, 0] = [o for i, o in enumerate(evs.eegoffset) if evs.type[i] == 'WORD']
+
+    # Load epoch data from EEG recording
+    ep = mne.Epochs(raw, mne_evs, event_id={'WORD': 0}, tmin=tmin, tmax=tmax, baseline=None, preload=True)
+
+    # Drop unused channels and sync pulse channel
+    ep.pick_types(eeg=True, eog=True)
+
+    bad_chan_file = os.path.splitext(eegfile)[0] + '_bad_chan.tsv'
+    bad_chan_info = np.loadtxt(bad_chan_file, dtype=str, delimiter='\t', skiprows=1, usecols=(0, 5))
+    ep.info['bads'] = bad_chan_info[bad_chan_info[:, 1] == '1', 0].tolist()
+
+    return ep
+
+
 def erp_ltpFR2(subj):
     """
     TBA
@@ -23,8 +67,7 @@ def erp_ltpFR2(subj):
     :return:
     """
     # Settings
-    db_dir = '/protocols/ltp/subjects/%s/experiments/ltpFR2/sessions/' % subj
-    out_dir = '/data/eeg/scalp/ltp/ltpFR2/'
+    exp = 'ltpFR2'
     n_sess = 24  # Max number of sessions in experiment
     fz_chans = ['C21']  # Channel(s) to plot under Fz
     cz_chans = ['A1']  # Channel(s) to plot under Cz
@@ -33,57 +76,39 @@ def erp_ltpFR2(subj):
     tmax = 2.1  # End time of ERP in seconds
 
     for sess in range(n_sess):
-        # Make directory for figures/ERP plots if it does not exist
-        fig_dir = os.path.join(out_dir, subj, 'session_' + str(sess), 'figs')
-        if not os.path.exists(fig_dir):
-            os.mkdir(fig_dir)
-
-        evfile = os.path.join(db_dir, str(sess), 'behavioral', 'current_processed', 'task_events.json')
-        if not os.path.exists(evfile):  # Skip session if events have not been processed
+        # Get data from each word presentation event; skip session if no events or no EEG data
+        eeg = get_scalp_data(subj, sess, exp, tmin, tmax)
+        if eeg is None:
             continue
-        # Load word presentation events from target session
-        ev = BaseEventReader(filename=evfile, eliminate_events_with_no_eeg=True).read()
-        ev = ev[ev.type == 'WORD']
+        # Apply common average reference (automatically excludes bad channels)
+        eeg.set_eeg_reference(ref_channels='average', projection=False)
+        # Baseline correct event data based on the 500 ms prior to word onset
+        eeg.apply_baseline((None, 0))
 
-        # Get list of all unique EEG files that have been aligned to the events from the target session
-        eegfiles = [f for f in np.unique(ev.eegfile) if f != '']
-        for i, fname in enumerate(eegfiles):
-            eegfile = os.path.join(db_dir, str(sess), 'ephys', 'current_processed', os.path.basename(fname) + '.fif')
-            # Skip EEG file if it cannot be found (only happens if EEG file was moved/deleted after alignment)
-            if not os.path.exists(eegfile):
+        names = ['Fz', 'Cz', 'Pz']
+        for i, erp_chs in enumerate((fz_chans, cz_chans, pz_chans)):
+            try:
+                # Calculate ERP
+                erp = eeg.average(picks=mne.pick_types(eeg.info, include=erp_chs))
+            except:
+                # Failure here is likely due to channel name(s) not being recognized
                 continue
-            # Add full path to an EEG file, load it, and re-reference to the common average
-            eeg = mne.io.read_raw_fif(eegfile, preload=False)
-            eeg.apply_proj()
 
-            # Get offsets for events from the current EEG file
-            offsets = ev.eegoffset[ev.eegfile == fname]
+            # Plot ERP
+            lim = ceil(np.abs(erp.data).max() * 1000000)  # Dynamically scale the range of the Y-axis
+            fig = erp.plot(ylim={'eeg': (-lim, lim)}, hline=[0], selectable=False)
+            plt.title('%s (%d -- %d ms)' % (names[i], tmin * 1000, tmax * 1000))
+            plt.axvline(x=0, ls='--')  # Mark word onset
+            plt.axvline(x=1600, ls='--')  # Mark word offset
 
-            # Use offsets to get data from presentation events (baseline corrected using timing tmin -> 0)
-            mne_evs = np.array([[o, 0, 1] for o in offsets], dtype=int)
-            pres_eeg = mne.Epochs(eeg, mne_evs, event_id=1, tmin=tmin, tmax=tmax, baseline=(None, 0), preload=True)
-
-            # Save ERP plots for Fz, Cz, and Pz electrodes
-            names = ['Fz', 'Cz', 'Pz']
-            for j, erp_chs in enumerate((fz_chans, cz_chans, pz_chans)):
-                try:
-                    # Calculate ERP
-                    erp = pres_eeg.average(picks=mne.pick_types(pres_eeg.info, include=erp_chs))
-                except:
-                    # Failure here is likely due to channel name(s) not being recognized
-                    continue
-
-                # Plot ERP
-                lim = ceil(np.abs(erp.data).max() * 1000000)  # Dynamically scale the range of the Y-axis
-                fig = erp.plot(ylim={'eeg': (-lim, lim)}, hline=[0], selectable=False)
-                plt.title('%s (%d -- %d ms)' % (names[j], tmin * 1000, tmax * 1000))
-                plt.axvline(x=0, ls='--')  # Mark word onset
-                plt.axvline(x=1600, ls='--')  # Mark word offset
-
-                # Save ERP to <ID>_<SESS>_<CHAN>_erp.pdf; add extra number at end if session has multiple recordings
-                fig_name = '%s_erp_%d.pdf' % (names[j], i) if len(eegfiles) > 1 else '%s_erp.pdf' % names[j]
-                fig.savefig(os.path.join(fig_dir, fig_name))
-                plt.close(fig)
+            # Save ERP to <ID>_<SESS>_<CHAN>_erp.pdf; add extra number at end if session has multiple recordings
+            fig_name = '%s_erp.pdf' % names[i]
+            # Make directory for figures/ERP plots if it does not exist
+            fig_dir = '/data/eeg/scalp/ltp/%s/%s/session_%d/figs/' % (exp, subj, sess)
+            if not os.path.exists(fig_dir):
+                os.mkdir(fig_dir)
+            fig.savefig(os.path.join(fig_dir, fig_name))
+            plt.close(fig)
 
             """
             # EXAMPLE ICA CODE
@@ -100,37 +125,4 @@ def erp_ltpFR2(subj):
 
 
 if __name__ == "__main__":
-    erp_ltpFR2('LTP373')
-
-    """
-    tmin = -.5  # Start time of ERP in seconds
-    tmax = 2.1  # End time of ERP in seconds
-
-    # Load behavioral data -> eeg offsets
-    evfile = '/data/eeg/scalp/ltp/ltpFR2/LTP342/session_10/events.mat'
-    ev = BaseEventReader(filename=evfile, normalize_eeg_path=False, eliminate_events_with_no_eeg=True).read()
-    offsets = ev.eegoffset
-    mne_evs = np.array([[int(o/2), 0, 1] for o in offsets])
-
-    # Load EEG data
-    fname = '/Users/jessepazdera/rhino_mount/home1/jpazdera/ICA/LTP342_10/raw.fif'
-    eeg = mne.io.read_raw_fif(fname, preload=True)
-    eeg.apply_proj()
-
-    # Create ERPs for Fz, Cz, and Pz electrodes
-    pres_eeg = mne.Epochs(eeg, mne_evs, event_id=1, tmin=tmin, tmax=tmax, baseline=(None, 0), preload=True)
-    fz = pres_eeg.average(picks=mne.pick_types(pres_eeg.info, include=['C21']))
-    cz = pres_eeg.average(picks=mne.pick_types(pres_eeg.info, include=['A1']))
-    pz = pres_eeg.average(picks=mne.pick_types(pres_eeg.info, include=['A19']))
-
-    # Plot ERP for each of the three electrodes
-    names = ['Fz', 'Cz', 'Pz']
-    for i, erp in enumerate((fz, cz, pz)):
-        lim = ceil(np.abs(erp.data).max() * 1000000)  # Dynamically adjust the Y-axis
-        fig = erp.plot(ylim={'eeg': (-lim, lim)}, hline=[0], selectable=False)
-        plt.title('%s (%d -- %d ms)' % (names[i], tmin * 1000, tmax * 1000))
-        plt.axvline(x=0, ls='--')
-        plt.axvline(x=1600, ls='--')
-        fig.savefig('/Users/jessepazdera/rhino_mount/home1/jpazdera/jupyter/%s_erp.pdf' % names[i])
-        plt.close(fig)
-    """
+    erp_ltpFR2('LTP368')
