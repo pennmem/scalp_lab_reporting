@@ -122,7 +122,10 @@ def make_data_matrices_FR1_scalp(subj):
                                                         delimiter='\t', dtype='S32').view(np.chararray).decode('utf-8'))
                 recs = np.atleast_2d(np.loadtxt(os.path.join(session_dir, '%d.par' % (i + 1)),
                                                         delimiter='\t', dtype='S32').view(np.chararray).decode('utf-8'))
-            except IOError:
+                # Drop any recalls with a negative rectime (caused by automatic annotation errors)
+                recs = recs[recs[:, 0].astype(int) > 0]
+            except Exception as e:
+                print(e)
                 bad_list_array[sess_num * n_lists + i] = True
                 sess_recalled[i, :].fill(np.nan)
                 continue
