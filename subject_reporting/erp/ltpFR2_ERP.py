@@ -22,7 +22,7 @@ def get_scalp_data(subj, sess, exp, tmin=0, tmax=1.6):
         return None
     evs = BaseEventReader(filename=evfile, eliminate_events_with_no_eeg=True).read()
 
-    # Check for EEG problems
+    # Check number of EEG files aligned to session
     eegfiles = np.unique(evs.eegfile)
     eegfiles = [f for f in eegfiles if f != '']
     if len(eegfiles) == 0:
@@ -32,6 +32,7 @@ def get_scalp_data(subj, sess, exp, tmin=0, tmax=1.6):
         print('Warning: %s session %d has multiple EEG recordings! Multi-recording sessions are not currently supported. No EEG data will be returned.' % (subj, sess))
     eegfile = eegfiles[0]
 
+    # Load EEG data
     if eegfile.endswith('.bdf'):
         raw = mne.io.read_raw_edf(eegfile, eog=['EXG1', 'EXG2', 'EXG3', 'EXG4'], misc=['EXG5', 'EXG6', 'EXG7', 'EXG8'], stim_channel='Status', montage='biosemi128', preload=False)
     elif eegfile.endswith('.mff') or eegfile.endswith('.raw'):
@@ -73,7 +74,7 @@ def erp_ltpFR2(subj):
     cz_chans = ['A1'] if int(subj[-3:]) > 330 else ['E55']  # Channel(s) to plot under Cz
     pz_chans = ['A19'] if int(subj[-3:]) > 330 else ['E62']  # Channel(s) to plot under Pz
     tmin = -.5  # Start time of ERP in seconds
-    tmax = 2.1  # End time of ERP in seconds
+    tmax = 1.6  # End time of ERP in seconds
 
     for sess in range(n_sess):
         # Get data from each word presentation event; skip session if no events or no EEG data
@@ -99,7 +100,7 @@ def erp_ltpFR2(subj):
             fig = erp.plot(ylim={'eeg': (-lim, lim)}, hline=[0], selectable=False)
             plt.title('%s (%d -- %d ms)' % (names[i], tmin * 1000, tmax * 1000))
             plt.axvline(x=0, ls='--')  # Mark word onset
-            plt.axvline(x=1600, ls='--')  # Mark word offset
+            # plt.axvline(x=1600, ls='--')  # Mark word offset
 
             # Save ERP to <ID>_<SESS>_<CHAN>_erp.pdf; add extra number at end if session has multiple recordings
             fig_name = '%s_erp.pdf' % names[i]
