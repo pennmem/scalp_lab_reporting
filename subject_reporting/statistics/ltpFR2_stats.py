@@ -146,6 +146,64 @@ def run_stats_ltpFR2(subj, data=None):
     if not os.path.exists(fig_dir):  # Make sure figure directory exists
         os.mkdir(fig_dir)
 
+    # PRec over sessions; include faint lines to indicate where tiers of bonus payments begin and end
+    fig = plt.figure(figsize=(12, 8))
+    plt.subplot(221)
+    s = np.empty(n_sess)
+    s.fill(np.nan)
+    s[:len(stats['p_rec'])] = stats['p_rec']
+    plt.plot(range(0, n_sess), s, 'ko-')
+    plt.axhline(np.nanmean(s), linestyle='--', color='k')
+    for bonus_bound in [.2, .3, .4, .5, .7]:
+        plt.axhline(bonus_bound, linestyle='-', color='k', alpha=.4)
+    plt.xlabel('Session Number')
+    plt.ylabel('Recall Probability')
+    plt.xlim(-1, 25)
+    plt.ylim(0, 1)
+    plt.xticks([0, 6, 12, 18, 24])
+
+    # PLI over sessions
+    plt.subplot(222)
+    s = np.empty(n_sess)
+    s.fill(np.nan)
+    s[:len(stats['pli_perlist'])] = stats['pli_perlist']
+    plt.plot(range(0, n_sess), s, 'ko-')
+    plt.axhline(np.nanmean(s), linestyle='--', color='k')
+    plt.xlabel('Session Number')
+    plt.ylabel('PLIs')
+    plt.xlim(-1, 25)
+    plt.ylim(0, max(s) + .1)
+    plt.xticks([0, 6, 12, 18, 24])
+
+    # ELI over sessions
+    plt.subplot(223)
+    s = np.empty(n_sess)
+    s.fill(np.nan)
+    s[:len(stats['xli_perlist'])] = stats['xli_perlist']
+    plt.plot(range(0, n_sess), s, 'ko-')
+    plt.axhline(np.nanmean(s), linestyle='--', color='k')
+    plt.xlabel('Session Number')
+    plt.ylabel('ELIs')
+    plt.xlim(-1, 25)
+    plt.ylim(0, max(s) + .1)
+    plt.xticks([0, 6, 12, 18, 24])
+
+    # Reps over sessions
+    plt.subplot(224)
+    s = np.empty(n_sess)
+    s.fill(np.nan)
+    s[:len(stats['rep_perlist'])] = stats['rep_perlist']
+    plt.plot(range(0, n_sess), s, 'ko-')
+    plt.axhline(np.nanmean(s), linestyle='--', color='k')
+    plt.xlabel('Session Number')
+    plt.ylabel('Repetitions')
+    plt.xlim(-1, 25)
+    plt.ylim(0, max(s) + .1)
+    plt.xticks([0, 6, 12, 18, 24])
+
+    fig.savefig(os.path.join(fig_dir, 'performance.pdf'))
+    plt.close(fig)
+
     # Average SPC
     s = stats['spc']
     fig = plt.figure()
