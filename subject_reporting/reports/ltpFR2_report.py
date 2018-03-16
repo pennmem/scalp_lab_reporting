@@ -76,7 +76,7 @@ def subject_report_ltpFR2(subj, stats=None):
         # Create first table (PRec, PLIs, XLIs, Reps, Trials)
         #
         ###############
-        header = ['Sess', 'PRec', 'PLI', 'XLI', 'Rep', 'Trials']
+        header = ['Sess', 'PRec', 'PLI', 'ELI', 'Rep', 'Trials']
         fmt = '|c' * len(header) + '|'
         with centered.create(ltx.Tabu(fmt)) as data_table:
             data_table.add_hline()
