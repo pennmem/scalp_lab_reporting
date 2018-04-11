@@ -57,7 +57,7 @@ def get_scalp_data(subj, sess, exp, tmin=0, tmax=1.6):
     if os.path.exists(bad_chan_file):
         with open(bad_chan_file, 'r') as f:
             badchan = [s.strip() for s in f.readlines()]
-    ep.info['bads'] = badchan
+        ep.info['bads'] = badchan
 
     return ep
 
