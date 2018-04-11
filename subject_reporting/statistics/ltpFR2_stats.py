@@ -1,6 +1,7 @@
 import os
 import json
 import numpy as np
+import pandas as pd
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
@@ -54,6 +55,7 @@ def run_stats_ltpFR2(subj, data=None):
     #
     ###############
     data_dir = '/data/eeg/scalp/ltp/ltpFR2/behavioral/data/'
+    bonus_dir = '/data/eeg/scalp/ltp/ltpFR2/bonus/'
     out_dir = '/data/eeg/scalp/ltp/ltpFR2/behavioral/stats/'
     n_sess = 24
 
@@ -71,6 +73,11 @@ def run_stats_ltpFR2(subj, data=None):
                 return dict()
         with open(data_file, 'r') as f:
             data = json.load(f)
+
+    bonus_data = None
+    bonus_data_file = os.path.join(bonus_dir, '%s_bonus_report.tsv' % subj)
+    if os.path.exists(bonus_data_file):
+        bonus_data = pd.read_csv(bonus_data_file, delimiter='\t')
 
     ###############
     #
@@ -142,13 +149,12 @@ def run_stats_ltpFR2(subj, data=None):
     #
     ###############
     fig_dir = '/data/eeg/scalp/ltp/ltpFR2/%s/figs/' % subj
-    # fig_dir = '/Users/jessepazdera/Desktop/testfigs/'
     if not os.path.exists(fig_dir):  # Make sure figure directory exists
         os.mkdir(fig_dir)
 
     # PRec over sessions; include faint lines to indicate where tiers of bonus payments begin and end
-    fig = plt.figure(figsize=(12, 8))
-    plt.subplot(221)
+    fig = plt.figure(figsize=(26, 24))
+    plt.subplot(321)
     s = np.empty(n_sess)
     s.fill(np.nan)
     s[:len(stats['p_rec'])] = stats['p_rec']
@@ -156,51 +162,76 @@ def run_stats_ltpFR2(subj, data=None):
     plt.axhline(np.nanmean(s), linestyle='--', color='k')
     for bonus_bound in [.2, .3, .4, .5, .7]:
         plt.axhline(bonus_bound, linestyle='-', color='k', alpha=.4)
-    plt.xlabel('Session Number')
-    plt.ylabel('Recall Probability')
+    plt.title('Recall Probability')
     plt.xlim(-1, 25)
     plt.ylim(0, 1)
     plt.xticks([0, 6, 12, 18, 24])
 
     # PLI over sessions
-    plt.subplot(222)
+    plt.subplot(322)
     s = np.empty(n_sess)
     s.fill(np.nan)
     s[:len(stats['pli_perlist'])] = stats['pli_perlist']
     plt.plot(range(0, n_sess), s, 'ko-')
     plt.axhline(np.nanmean(s), linestyle='--', color='k')
-    plt.xlabel('Session Number')
-    plt.ylabel('PLIs')
+    plt.title('PLIs')
     plt.xlim(-1, 25)
     plt.ylim(0, max(s) + .1)
     plt.xticks([0, 6, 12, 18, 24])
 
+    # Blink rate over sessions
+    plt.subplot(323)
+    s = [x.split('/')[2][:-1] for x in bonus_data['Blink Rate'][:-1]]
+    s = [np.nan if x == '' else x for x in s]
+    s = np.array(s, dtype=float) / 100
+    plt.plot(range(0, n_sess), s, 'ko-')
+    plt.axhline(np.nanmean(s), linestyle='--', color='k')
+    for bonus_bound in [.1, .2, .3, .4, .5]:
+        plt.axhline(bonus_bound, linestyle='-', color='k', alpha=.4)
+    plt.title('Blink Rate')
+    plt.xlim(-1, 25)
+    plt.ylim(0, 1)
+    plt.xticks([0, 6, 12, 18, 24])
+
     # ELI over sessions
-    plt.subplot(223)
+    plt.subplot(324)
     s = np.empty(n_sess)
     s.fill(np.nan)
     s[:len(stats['xli_perlist'])] = stats['xli_perlist']
     plt.plot(range(0, n_sess), s, 'ko-')
     plt.axhline(np.nanmean(s), linestyle='--', color='k')
-    plt.xlabel('Session Number')
-    plt.ylabel('ELIs')
+    plt.title('ELIs')
     plt.xlim(-1, 25)
     plt.ylim(0, max(s) + .1)
     plt.xticks([0, 6, 12, 18, 24])
 
+    # Math score over sessions
+    plt.subplot(325)
+    s = bonus_data['Math Score'][:n_sess]
+    plt.plot(range(0, n_sess), s, 'ko-')
+    plt.axhline(np.nanmean(s), linestyle='--', color='k')
+    for bonus_bound in [200, 350, 400, 450, 500]:
+        plt.axhline(bonus_bound, linestyle='-', color='k', alpha=.4)
+    plt.xlabel('Session Number')
+    plt.title('Math Score')
+    plt.xlim(-1, 25)
+    plt.ylim(0, max(550, max(s) + 10))
+    plt.xticks([0, 6, 12, 18, 24])
+
     # Reps over sessions
-    plt.subplot(224)
+    plt.subplot(326)
     s = np.empty(n_sess)
     s.fill(np.nan)
     s[:len(stats['rep_perlist'])] = stats['rep_perlist']
     plt.plot(range(0, n_sess), s, 'ko-')
     plt.axhline(np.nanmean(s), linestyle='--', color='k')
     plt.xlabel('Session Number')
-    plt.ylabel('Repetitions')
+    plt.title('Repetitions')
     plt.xlim(-1, 25)
     plt.ylim(0, max(s) + .1)
     plt.xticks([0, 6, 12, 18, 24])
 
+    plt.tight_layout(w_pad=2.5, h_pad=5)
     fig.savefig(os.path.join(fig_dir, 'performance.pdf'))
     plt.close(fig)
 
