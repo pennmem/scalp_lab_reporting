@@ -53,9 +53,11 @@ def get_scalp_data(subj, sess, exp, tmin=0, tmax=1.6):
     # Drop unused channels and sync pulse channel
     ep.pick_types(eeg=True, eog=True)
 
-    bad_chan_file = os.path.splitext(eegfile)[0] + '_bad_chan.tsv'
-    bad_chan_info = np.loadtxt(bad_chan_file, dtype=str, delimiter='\t', skiprows=1, usecols=(0, 5))
-    ep.info['bads'] = bad_chan_info[bad_chan_info[:, 1] == '1', 0].tolist()
+    bad_chan_file = os.path.splitext(eegfile)[0] + '_bad_chan.txt'
+    if os.path.exists(bad_chan_file):
+        with open(bad_chan_file, 'r') as f:
+            badchan = [s.strip() for s in f.readlines()]
+    ep.info['bads'] = badchan
 
     return ep
 
