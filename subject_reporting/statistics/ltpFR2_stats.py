@@ -14,13 +14,6 @@ from pybeh.xli import xli
 from pybeh.reps import reps
 from subject_reporting.statistics.p_rec import p_rec
 
-matplotlib.rc('font', size=22)  # default text sizes
-matplotlib.rc('axes', titlesize=22)  # fontsize of the axes title
-matplotlib.rc('axes', labelsize=22)  # fontsize of the x and y labels
-matplotlib.rc('xtick', labelsize=24)  # fontsize of the x-axis tick labels
-matplotlib.rc('ytick', labelsize=24)  # fontsize of the y-axis tick labels
-matplotlib.rc('figure', titlesize=22)  # fontsize of the figure title
-
 
 def run_stats_ltpFR2(subj, data=None):
     """
@@ -145,9 +138,16 @@ def run_stats_ltpFR2(subj, data=None):
 
     ###############
     #
-    # Plot stats
+    # Plot Performance Stats
     #
     ###############
+    matplotlib.rc('font', size=36)  # default text sizes
+    matplotlib.rc('axes', titlesize=36)  # fontsize of the axes title
+    matplotlib.rc('axes', labelsize=36)  # fontsize of the x and y labels
+    matplotlib.rc('xtick', labelsize=36)  # fontsize of the x-axis tick labels
+    matplotlib.rc('ytick', labelsize=36)  # fontsize of the y-axis tick labels
+    matplotlib.rc('figure', titlesize=40)  # fontsize of the figure title
+
     fig_dir = '/data/eeg/scalp/ltp/ltpFR2/%s/figs/' % subj
     if not os.path.exists(fig_dir):  # Make sure figure directory exists
         os.mkdir(fig_dir)
@@ -158,10 +158,8 @@ def run_stats_ltpFR2(subj, data=None):
     s = np.empty(n_sess)
     s.fill(np.nan)
     s[:len(stats['p_rec'])] = stats['p_rec']
-    plt.plot(range(0, n_sess), s, 'ko-')
-    plt.axhline(np.nanmean(s), linestyle='--', color='k')
-    for bonus_bound in [.2, .3, .4, .5, .7]:
-        plt.axhline(bonus_bound, linestyle='-', color='k', alpha=.4)
+    plt.plot(range(0, n_sess), s, 'ko', markersize=15)
+    plt.axhline(np.nanmean(s), linestyle='--', color='k', linewidth=3)
     plt.title('Recall Probability')
     plt.xlim(-1, 25)
     plt.ylim(0, 1)
@@ -172,11 +170,11 @@ def run_stats_ltpFR2(subj, data=None):
     s = np.empty(n_sess)
     s.fill(np.nan)
     s[:len(stats['pli_perlist'])] = stats['pli_perlist']
-    plt.plot(range(0, n_sess), s, 'ko-')
-    plt.axhline(np.nanmean(s), linestyle='--', color='k')
+    plt.plot(range(0, n_sess), s, 'ko', markersize=15)
+    plt.axhline(np.nanmean(s), linestyle='--', color='k', linewidth=3)
     plt.title('PLIs')
     plt.xlim(-1, 25)
-    plt.ylim(0, max(s) + .1)
+    plt.ylim(-0.05, max(s) + .1)
     plt.xticks([0, 6, 12, 18, 24])
 
     # Blink rate over sessions
@@ -184,10 +182,8 @@ def run_stats_ltpFR2(subj, data=None):
     s = [x.split('/')[2][:-1] for x in bonus_data['Blink Rate'][:-1]]
     s = [np.nan if x == '' else x for x in s]
     s = np.array(s, dtype=float) / 100
-    plt.plot(range(0, n_sess), s, 'ko-')
-    plt.axhline(np.nanmean(s), linestyle='--', color='k')
-    for bonus_bound in [.1, .2, .3, .4, .5]:
-        plt.axhline(bonus_bound, linestyle='-', color='k', alpha=.4)
+    plt.plot(range(0, n_sess), s, 'ko', markersize=15)
+    plt.axhline(np.nanmean(s), linestyle='--', color='k', linewidth=3)
     plt.title('Blink Rate')
     plt.xlim(-1, 25)
     plt.ylim(0, 1)
@@ -198,20 +194,18 @@ def run_stats_ltpFR2(subj, data=None):
     s = np.empty(n_sess)
     s.fill(np.nan)
     s[:len(stats['xli_perlist'])] = stats['xli_perlist']
-    plt.plot(range(0, n_sess), s, 'ko-')
-    plt.axhline(np.nanmean(s), linestyle='--', color='k')
+    plt.plot(range(0, n_sess), s, 'ko', markersize=15)
+    plt.axhline(np.nanmean(s), linestyle='--', color='k', linewidth=3)
     plt.title('ELIs')
     plt.xlim(-1, 25)
-    plt.ylim(0, max(s) + .1)
+    plt.ylim(-0.05, max(s) + .1)
     plt.xticks([0, 6, 12, 18, 24])
 
     # Math score over sessions
     plt.subplot(325)
     s = bonus_data['Math Score'][:n_sess]
-    plt.plot(range(0, n_sess), s, 'ko-')
-    plt.axhline(np.nanmean(s), linestyle='--', color='k')
-    for bonus_bound in [200, 350, 400, 450, 500]:
-        plt.axhline(bonus_bound, linestyle='-', color='k', alpha=.4)
+    plt.plot(range(0, n_sess), s, 'ko', markersize=15)
+    plt.axhline(np.nanmean(s), linestyle='--', color='k', linewidth=3)
     plt.xlabel('Session Number')
     plt.title('Math Score')
     plt.xlim(-1, 25)
@@ -223,17 +217,30 @@ def run_stats_ltpFR2(subj, data=None):
     s = np.empty(n_sess)
     s.fill(np.nan)
     s[:len(stats['rep_perlist'])] = stats['rep_perlist']
-    plt.plot(range(0, n_sess), s, 'ko-')
-    plt.axhline(np.nanmean(s), linestyle='--', color='k')
+    plt.plot(range(0, n_sess), s, 'ko', markersize=15)
+    plt.axhline(np.nanmean(s), linestyle='--', color='k', linewidth=3)
     plt.xlabel('Session Number')
     plt.title('Repetitions')
     plt.xlim(-1, 25)
-    plt.ylim(0, max(s) + .1)
+    plt.ylim(-0.05, max(s) + .1)
     plt.xticks([0, 6, 12, 18, 24])
 
-    plt.tight_layout(w_pad=2.5, h_pad=5)
+    plt.tight_layout(w_pad=2.5, h_pad=3.75)
     fig.savefig(os.path.join(fig_dir, 'performance.pdf'))
+    #fig.savefig(os.path.join('/Users/jpazdera/Desktop/performance.pdf'))
     plt.close(fig)
+
+    ###############
+    #
+    # Plot Recall Stats
+    #
+    ###############
+    matplotlib.rc('font', size=22)  # default text sizes
+    matplotlib.rc('axes', titlesize=22)  # fontsize of the axes title
+    matplotlib.rc('axes', labelsize=22)  # fontsize of the x and y labels
+    matplotlib.rc('xtick', labelsize=24)  # fontsize of the x-axis tick labels
+    matplotlib.rc('ytick', labelsize=24)  # fontsize of the y-axis tick labels
+    matplotlib.rc('figure', titlesize=22)  # fontsize of the figure title
 
     # Average SPC
     s = stats['spc']
@@ -279,7 +286,7 @@ def run_stats_ltpFR2(subj, data=None):
 
     for i, sess in enumerate(stats['session']):
         fig_dir = '/data/eeg/scalp/ltp/ltpFR2/%s/session_%d/figs/' % (subj, sess)
-        # fig_dir = '/Users/jessepazdera/Desktop/testfigs/'
+        # fig_dir = '/Users/jpazdera/Desktop/testfigs/'
         if not os.path.exists(fig_dir):  # Make sure figure directory exists
             os.mkdir(fig_dir)
 
