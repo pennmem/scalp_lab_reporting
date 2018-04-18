@@ -139,8 +139,9 @@ def calculate_bonus_ltpFR2(subj):
                         rec = [w.split('\t')[2].strip() for w in f.readlines()]
                         recalled = [(w in rec) for w in pres]
                         sess_precs.append(np.mean(recalled))
-            # Leave as nan if any missing annotations
-            prec = np.mean(sess_precs) * 100 if len(sess_precs) == len(lsts) else np.nan
+                else:
+                    sess_precs.append(np.nan)
+            prec = np.nanmean(sess_precs) * 100
 
             # Load events for given subject and session
             ev = BaseEventReader(filename=event_file, common_root='data', eliminate_nans=False, eliminate_events_with_no_eeg=False).read()
