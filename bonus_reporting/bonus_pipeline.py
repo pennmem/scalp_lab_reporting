@@ -1,11 +1,15 @@
 import os
 import json
+
 from bonus_reporting.calculation.bonus_ltpFR2 import calculate_bonus_ltpFR2
 from bonus_reporting.calculation.bonus_SFR import calculate_bonus_SFR
 from bonus_reporting.calculation.bonus_FR1_scalp import calculate_bonus_FR1_scalp
+#from bonus_reporting.calculation.bonus_VFFR import calculate_bonus_VFFR
+
 from bonus_reporting.reports.bonus_report_ltpFR2 import bonus_report_ltpFR2
 from bonus_reporting.reports.bonus_report_SFR import bonus_report_SFR
 from bonus_reporting.reports.bonus_report_FR1_scalp import bonus_report_FR1_scalp
+#from bonus_reporting.reports.bonus_report_VFFR import bonus_report_VFFR
 
 
 def upload_bonus_report(report_path, exp):
@@ -35,7 +39,8 @@ def run_bonus(experiment=None, subjects=None):
     BONUS_SCRIPTS = dict(
         ltpFR2=(calculate_bonus_ltpFR2, bonus_report_ltpFR2, True),
         SFR=(calculate_bonus_SFR, bonus_report_SFR, True),
-        FR1_scalp=(calculate_bonus_FR1_scalp, bonus_report_FR1_scalp, True)
+        FR1_scalp=(calculate_bonus_FR1_scalp, bonus_report_FR1_scalp, True),
+        #VFFR=(calculate_bonus_VFFR, bonus_report_VFFR, True)
     )
 
     # Determine experiment list
