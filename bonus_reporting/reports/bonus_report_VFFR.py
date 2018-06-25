@@ -26,7 +26,7 @@ def bonus_report_VFFR(subj, scores, bonuses, nans_blank=True):
     outfile = '/data/eeg/scalp/ltp/VFFR/bonus/%s_bonus_report.tsv' % subj
 
     # Create report header
-    report = 'Session\tRecall\tRecall Bonus\tBlink Rate\tBlink Bonus\tTotal\n'
+    report = 'Session\tBad Trial\tTrial Bonus\tBlink Rate\tBlink Bonus\tTotal\n'
 
     # Fill in report
     for i in range(len(bonuses)):
