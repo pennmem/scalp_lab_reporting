@@ -130,7 +130,7 @@ def calculate_bonus_VFFR(subj):
         except Exception as e:
             # Exceptions here are caused by a nonexistent, empty, or otherwise unreadable event file.
             print(e)
-            print('PTSA was unable to read event file %s... Leaving blink rate and recall probability as NaN!' % event_file)
+            print('PTSA was unable to read event file %s... Leaving blink rate and trial rate as NaN!' % event_file)
 
         # Calculate bonuses based on performance brackets
         blink_bonus = 5 - np.searchsorted(brackets['br'], br, side='right') if not np.isnan(br) else np.nan
