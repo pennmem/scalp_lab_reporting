@@ -56,16 +56,13 @@ def calculate_blink_rate(events, return_percent=False):
 def calculate_bad_trial_rate(events, return_percent=False):
     """
     Calculates a participant's bad trial rate on an events structure. Bad trials are defined to be trials in which
-    the rec event was marked too fast or the rec_word was a PASS.
+    the participant spoke too early or did not say the correct word. For fairness, speaking too early will only count
+    against the participant if the word was annotated as too early AND the "too fast" message was displayed to the
+    participant.
     """
-
     pres_events = events[events['type'] == 'WORD']
-    # exclude events marked with too_fast
-    good_events = pres_events[pres_events['too_fast']!=1]
-    # exclude events marked with pass
-    # good_events = pres_events[pres_events['pass']!=1]
-    gtr = len(good_events) / float(len(pres_events))
-    btr = 1 - gtr
+    bad_trials = pres_events[((pres_events['too_fast']) & (pres_events['too_fast_msg'])) | ~(pres_events['correct'])]
+    btr = len(bad_trials) / float(len(pres_events))
 
     if return_percent:
         return btr * 100
@@ -76,7 +73,7 @@ def calculate_bonus_VFFR(subj):
     """
     Calculates bonus payments for each of a participant's 24 sessions based on the following performance brackets:
 
-    P-Recs:
+    Performance:
     $0 --> 0% - 19.99%
     $1 --> 20% - 29.99%
     $2 --> 30% - 39.99%
@@ -92,7 +89,7 @@ def calculate_bonus_VFFR(subj):
     $4 --> 10% - 19.99%
     $5 --> 0% - 9.99%
 
-    Recall scores and bonuses can only be calculated once the session has been annotated. Blink rates can only be
+    Performance scores and bonuses can only be calculated once the session has been annotated. Blink rates can only be
     calculated if the session has been successfully aligned and blink detection has been run. If not all presentation
     events have EEG data, the blink rate is calculated only over the events that do.
 
