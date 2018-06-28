@@ -61,7 +61,7 @@ def calculate_bad_trial_rate(events, return_percent=False):
     participant.
     """
     pres_events = events[events['type'] == 'WORD']
-    bad_trials = pres_events[((pres_events['too_fast']) & (pres_events['too_fast_msg'])) | ~(pres_events['correct'])]
+    bad_trials = pres_events[((pres_events['too_fast']) & (pres_events['too_fast_msg'])) | (pres_events['correct'] == 0)]
     btr = len(bad_trials) / float(len(pres_events))
 
     if return_percent:
