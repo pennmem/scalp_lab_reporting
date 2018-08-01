@@ -73,20 +73,20 @@ def calculate_bonus_VFFR(subj):
     Calculates bonus payments for each of a participant's 24 sessions based on the following performance brackets:
 
     Performance:
-    $0 --> 0% - 19.99%
-    $1 --> 20% - 29.99%
-    $2 --> 30% - 39.99%
-    $3 --> 40% - 49.99%
-    $4 --> 50% - 69.99%
-    $5 --> 70% - 100%
+    $0 --> 17.36% (100+ bad trials)
+    $1 --> 13.87% - 17.359% (80-99 bad trials)
+    $2 --> 10.4% - 13.869% (60-79 bad trials)
+    $3 --> 6.9% - 10.39% (40-59 bad trials)
+    $4 --> 3.4$ - 6.89% (20-39 bad trials)
+    $5 --> 0% - 3.39% (0-19 bad trials)
 
     Blink rates:
     $0 --> > 50%
-    $1 --> 40% - 49.99%
-    $2 --> 30% - 39.99%
-    $3 --> 20% - 29.99%
-    $4 --> 10% - 19.99%
-    $5 --> 0% - 9.99%
+    $1 --> 42.5% - 49.99%
+    $2 --> 35% - 42.49%
+    $3 --> 27.5% - 34.99%
+    $4 --> 20% - 27.49%
+    $5 --> 0% - 19.99%
 
     Performance scores and bonuses can only be calculated once the session has been annotated. Blink rates can only be
     calculated if the session has been successfully aligned and blink detection has been run. If not all presentation
@@ -101,8 +101,8 @@ def calculate_bonus_VFFR(subj):
     # Set experiment parameters and performance bracket boundaries
     n_sessions = 10
     brackets = dict(
-        btr = [10, 20, 30, 40, 50],
-        br=[10, 20, 30, 40, 50]
+        btr = [3.4, 6.9, 10.4, 13.87, 17.36],
+        br=[20, 27.5, 35, 42.5, 50]
     )
 
     scores = np.zeros((n_sessions, 4))
