@@ -5,6 +5,7 @@ import os.path
 import datetime
 import string
 import json
+from subject_reporting import __version__ as version
 
 
 class PartialFormatter(string.Formatter):
@@ -59,6 +60,8 @@ if __name__ == '__main__':
     subj = input('Enter a subject ID: ')
     output_dest = report_dest.format(subject=subj, experiment=exp)
     build_report(subj, exp, output_dest,
+                 # TODO: Add Javascript, CSS
                  js={},
                  css={},
+                 version=version,
                  )
