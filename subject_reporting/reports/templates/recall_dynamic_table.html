@@ -1,0 +1,26 @@
+<h2> Dynamics of Recall</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Session</th>
+        <th> SPC </th>
+        <th> PFR </th>
+        <th> CRP </th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Avg</td>
+            <td><object data="{{ spc.format(sesssion='') }}" type="application/pdf" ></object></td>
+            <td><object data="{{ pfr.format(sesssion='') }}" type="application/pdf" ></object></td>
+            <td><object data="{{ crp.format(sesssion='') }}" type="application/pdf" ></object></td>
+        </tr>
+       {% for session in sessions %}
+        <tr>
+            <td> {{ session }} </td>
+            <td><object data="{{ spc.format(session=session) }}" type="application/pdf" ></object></td>
+            <td><object data="{{ pfr.format(session=session) }}" type="application/pdf" ></object></td>
+            <td><object data="{{ crp.format(session=session)}}" type="application/pdf" ></object></td>
+        </tr>
+    </tbody>
+</table>
