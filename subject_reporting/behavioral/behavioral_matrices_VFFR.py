@@ -70,7 +70,7 @@ def make_data_matrices_VFFR(subj):
             sess_array.append(i)
 
     # Load subject's wordpool
-    wordpool = np.loadtxt(os.path.join(exp_dir, 'VFFR_wordpool.txt'), dtype='S32')
+    wordpool = np.loadtxt(os.path.join(exp_dir, 'full_ltp_wordpool.txt'), dtype='S32')
 
     # Initialize behavioral data matrices
     pres_words = np.zeros((total_lists, list_length), dtype='U32')
@@ -118,7 +118,7 @@ def make_data_matrices_VFFR(subj):
                 sess_times[:len(recs)] = recs[:, 0].astype(float).astype(int)  # ValueError if just using .astype(int)
 
         # Determine whether each word was recalled during initial free recall
-        sess_recalled = np.in1d(sess_pres_nos, sess_rec_nos)
+        sess_recalled = np.in1d(sess_pres_words, sess_rec_words)
 
         # Create matrix with intrusion info; ELIs are any words that were not presented -- mark these as -1
         sess_intru = ((sess_rec_words != '') & (~np.in1d(sess_rec_words, sess_pres_words))).astype(int) * -1
