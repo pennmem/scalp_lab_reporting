@@ -133,7 +133,7 @@ def make_data_matrices_FR1_scalp(subj):
             # We can skip the steps below for trials with no recalls, which will produce a recs of shape (1, 0)
             if recs.shape[1] >= 3:
                 recs = np.char.strip(recs)
-                recs = recs[np.where(recs[:, 2] != 'VV')]
+                recs = recs[(recs[:, 2] != 'VV') & (recs[:, 2] != '<>') & (recs[:, 2] != '!')]
                 sess_rec_words[i, :len(recs)] = recs[:, 2]
                 sess_rec_nos[i, :len(recs)] = recs[:, 1]
                 sess_times[i, :len(recs)] = recs[:, 0]

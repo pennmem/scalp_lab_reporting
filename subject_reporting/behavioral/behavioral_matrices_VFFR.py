@@ -112,7 +112,7 @@ def make_data_matrices_VFFR(subj):
             # We can skip the steps below for sessions with no recalls, which will produce recs of shape (1, 0)
             if recs.shape[1] >= 3:
                 recs = np.char.strip(recs)
-                recs = recs[np.where(recs[:, 2] != 'VV')]
+                recs = recs[(recs[:, 2] != 'VV') & (recs[:, 2] != '<>') & (recs[:, 2] != '!')]
                 sess_rec_words[:len(recs)] = recs[:, 2]
                 sess_rec_nos[:len(recs)] = recs[:, 1]
                 sess_times[:len(recs)] = recs[:, 0].astype(float).astype(int)  # ValueError if just using .astype(int)
