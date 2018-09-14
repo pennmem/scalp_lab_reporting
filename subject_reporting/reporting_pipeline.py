@@ -30,7 +30,7 @@ def upload_subject_report(report_path, exp):
         os.system('scp %s reports@memory.psych.upenn.edu:/var/www/html/ltp_reports/%s/' % (report_path, exp))
 
 
-def run_pipeline(experiment=None, subjects=None, upload=True):
+def run_pipeline(experiment=None, subjects=None):
     """
     Runs the subject report pipeline on a list of participants. The pipeline has three major steps:
     1) Create behavioral data matrices containing presentation and recall information needed for analyses.
@@ -50,7 +50,6 @@ def run_pipeline(experiment=None, subjects=None, upload=True):
     active experiments.
     :param subjects: A list of subject IDs on whom to run the reporting pipeline. If None, run on all recently modified
     participants in the target experiment. If 'all', run on all participants.
-    :param upload: Indicates whether or not reports should be uploaded to memory.psych.upenn.edu after being generated.
     """
     ###############
     #
