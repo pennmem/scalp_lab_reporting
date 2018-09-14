@@ -1,7 +1,6 @@
 import os
 import json
 import numpy as np
-from pybeh.create_intrusions import intrusions as make_intrusions_matrix
 
 
 def make_data_matrices_VFFR(subj):
@@ -80,6 +79,7 @@ def make_data_matrices_VFFR(subj):
     rec_nos = np.zeros((total_lists, recalls_allowed), dtype='int16')
     recalled = np.zeros((total_lists, list_length), dtype='float16')
     times = np.zeros((total_lists, recalls_allowed), dtype='int32')
+    intru = np.zeros((total_lists, recalls_allowed), dtype='int16')
 
     # Create data matrices for each session
     for sess_num, session_dir in enumerate(sess_dirs):
@@ -120,14 +120,14 @@ def make_data_matrices_VFFR(subj):
         # Determine whether each word was recalled during initial free recall
         sess_recalled = np.in1d(sess_pres_nos, sess_rec_nos)
 
+        # Create matrix with intrusion info; ELIs are any words that were not presented -- mark these as -1
+        sess_intru = ((rec_words != '') & (~np.in1d(rec_words, pres_words))).astype(int) * -1
+
         # Place that session's behavioral data into the appropriate row of the subject's full data matrices
         matrix_pairs = [(pres_words, sess_pres_words), (pres_nos, sess_pres_nos), (rec_words, sess_rec_words),
-                     (rec_nos, sess_rec_nos), (recalled, sess_recalled), (times, sess_times)]
+                     (rec_nos, sess_rec_nos), (recalled, sess_recalled), (times, sess_times), (intru, sess_intru)]
         for pair in matrix_pairs:
             pair[0][sess_num, :] = pair[1]
-
-    # Create matrix with intrusion info
-    intrusions = make_intrusions_matrix(rec_nos, pres_nos, subj_array, sess_array)
 
     ###############
     #
@@ -144,7 +144,7 @@ def make_data_matrices_VFFR(subj):
     rec_words = rec_words[:, :max_recalls]
     rec_nos = rec_nos[:, :max_recalls]
     times = times[:, :max_recalls]
-    intrusions = intrusions[:, :max_recalls]
+    intru = intru[:, :max_recalls]
 
     # Once all of a subject's data has been processed, add their completed data matrices to the data dictionary
     data = dict(
@@ -156,7 +156,7 @@ def make_data_matrices_VFFR(subj):
         rec_nos=rec_nos.tolist(),
         recalled=recalled.tolist(),
         times=times.tolist(),
-        intrusions=intrusions.tolist()
+        intrusions=intru.tolist()
     )
 
     # Define location where the subject's data will be saved. Participants without 10 sessions will have their data
