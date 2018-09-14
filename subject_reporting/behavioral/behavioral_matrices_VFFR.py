@@ -121,7 +121,7 @@ def make_data_matrices_VFFR(subj):
         sess_recalled = np.in1d(sess_pres_nos, sess_rec_nos)
 
         # Create matrix with intrusion info; ELIs are any words that were not presented -- mark these as -1
-        sess_intru = ((rec_words != '') & (~np.in1d(rec_words, pres_words))).astype(int) * -1
+        sess_intru = ((sess_rec_words != '') & (~np.in1d(sess_rec_words, sess_pres_words))).astype(int) * -1
 
         # Place that session's behavioral data into the appropriate row of the subject's full data matrices
         matrix_pairs = [(pres_words, sess_pres_words), (pres_nos, sess_pres_nos), (rec_words, sess_rec_words),
