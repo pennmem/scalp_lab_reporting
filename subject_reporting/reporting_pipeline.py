@@ -2,12 +2,20 @@ from __future__ import print_function
 import os
 import json
 from glob import glob
+
+# Import ltpFR2 functions
 from subject_reporting.behavioral.behavioral_matrices_ltpFR2 import make_data_matrices_ltpFR2
 from subject_reporting.statistics.ltpFR2_stats import run_stats_ltpFR2
-from subject_reporting.erp.ltpFR2_ERP import erp_ltpFR2
+from subject_reporting.eeg.ltpFR2_eeg import eeg_ltpFR2
 from subject_reporting.reports.ltpFR2_report import subject_report_ltpFR2
+
+# Import SFR/FR1_scalp functions
 from subject_reporting.behavioral.behavioral_matrices_SFR import make_data_matrices_SFR
 from subject_reporting.behavioral.behavioral_matrices_FR1_scalp import make_data_matrices_FR1_scalp
+
+# Import VFFR functions
+from subject_reporting.behavioral.behavioral_matrices_VFFR import make_data_matrices_VFFR
+from subject_reporting.statistics.VFFR_stats import run_stats_VFFR
 
 
 def upload_subject_report(report_path, exp):
@@ -41,7 +49,7 @@ def run_pipeline(experiment=None, subjects=None, upload=True):
     :param experiment: A string containing the name of the experiment for which to generate reports. If None, run on all
     active experiments.
     :param subjects: A list of subject IDs on whom to run the reporting pipeline. If None, run on all recently modified
-    participants in the target experiment.
+    participants in the target experiment. If 'all', run on all participants.
     :param upload: Indicates whether or not reports should be uploaded to memory.psych.upenn.edu after being generated.
     """
     ###############
@@ -49,10 +57,16 @@ def run_pipeline(experiment=None, subjects=None, upload=True):
     # Set reporting functions to use for each supported experiment here
     #
     ###############
+    """
+    Format is as follows:
+    experiment name = (behavioral matrix generation function, stat calculation function, EEG plotting function,
+                       report generation function, upload report? (True/False), subject ID prefix for experiment)
+    """
     REPORTING_SCRIPTS = dict(
-        ltpFR2=(make_data_matrices_ltpFR2, run_stats_ltpFR2, erp_ltpFR2, subject_report_ltpFR2, True, 'LTP'),
+        ltpFR2=(make_data_matrices_ltpFR2, run_stats_ltpFR2, eeg_ltpFR2, subject_report_ltpFR2, True, 'LTP'),
         SFR=(make_data_matrices_SFR, None, None, None, False, 'RAA'),
-        FR1_scalp=(make_data_matrices_FR1_scalp, None, None, None, False, 'RAA')
+        FR1_scalp=(make_data_matrices_FR1_scalp, None, None, None, False, 'RAA'),
+        VFFR=(make_data_matrices_VFFR, run_stats_VFFR, None, None, False, 'LTP')
     )
 
     ###############
@@ -75,32 +89,42 @@ def run_pipeline(experiment=None, subjects=None, upload=True):
     # Run subject reporting pipeline
     #
     ###############
+    # Use REPORTING_SCRIPTS dictionary to select the functions that should be run on participants from each experiment
     for exp in experiments:
         behavioral_func = REPORTING_SCRIPTS[exp][0]
         statistics_func = REPORTING_SCRIPTS[exp][1]
-        erp_func = REPORTING_SCRIPTS[exp][2]
+        eeg_func = REPORTING_SCRIPTS[exp][2]
         report_func = REPORTING_SCRIPTS[exp][3]
         upload = REPORTING_SCRIPTS[exp][4]
         subj_prefix = REPORTING_SCRIPTS[exp][5]
 
-        # Run on recently modified subjects unless user specified the subjects to use
+        # Run on recently modified subjects unless user specified a list of subjects to use
         if subjects is None:
             with open('/data/eeg/scalp/ltp/%s/recently_modified.json' % exp, 'r') as f:
                 subjects = json.load(f).keys()
         elif subjects == 'all':
             subjects = [os.path.basename(s) for s in glob('/data/eeg/scalp/ltp/%s/%s[0-9][0-9][0-9]' % (exp, subj_prefix))]
 
+        # Run reporting pipeline on each participant
         for s in subjects:
-            beh_data = behavioral_func(s)  # Create behavioral data matrices
-            # Skip participant if they haven't actually completed any sessions
+            # Create behavioral data matrices
+            beh_data = behavioral_func(s)
+
+            # Run behavioral statistics
             if beh_data == {} or statistics_func is None:
                 continue
-            statistics_func(s, data=beh_data)  # Run behavioral statistics
-            if erp_func is not None:
-                erp_func(s)  # Generate ERP plots
+            statistics_func(s, data=beh_data)
+
+            # Generate EEG plots (e.g. ERPs)
+            if eeg_func is not None:
+                eeg_func(s)
+
+            # Create subject report
             if report_func is None:
                 continue
-            report_path = report_func(s)  # Create subject report
+            report_path = report_func(s)
+
+            # Upload report to memory.psych.upenn.edu
             if upload:
                 upload_subject_report(report_path, exp)
 

@@ -62,11 +62,11 @@ def get_scalp_data(subj, sess, exp, tmin=0, tmax=1.6):
     return ep
 
 
-def erp_ltpFR2(subj):
+def eeg_ltpFR2(subj):
     """
     TBA
 
-    :param subj:
+    :param subj: The participant for whom ERPs will be plotted.
     :return:
     """
     # Settings
@@ -128,4 +128,5 @@ def erp_ltpFR2(subj):
 
 
 if __name__ == "__main__":
-    erp_ltpFR2('LTP368')
+    s = input('Enter a subject ID: ')
+    eeg_ltpFR2(s)
