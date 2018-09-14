@@ -12,11 +12,12 @@
     <tbody>
     {% for session in sessions %}
         <tr>
-            {% for location in ['Fz', 'Cz', Pz'] %}
+            {% for location in ['Fz', 'Cz', 'Pz'] %}
             <td> <object data="{{ erp_plot.format(session='session_%s'%session, location=location, subject=subject, experiment=experiment,) }}"
                          type="application/pdf"></object> </td>
             {% endfor %}
         </tr>
+    {% endfor %}
     </tbody>
 </table>
 

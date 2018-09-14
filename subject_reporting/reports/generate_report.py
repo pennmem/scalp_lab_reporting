@@ -17,7 +17,7 @@ class PartialFormatter(string.Formatter):
             return '{' + key + '}'
 pf = PartialFormatter()
 
-figures_dir = '/data/eeg/scalp/ltp/{experiment}/{subject}/{session}/figs'
+figures_dir = '{session}/figs'
 report_dest = '/data/eeg/scalp/ltp/{experiment}/{subject}/{subject}_report.html'
 
 
@@ -33,7 +33,7 @@ def load_stats(subject, experiment):
 
 def build_report(subject, experiment, dest, **kwargs):
 
-    sessions = load_stats(subject, experiment)['stats']
+    sessions = load_stats(subject, experiment)['session']
 
     figures = dict(
         erp_plot=os.path.join(figures_dir, '{location}_erp.pdf'),
@@ -42,11 +42,11 @@ def build_report(subject, experiment, dest, **kwargs):
         pfr=os.path.join(figures_dir, 'pfr.pdf'),
         performance=pf.format(os.path.join(figures_dir, 'performance.pdf'), session=''),
     )
-    env = jinja2.Environment(loader=jinja2.PackageLoader('reports', 'templates'))
+    env = jinja2.Environment(loader=jinja2.PackageLoader('subject_reporting.reports', 'templates'))
     template = env.get_template('{}.html'.format(experiment))
     kwargs.update(figures)
     report_str = template.render(
-        datetime=datetime,
+        datetime=datetime.datetime,
         subject=subject,
         experiment=experiment,
         sessions=sessions,
@@ -56,7 +56,7 @@ def build_report(subject, experiment, dest, **kwargs):
         report.write(report_str)
 
 if __name__ == '__main__':
-    exp = ' ltpFR2'
+    exp = 'ltpFR2'
     subj = input('Enter a subject ID: ')
     output_dest = report_dest.format(subject=subj, experiment=exp)
     build_report(subj, exp, output_dest,

@@ -11,16 +11,18 @@
     <tbody>
         <tr>
             <td>Avg</td>
-            <td><object data="{{ spc.format(sesssion='') }}" type="application/pdf" ></object></td>
-            <td><object data="{{ pfr.format(sesssion='') }}" type="application/pdf" ></object></td>
-            <td><object data="{{ crp.format(sesssion='') }}" type="application/pdf" ></object></td>
+            <td><object data="figs/spc.pdf" type="application/pdf" ></object></td>
+            <td><object data="figs/pdf.pdf" type="application/pdf" ></object></td>
+            <td><object data="figs/crp.pdf" type="application/pdf" ></object></td>
         </tr>
        {% for session in sessions %}
+        {% set session_name = "session_%s" % session %}
         <tr>
             <td> {{ session }} </td>
-            <td><object data="{{ spc.format(session=session) }}" type="application/pdf" ></object></td>
-            <td><object data="{{ pfr.format(session=session) }}" type="application/pdf" ></object></td>
-            <td><object data="{{ crp.format(session=session)}}" type="application/pdf" ></object></td>
+            <td><object data="{{ spc.format(subject=subject,experiment=experiment,session=session_name) }}" type="application/pdf" ></object></td>
+            <td><object data="{{ pfr.format(subject=subject,experiment=experiment,session=session_name) }}" type="application/pdf" ></object></td>
+            <td><object data="{{ crp.format(subject=subject,experiment=experiment,session=session_name)}}" type="application/pdf" ></object></td>
         </tr>
+        {% endfor %}
     </tbody>
 </table>
