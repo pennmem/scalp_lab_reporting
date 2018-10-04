@@ -83,7 +83,7 @@ def run_stats_VFFR(subj, data=None):
     # Count repetitions of correct recalls (i.e. if the word was recalled earlier and is not an intrusion)
     stats['repetitions'] = np.zeros(len(stats['session']), dtype=float)
     for sess, sess_data in enumerate(recs):
-        if np.all(np.isnan(sess_data)):
+        if np.all(np.isnan(recalled[sess, :])):
             stats['recalls'][sess] = np.nan
             stats['intrusions'][sess] = np.nan
             stats['repetitions'][sess] = np.nan
