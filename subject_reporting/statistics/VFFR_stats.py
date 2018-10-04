@@ -34,7 +34,7 @@ def run_stats_VFFR(subj, data=None):
     #
     ###############
     data_dir = '/data/eeg/scalp/ltp/VFFR/behavioral/data/'
-    bonus_dir = '/data/eeg/scalp/ltp/VFFR/bonus/'
+    #bonus_dir = '/data/eeg/scalp/ltp/VFFR/bonus/'
     out_dir = '/data/eeg/scalp/ltp/VFFR/behavioral/stats/'
     n_sess = 10
 
@@ -54,10 +54,10 @@ def run_stats_VFFR(subj, data=None):
             data = json.load(f)
 
     # Load bonus data so we can plot blink rates
-    bonus_data = None
-    bonus_data_file = os.path.join(bonus_dir, '%s_bonus_report.tsv' % subj)
-    if os.path.exists(bonus_data_file):
-        bonus_data = read_csv(bonus_data_file, delimiter='\t')
+    #bonus_data = None
+    #bonus_data_file = os.path.join(bonus_dir, '%s_bonus_report.tsv' % subj)
+    #if os.path.exists(bonus_data_file):
+    #    bonus_data = read_csv(bonus_data_file, delimiter='\t')
 
     ###############
     #
@@ -81,11 +81,16 @@ def run_stats_VFFR(subj, data=None):
     # There are no PLIs, so sum of intru is -1 * number of ELIs; remove the negative to get total number of ELIs
     stats['intrusions'] = np.nansum(intru, axis=1) * -1
     # Count repetitions of correct recalls (i.e. if the word was recalled earlier and is not an intrusion)
-    stats['repetitions'] = np.zeros(len(stats['session']), dtype=int)
+    stats['repetitions'] = np.zeros(len(stats['session']), dtype=float)
     for sess, sess_data in enumerate(recs):
-        for i, w in enumerate(sess_data):
-            if w != '' and np.isin(w, sess_data[:i]) and intru[sess, i] == 0:
-                stats['repetitions'][sess] += 1
+        if np.all(np.isnan(sess_data)):
+            stats['recalls'][sess] = np.nan
+            stats['intrusions'][sess] = np.nan
+            stats['repetitions'][sess] = np.nan
+        else:
+            for i, w in enumerate(sess_data):
+                if w != '' and np.isin(w, sess_data[:i]) and intru[sess, i] == 0:
+                    stats['repetitions'][sess] += 1
 
     ###############
     #
