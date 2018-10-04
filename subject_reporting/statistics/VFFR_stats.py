@@ -77,9 +77,9 @@ def run_stats_VFFR(subj, data=None):
     stats = dict()
     stats['session'] = np.unique(sessions)
     stats['subject'] = np.array([subj] * len(stats['session']))
-    stats['recalls'] = np.sum(recalled, axis=1).astype(int)
+    stats['recalls'] = np.nansum(recalled, axis=1)
     # There are no PLIs, so sum of intru is -1 * number of ELIs; remove the negative to get total number of ELIs
-    stats['intrusions'] = np.sum(intru, axis=1) * -1
+    stats['intrusions'] = np.nansum(intru, axis=1) * -1
     # Count repetitions of correct recalls (i.e. if the word was recalled earlier and is not an intrusion)
     stats['repetitions'] = np.zeros(len(stats['session']), dtype=int)
     for sess, sess_data in enumerate(recs):

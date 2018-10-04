@@ -144,7 +144,7 @@ def make_data_matrices_VFFR(subj):
 
     # Identify the max number of recalls the subject made on any trial of any session, as this is the number of
     # columns we should keep in our recall-related matrices
-    recall_columns = np.where(rec_nos != 0)[1]
+    recall_columns = np.where((rec_nos != 0) & (~np.isnan(rec_nos)))[1]
     max_recalls = recall_columns.max() + 1 if len(recall_columns) > 0 else 0
 
     # Trim unused columns of the recall-related data matrices
