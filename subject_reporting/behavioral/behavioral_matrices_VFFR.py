@@ -90,10 +90,10 @@ def make_data_matrices_VFFR(subj):
         print('Processing session %s...' % sess_num)
 
         sess_pres_words = np.zeros(list_length, dtype='U32')
-        sess_pres_nos = np.zeros(list_length, dtype='int16')
+        sess_pres_nos = np.zeros(list_length, dtype=float)
         sess_rec_words = np.zeros(recalls_allowed, dtype='U32')
-        sess_rec_nos = np.zeros(recalls_allowed, dtype='int16')
-        sess_times = np.zeros(recalls_allowed, dtype='int32')
+        sess_rec_nos = np.zeros(recalls_allowed, dtype=float)
+        sess_times = np.zeros(recalls_allowed, dtype=float)
 
         # Load presented from that session's .lst files (VFFR has one .lst for each word)
         for i in range(n_practice_words):
@@ -119,7 +119,7 @@ def make_data_matrices_VFFR(subj):
                 recs = recs[(recs[:, 2] != 'VV') & (recs[:, 2] != '<>') & (recs[:, 2] != '!')]
                 sess_rec_words[:len(recs)] = recs[:, 2]
                 sess_rec_nos[:len(recs)] = recs[:, 1]
-                sess_times[:len(recs)] = recs[:, 0].astype(float).astype(int)  # ValueError if just using .astype(int)
+                sess_times[:len(recs)] = recs[:, 0]
 
             # Determine whether each word was recalled during initial free recall
             sess_recalled = np.in1d(sess_pres_words, sess_rec_words)
