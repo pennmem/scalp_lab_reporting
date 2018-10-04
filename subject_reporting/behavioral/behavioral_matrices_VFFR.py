@@ -74,12 +74,16 @@ def make_data_matrices_VFFR(subj):
 
     # Initialize behavioral data matrices
     pres_words = np.zeros((total_lists, list_length), dtype='U32')
-    pres_nos = np.zeros((total_lists, list_length), dtype='int16')
+    pres_nos = np.zeros((total_lists, list_length), dtype=float)
     rec_words = np.zeros((total_lists, recalls_allowed), dtype='U32')
-    rec_nos = np.zeros((total_lists, recalls_allowed), dtype='int16')
-    recalled = np.zeros((total_lists, list_length), dtype='float16')
-    times = np.zeros((total_lists, recalls_allowed), dtype='int32')
-    intru = np.zeros((total_lists, recalls_allowed), dtype='int16')
+    rec_nos = np.zeros((total_lists, recalls_allowed), dtype=float)
+    rec_nos.fill(np.nan)
+    recalled = np.zeros((total_lists, list_length), dtype=float)
+    recalled.fill(np.nan)
+    times = np.zeros((total_lists, recalls_allowed), dtype=float)
+    times.fill(np.nan)
+    intru = np.zeros((total_lists, recalls_allowed), dtype=float)
+    intru.fill(np.nan)
 
     # Create data matrices for each session
     for sess_num, session_dir in enumerate(sess_dirs):
@@ -117,15 +121,18 @@ def make_data_matrices_VFFR(subj):
                 sess_rec_nos[:len(recs)] = recs[:, 1]
                 sess_times[:len(recs)] = recs[:, 0].astype(float).astype(int)  # ValueError if just using .astype(int)
 
-        # Determine whether each word was recalled during initial free recall
-        sess_recalled = np.in1d(sess_pres_words, sess_rec_words)
+            # Determine whether each word was recalled during initial free recall
+            sess_recalled = np.in1d(sess_pres_words, sess_rec_words)
 
-        # Create matrix with intrusion info; ELIs are any words that were not presented -- mark these as -1
-        sess_intru = ((sess_rec_words != '') & (~np.in1d(sess_rec_words, sess_pres_words))).astype(int) * -1
+            # Create matrix with intrusion info; ELIs are any words that were not presented -- mark these as -1
+            sess_intru = ((sess_rec_words != '') & (~np.in1d(sess_rec_words, sess_pres_words))).astype(int) * -1
 
-        # Place that session's behavioral data into the appropriate row of the subject's full data matrices
-        matrix_pairs = [(pres_words, sess_pres_words), (pres_nos, sess_pres_nos), (rec_words, sess_rec_words),
-                     (rec_nos, sess_rec_nos), (recalled, sess_recalled), (times, sess_times), (intru, sess_intru)]
+            # Place that session's behavioral data into the appropriate row of the subject's full data matrices
+            matrix_pairs = [(pres_words, sess_pres_words), (pres_nos, sess_pres_nos), (rec_words, sess_rec_words),
+                         (rec_nos, sess_rec_nos), (recalled, sess_recalled), (times, sess_times), (intru, sess_intru)]
+        else:
+            matrix_pairs = [(pres_words, sess_pres_words), (pres_nos, sess_pres_nos)]
+
         for pair in matrix_pairs:
             pair[0][sess_num, :] = pair[1]
 
