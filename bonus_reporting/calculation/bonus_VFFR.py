@@ -73,10 +73,10 @@ def calculate_recall_rate(events, return_percent=False):
     Calculates a participant's recall rate on an events structure. 
     """
     pres_events = events[events['type'] == 'WORD']
-    recall = np.mean((pres_events['correct'] == 1))
+    recall = np.mean(pres_events['recalled'])
 
     if return_percent:
-        return recall / np.mean(pres_events) * 100
+        return recall * 100
     else:
         return recall
 
