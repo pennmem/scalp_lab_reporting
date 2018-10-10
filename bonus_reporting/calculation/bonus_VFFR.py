@@ -67,6 +67,18 @@ def calculate_bad_trial_rate(events, return_percent=False):
         return btr * 100
     else:
         return btr
+    
+def calculate_recall_rate(events, return_percent=False):
+    """
+    Calculates a participant's recall rate on an events structure. 
+    """
+    pres_events = events[events['type'] == 'WORD']
+    recall = np.mean(pres_events['recalled'])
+
+    if return_percent:
+        return recall * 100
+    else:
+        return recall
 
 def calculate_bonus_VFFR(subj):
     """
@@ -87,6 +99,14 @@ def calculate_bonus_VFFR(subj):
     $3 --> 27.5% - 34.99%
     $4 --> 20% - 27.49%
     $5 --> 0% - 19.99%
+    
+    Recall rates:
+    $100 --> > 50%
+    $80 --> 42.5% - 49.99%
+    $60 --> 35% - 42.49%
+    $40 --> 27.5% - 34.99%
+    $20 --> 20% - 27.49%
+    $0 --> 0% - 19.99%
 
     Performance scores and bonuses can only be calculated once the session has been annotated. Blink rates can only be
     calculated if the session has been successfully aligned and blink detection has been run. If not all presentation
