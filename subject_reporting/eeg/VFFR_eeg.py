@@ -15,7 +15,7 @@ matplotlib.rc('ytick', labelsize=18)  # font size of the y-axis tick labels
 matplotlib.rc('figure', titlesize=20)  # font size of the figure title
 
 
-def eeg_ltpFR2(subj):
+def eeg_VFFR(subj):
     """
     Plots ERPs for word presentation events during each of a subject's sessions at three regions of interest
     (Fz, Cz, Pz). In generating ERPs, data is common average re-referenced with bad channels excluded. Then the data
