@@ -16,6 +16,8 @@ from subject_reporting.behavioral.behavioral_matrices_FR1_scalp import make_data
 # Import VFFR functions
 from subject_reporting.behavioral.behavioral_matrices_VFFR import make_data_matrices_VFFR
 from subject_reporting.statistics.VFFR_stats import run_stats_VFFR
+from subject_reporting.eeg.VFFR_eeg import eeg_VFFR
+from subject_reporting.reports.VFFR_report import subject_report_VFFR
 
 
 def upload_subject_report(report_path, exp):
@@ -65,7 +67,7 @@ def run_pipeline(experiment=None, subjects=None):
         ltpFR2=(make_data_matrices_ltpFR2, run_stats_ltpFR2, eeg_ltpFR2, subject_report_ltpFR2, True, 'LTP'),
         SFR=(make_data_matrices_SFR, None, None, None, False, 'RAA'),
         FR1_scalp=(make_data_matrices_FR1_scalp, None, None, None, False, 'RAA'),
-        VFFR=(make_data_matrices_VFFR, run_stats_VFFR, None, None, False, 'LTP')
+        VFFR=(make_data_matrices_VFFR, run_stats_VFFR, eeg_VFFR, subject_report_VFFR, True, 'LTP')
     )
 
     ###############
