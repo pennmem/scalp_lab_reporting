@@ -23,28 +23,49 @@ def bonus_report_VFFR(subj, scores, bonuses, nans_blank=True):
     # Part 1: Text Report
     #
     ###############
+
     outfile = '/data/eeg/scalp/ltp/VFFR/bonus/%s_bonus_report.tsv' % subj
 
     # Create report header
-    report = 'Session\tBad Trial\tTrial Bonus\tBlink Rate\tBlink Bonus\tRecall\tRecall Bonus\tTotal\n'
+    if subj not in ('LTP356', 'LTP392', 'LTP400', 'LTP400', 'LTP401', 'LTP402', 'LTP404'):
+        report = 'Session\tBad Trial\tTrial Bonus\tBlink Rate\tBlink Bonus\tRecall\tRecall Bonus\tTotal\n'
 
-    # Fill in report
-    for i in range(len(bonuses)):
-        report += '%d\t%.1f%%\t$%.2f\t%s\t$%.2f\t%.2f\t$%.2f\t$%.2f\n' % \
-                  (i,
-                   scores[i][0], bonuses[i][0],
-                   str(scores[i][1]) + '%/' + str(scores[i][2]) + '%/' + str(scores[i][3]) + '%', bonuses[i][1],
-                   scores[i][4], bonuses[i][2],
-                   bonuses[i][3])
-    # Add final line with average performance and total payment measures
-    report += 'Overall\t%.1f%%\t$%.2f\t%s\t$%.2f\t%.2f\t$%.2f\t$%.2f\n' % \
-              (np.nanmean([s[0] for s in scores]), np.nansum([b[0] for b in bonuses]),
-               str(round(np.nanmean([s[1] for s in scores]), 1)) + '%/' +
-               str(round(np.nanmean([s[2] for s in scores]), 1)) + '%/' +
-               str(round(np.nanmean([s[3] for s in scores]), 1)) + '%', np.nansum([b[2] for b in bonuses]),
-               np.nanmean([s[4] for s in scores]), np.nansum([b[2] for b in bonuses]),
-               np.nansum([b[3] for b in bonuses]))
-    report = report.strip()
+        # Fill in report
+        for i in range(len(bonuses)):
+            report += '%d\t%.1f%%\t$%.2f\t%s\t$%.2f\t%.2f\t$%.2f\t$%.2f\n' % \
+                      (i,
+                       scores[i][0], bonuses[i][0],
+                       str(scores[i][1]) + '%/' + str(scores[i][2]) + '%/' + str(scores[i][3]) + '%', bonuses[i][1],
+                       scores[i][4], bonuses[i][2],
+                       bonuses[i][3])
+        # Add final line with average performance and total payment measures
+        report += 'Overall\t%.1f%%\t$%.2f\t%s\t$%.2f\t%.2f\t$%.2f\t$%.2f\n' % \
+                  (np.nanmean([s[0] for s in scores]), np.nansum([b[0] for b in bonuses]),
+                   str(round(np.nanmean([s[1] for s in scores]), 1)) + '%/' +
+                   str(round(np.nanmean([s[2] for s in scores]), 1)) + '%/' +
+                   str(round(np.nanmean([s[3] for s in scores]), 1)) + '%', np.nansum([b[2] for b in bonuses]),
+                   np.nanmean([s[4] for s in scores]), np.nansum([b[2] for b in bonuses]),
+                   np.nansum([b[3] for b in bonuses]))
+        report = report.strip()
+
+    else:
+        # Fill in report
+        report = 'Session\tBad Trial\tTrial Bonus\tBlink Rate\tBlink Bonus\tTotal\n'
+
+        for i in range(len(bonuses)):
+            report += '%d\t%.1f%%\t$%.2f\t%s\t$%.2f\t$%.2f\n' % \
+                      (i,
+                       scores[i][0], bonuses[i][0],
+                       str(scores[i][1]) + '%/' + str(scores[i][2]) + '%/' + str(scores[i][3]) + '%', bonuses[i][1],
+                       bonuses[i][3])
+        # Add final line with average performance and total payment measures
+        report += 'Overall\t%.1f%%\t$%.2f\t%s\t$%.2f\t$%.2f\n' % \
+                  (np.nanmean([s[0] for s in scores]), np.nansum([b[0] for b in bonuses]),
+                   str(round(np.nanmean([s[1] for s in scores]), 1)) + '%/' +
+                   str(round(np.nanmean([s[2] for s in scores]), 1)) + '%/' +
+                   str(round(np.nanmean([s[3] for s in scores]), 1)) + '%', np.nansum([b[2] for b in bonuses]),
+                   np.nansum([b[3] for b in bonuses]))
+        report = report.strip()
 
     # Replace nans with blank entries if desired
     if nans_blank:
