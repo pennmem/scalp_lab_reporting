@@ -138,7 +138,8 @@ def calculate_bonus_VFFR(subj):
             ev = BaseEventReader(filename=event_file, common_root='data', eliminate_nans=False, eliminate_events_with_no_eeg=False).read()
             lbr, rbr, br = calculate_blink_rate(ev, return_percent=True)
             btr = calculate_bad_trial_rate(ev, return_percent=True)
-            nrec = calculate_nrecall(ev)
+            if sess >= 5:
+                nrec = calculate_nrecall(ev)
             del ev
         except Exception as e:
             # Exceptions here are caused by a nonexistent, empty, or otherwise unreadable event file.
