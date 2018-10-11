@@ -150,7 +150,7 @@ def calculate_bonus_VFFR(subj):
         blink_bonus = 5 - np.searchsorted(brackets['br'], br, side='right') if not np.isnan(br) else np.nan
         trial_bonus = 5 - np.searchsorted(brackets['btr'], btr, side='right') if not np.isnan(btr) else np.nan
         recall_bonus = min(5, 5*(nrec/brackets['recmax'])) if not np.isnan(nrec) else np.nan
-        total_bonus = blink_bonus + trial_bonus + recall_bonus
+        total_bonus = blink_bonus + trial_bonus + recall_bonus if sess >= 5 else blink_bonus + trial_bonus
 
         # Record scores and bonuses from session
         scores[sess] = [btr, round(lbr, 1), round(rbr, 1), round(br, 1), nrec]
