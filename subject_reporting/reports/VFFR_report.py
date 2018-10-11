@@ -58,6 +58,8 @@ def subject_report_VFFR(subj):
         #
         ###############
         doc.append(ltx.Command('break'))
+        doc.append(ltx.Command('break'))
+        doc.append(ltx.Command('break'))
         doc.append(ltx.MediumText('Event-Related Potentials'))
         header = ['Session', 'Fz', 'Cz', 'Pz']
         fmt = 'c' * len(header)
