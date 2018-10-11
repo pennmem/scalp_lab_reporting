@@ -179,8 +179,12 @@ def run_stats_ltpFR2(subj, data=None):
 
     # Blink rate over sessions
     plt.subplot(323)
-    s = [x.split('/')[2][:-1] for x in bonus_data['Blink Rate'][:-1]]
-    s = [np.nan if x == '' else x for x in s]
+    if bonus_data is not None:
+        s = [x.split('/')[2][:-1] for x in bonus_data['Blink Rate'][:-1]]
+        s = [np.nan if x == '' else x for x in s]
+    else:
+        s = np.empty(n_sess)
+        s.fill(np.nan)
     s = np.array(s, dtype=float) / 100
     plt.plot(range(0, n_sess), s, 'ko', markersize=15)
     plt.axhline(np.nanmean(s), linestyle='--', color='k', linewidth=3)
@@ -203,7 +207,11 @@ def run_stats_ltpFR2(subj, data=None):
 
     # Math score over sessions
     plt.subplot(325)
-    s = bonus_data['Math Score'][:n_sess]
+    if bonus_data is not None:
+        s = bonus_data['Math Score'][:n_sess]
+    else:
+        s = np.empty(n_sess)
+        s.fill(np.nan)
     plt.plot(range(0, n_sess), s, 'ko', markersize=15)
     plt.axhline(np.nanmean(s), linestyle='--', color='k', linewidth=3)
     plt.xlabel('Session Number')
