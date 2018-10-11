@@ -115,9 +115,9 @@ def calculate_bonus_VFFR(subj):
     # rr: recall rate (contains the rate above which will be paid $5)
     n_sessions = 10
     brackets = dict(
-        btr = [3.4, 6.9, 10.4, 13.87, 17.36],
+        btr=[3.4, 6.9, 10.4, 13.87, 17.36],
         br=[20, 27.5, 35, 42.5, 50],
-	recmax=[144.0]
+        recmax=[144.0]
     )
 
     scores = np.zeros((n_sessions, 5))
@@ -131,14 +131,14 @@ def calculate_bonus_VFFR(subj):
         lbr = np.nan
         rbr = np.nan
         br = np.nan
-	nrec = np.nan
+        nrec = np.nan
         try:
             # Calculate performance from the target session
             # Load events for given subject and session
             ev = BaseEventReader(filename=event_file, common_root='data', eliminate_nans=False, eliminate_events_with_no_eeg=False).read()
             lbr, rbr, br = calculate_blink_rate(ev, return_percent=True)
             btr = calculate_bad_trial_rate(ev, return_percent=True)
-	    nrec = calculate_nrecall(ev)
+            nrec = calculate_nrecall(ev)
             del ev
         except Exception as e:
             # Exceptions here are caused by a nonexistent, empty, or otherwise unreadable event file.
@@ -148,7 +148,7 @@ def calculate_bonus_VFFR(subj):
         # Calculate bonuses based on performance brackets
         blink_bonus = 5 - np.searchsorted(brackets['br'], br, side='right') if not np.isnan(br) else np.nan
         trial_bonus = 5 - np.searchsorted(brackets['btr'], btr, side='right') if not np.isnan(btr) else np.nan
-	recall_bonus = min(5, 5*(nrec/brackets['recmax'])) if not np.isnan(nrec) else np.nan 
+        recall_bonus = min(5, 5*(nrec/brackets['recmax'])) if not np.isnan(nrec) else np.nan
         total_bonus = blink_bonus + trial_bonus + recall_bonus
 
         # Record scores and bonuses from session
