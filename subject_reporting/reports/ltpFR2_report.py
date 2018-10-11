@@ -6,11 +6,10 @@ import pylatex as ltx
 
 def subject_report_ltpFR2(subj):
     """
-    TBA
+    Create a subject report for the specified ltpFR2 participant.
 
-    :param subj:
-    :param stats:
-    :return:
+    :param subj: The subject for whom a report will be generated.
+    :return: The filepath of the PDF report.
     """
     ###############
     #
