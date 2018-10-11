@@ -43,7 +43,7 @@ def bonus_report_VFFR(subj, scores, bonuses, nans_blank=True):
                   (np.nanmean([s[0] for s in scores]), np.nansum([b[0] for b in bonuses]),
                    str(round(np.nanmean([s[1] for s in scores]), 1)) + '%/' +
                    str(round(np.nanmean([s[2] for s in scores]), 1)) + '%/' +
-                   str(round(np.nanmean([s[3] for s in scores]), 1)) + '%', np.nansum([b[2] for b in bonuses]),
+                   str(round(np.nanmean([s[3] for s in scores]), 1)) + '%', np.nansum([b[1] for b in bonuses]),
                    np.nanmean([s[4] for s in scores]), np.nansum([b[2] for b in bonuses]),
                    np.nansum([b[3] for b in bonuses]))
         report = report.strip()
@@ -63,7 +63,7 @@ def bonus_report_VFFR(subj, scores, bonuses, nans_blank=True):
                   (np.nanmean([s[0] for s in scores]), np.nansum([b[0] for b in bonuses]),
                    str(round(np.nanmean([s[1] for s in scores]), 1)) + '%/' +
                    str(round(np.nanmean([s[2] for s in scores]), 1)) + '%/' +
-                   str(round(np.nanmean([s[3] for s in scores]), 1)) + '%', np.nansum([b[2] for b in bonuses]),
+                   str(round(np.nanmean([s[3] for s in scores]), 1)) + '%', np.nansum([b[1] for b in bonuses]),
                    np.nansum([b[3] for b in bonuses]))
         report = report.strip()
 
