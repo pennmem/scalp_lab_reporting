@@ -1,7 +1,5 @@
 from __future__ import print_function
-import os
 import numpy as np
-from glob import glob
 from ptsa.data.readers import BaseEventReader
 
 
