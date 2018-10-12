@@ -78,13 +78,13 @@ def subject_report_VFFR(subj):
             pz_path = os.path.join(subj_dir, 'figs', 'Pz_erp.pdf')
             fz = cz = pz = ''
             if os.path.exists(fz_path):
-                fz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'),
+                fz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.3\\textwidth'),
                                  arguments=ltx.NoEscape(fz_path))
             if os.path.exists(cz_path):
-                cz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'),
+                cz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.3\\textwidth'),
                                  arguments=ltx.NoEscape(cz_path))
             if os.path.exists(pz_path):
-                pz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'),
+                pz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.3\\textwidth'),
                                  arguments=ltx.NoEscape(pz_path))
             data_table.add_row([sesstext, fz, cz, pz])
 
@@ -96,11 +96,11 @@ def subject_report_VFFR(subj):
                 pz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'Pz_erp.pdf')
                 fz = cz = pz = ''
                 if os.path.exists(fz_path):
-                    fz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'), arguments=ltx.NoEscape(fz_path))
+                    fz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.3\\textwidth'), arguments=ltx.NoEscape(fz_path))
                 if os.path.exists(cz_path):
-                    cz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'), arguments=ltx.NoEscape(cz_path))
+                    cz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.3\\textwidth'), arguments=ltx.NoEscape(cz_path))
                 if os.path.exists(pz_path):
-                    pz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'), arguments=ltx.NoEscape(pz_path))
+                    pz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.3\\textwidth'), arguments=ltx.NoEscape(pz_path))
 
                 data_table.add_row([sesstext, fz, cz, pz])
 

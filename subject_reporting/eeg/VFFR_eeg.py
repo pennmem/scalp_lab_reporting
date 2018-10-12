@@ -94,17 +94,17 @@ def eeg_VFFR(subj):
 
     for i, roi in enumerate(names):
         # Plot ERP
-        plt.axvline(x=0, ls='--', c='#011F5B')
-        plt.axhline(y=0, ls='--', c='#990000')
+        plt.axvline(x=0, ls='--', c='#011F5B', label=None)
+        plt.axhline(y=0, ls='--', c='#990000', label=None)
         plt.xlim(tmin, tmax)
         lim = ceil(np.nanmax(np.abs(np.concatenate((first5_avg[i, :], last5_avg[i, :])))))
         if np.isnan(lim):
             continue
         plt.ylim(-lim, lim)
         plt.title('%s (%d$-$%d ms)' % (roi, tmin * 1000, tmax * 1000))
-        plt.plot(evoked.times, first5_avg[i, :], 'k', lw=1)
-        plt.plot(evoked.times, last5_avg[i, :], 'C1', lw=1)
-        plt.legend(['Control Sessions', 'FFR Sessions'])
+        plt.plot(evoked.times, first5_avg[i, :], 'k', lw=1, label='0-4')
+        plt.plot(evoked.times, last5_avg[i, :], 'C1', lw=1, label='5-9')
+        plt.legend()
         plt.gcf().set_size_inches(7.5, 3.5)
         plt.tight_layout()
         fig_name = '%s_erp.pdf' % names[i]
