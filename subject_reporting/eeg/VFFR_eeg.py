@@ -97,7 +97,7 @@ def eeg_VFFR(subj):
         plt.axvline(x=0, ls='--', c='#011F5B')
         plt.axhline(y=0, ls='--', c='#990000')
         plt.xlim(tmin, tmax)
-        lim = ceil(np.nanmax(np.abs(np.concatenate(first5_avg[i, :], last5_avg[i, :]))))
+        lim = ceil(np.nanmax(np.abs(np.concatenate((first5_avg[i, :], last5_avg[i, :])))))
         if np.isnan(lim):
             continue
         plt.ylim(-lim, lim)
