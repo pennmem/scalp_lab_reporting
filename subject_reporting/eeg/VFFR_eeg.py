@@ -66,7 +66,7 @@ def eeg_VFFR(subj):
             plt.axvline(x=0, ls='--', c='#011F5B')
             plt.axhline(y=0, ls='--', c='#990000')
             plt.xlim(evoked.times[0], evoked.times[-1])
-            lim = ceil(np.abs(erps[sess, i, :]).max())  # Dynamically scale the range of the Y-axis
+            lim = ceil(np.nanmax(np.abs(erps[sess, i, :])))  # Dynamically scale the range of the Y-axis
             plt.ylim(-lim, lim)
             plt.title('%s (%d$-$%d ms)' % (names[i], tmin * 1000, tmax * 1000))
             plt.plot(evoked.times, erps[sess, i, :], 'k', lw=1)
@@ -97,7 +97,7 @@ def eeg_VFFR(subj):
             plt.axvline(x=0, ls='--', c='#011F5B')
             plt.axhline(y=0, ls='--', c='#990000')
             plt.xlim(evoked.times[0], evoked.times[-1])
-            lim = ceil(np.abs(first5_avg[i, :]).max())  # Dynamically scale the range of the Y-axis
+            lim = ceil(np.nanmax(np.abs(first5_avg[i, :])))  # Dynamically scale the range of the Y-axis
             plt.ylim(-lim, lim)
             plt.title('%s (%d$-$%d ms)' % (roi, tmin * 1000, tmax * 1000))
             plt.plot(evoked.times, first5_avg[i, :], 'k', lw=1)
