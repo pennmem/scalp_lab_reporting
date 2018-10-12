@@ -36,11 +36,6 @@ def eeg_VFFR(subj):
 
     for sess in range(n_sess):
 
-        # Make directory for ERP plots if it does not exist
-        fig_dir = '/data/eeg/scalp/ltp/%s/%s/session_%d/figs/' % (exp, subj, sess)
-        if not os.path.exists(fig_dir):
-            os.mkdir(fig_dir)
-
         # Get data from each word presentation event; skip session if no events or no EEG data
         eeg = get_scalp_data(subj, sess, exp, tmin, tmax)
         if eeg is None:
@@ -75,6 +70,11 @@ def eeg_VFFR(subj):
             plt.gcf().set_size_inches(7.5, 3.5)
             plt.tight_layout()
 
+            # Make directory for ERP plots if it does not exist
+            fig_dir = '/data/eeg/scalp/ltp/%s/%s/session_%d/figs/' % (exp, subj, sess)
+            if not os.path.exists(fig_dir):
+                os.mkdir(fig_dir)
+
             # Save ERP figure
             fig_name = '%s_erp.pdf' % names[i]
             plt.savefig(os.path.join(fig_dir, fig_name))
@@ -83,4 +83,4 @@ def eeg_VFFR(subj):
 
 if __name__ == "__main__":
     s = input('Enter a subject ID: ')
-    eeg_ltpFR2(s)
+    eeg_VFFR(s)
