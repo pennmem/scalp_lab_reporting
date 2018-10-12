@@ -35,7 +35,7 @@ def eeg_VFFR(subj):
     tmin = -.3  # Start time of ERP in seconds
     tmax = 1.2  # End time of ERP in seconds
 
-    n_samples = samp_rate * tmax - tmin
+    n_samples = ceil(samp_rate * tmax - tmin)
     erps = np.zeros((n_sess, 3, n_samples))
     erps.fill(np.nan)
     for sess in range(n_sess):
