@@ -28,18 +28,17 @@ def eeg_VFFR(subj):
     # Settings
     exp = 'VFFR'
     n_sess = 10  # Max number of sessions in experiment
+    samp_rate = 2048
     fz_chans = ['C12', 'C13', 'C20', 'C21', 'C25', 'C26']  # Fz channels
     cz_chans = ['A1', 'A2', 'B1', 'C1', 'D1', 'D15']  # Cz channels
     pz_chans = ['A5', 'A18', 'A19', 'A20', 'A31', 'A32']  # Pz channels
     tmin = -.3  # Start time of ERP in seconds
     tmax = 1.2  # End time of ERP in seconds
 
+    n_samples = ceil(samp_rate * (tmax - tmin)) + 1
+    erps = np.zeros((n_sess, 3, n_samples))
+    erps.fill(np.nan)
     for sess in range(n_sess):
-
-        # Make directory for ERP plots if it does not exist
-        fig_dir = '/data/eeg/scalp/ltp/%s/%s/session_%d/figs/' % (exp, subj, sess)
-        if not os.path.exists(fig_dir):
-            os.mkdir(fig_dir)
 
         # Get data from each word presentation event; skip session if no events or no EEG data
         eeg = get_scalp_data(subj, sess, exp, tmin, tmax)
@@ -53,13 +52,12 @@ def eeg_VFFR(subj):
         eeg.apply_baseline((None, 0))
 
         names = ['Fz', 'Cz', 'Pz']
-        erps = np.zeros((len(names), len(eeg.times)))
         for i, erp_chs in enumerate((fz_chans, cz_chans, pz_chans)):
 
             try:
                 # Calculate ERP
                 evoked = eeg.average(picks=mne.pick_types(eeg.info, include=erp_chs))
-                erps[i, :] = evoked._data.mean(axis=0) * 1000000
+                erps[sess, i, :] = evoked._data.mean(axis=0) * 1000000
             except Exception as e:
                 print(e)
                 continue
@@ -67,18 +65,51 @@ def eeg_VFFR(subj):
             # Plot ERP
             plt.axvline(x=0, ls='--', c='#011F5B')
             plt.axhline(y=0, ls='--', c='#990000')
-            plt.xlim(evoked.times[0], evoked.times[-1])
-            lim = ceil(np.abs(erps[i]).max())  # Dynamically scale the range of the Y-axis
+            plt.xlim(tmin, tmax)
+            lim = ceil(np.nanmax(np.abs(erps[sess, i, :])))  # Dynamically scale the range of the Y-axis
             plt.ylim(-lim, lim)
             plt.title('%s (%d$-$%d ms)' % (names[i], tmin * 1000, tmax * 1000))
-            plt.plot(evoked.times, erps[i], 'k', lw=1)
+            plt.plot(evoked.times, erps[sess, i, :], 'k', lw=1)
             plt.gcf().set_size_inches(7.5, 3.5)
             plt.tight_layout()
+
+            # Make directory for ERP plots if it does not exist
+            fig_dir = '/data/eeg/scalp/ltp/%s/%s/session_%d/figs/' % (exp, subj, sess)
+            if not os.path.exists(fig_dir):
+                os.mkdir(fig_dir)
 
             # Save ERP figure
             fig_name = '%s_erp.pdf' % names[i]
             plt.savefig(os.path.join(fig_dir, fig_name))
             plt.close()
+
+    # Calculate cross-session average ERPs for the first 5 and last 5 sessions
+    first5_avg = np.nanmean(erps[:5, :, :], axis=0)
+    last5_avg = np.nanmean(erps[5:, :, :], axis=0)
+
+    # Make directory for cross-session average ERP plots if it does not exist
+    fig_dir = '/data/eeg/scalp/ltp/%s/%s/figs/' % (exp, subj)
+    if not os.path.exists(fig_dir):
+        os.mkdir(fig_dir)
+
+    for i, roi in enumerate(names):
+        # Plot ERP
+        plt.axvline(x=0, ls='--', c='#011F5B', label=None)
+        plt.axhline(y=0, ls='--', c='#990000', label=None)
+        plt.xlim(tmin, tmax)
+        lim = ceil(np.nanmax(np.abs(np.concatenate((first5_avg[i, :], last5_avg[i, :])))))
+        if np.isnan(lim):
+            continue
+        plt.ylim(-lim, lim)
+        plt.title('%s (%d$-$%d ms)' % (roi, tmin * 1000, tmax * 1000))
+        plt.plot(evoked.times, first5_avg[i, :], 'k', lw=1, label='0-4')
+        plt.plot(evoked.times, last5_avg[i, :], 'C1', lw=1, label='5-9')
+        plt.legend()
+        plt.gcf().set_size_inches(7.5, 3.5)
+        plt.tight_layout()
+        fig_name = '%s_erp.pdf' % names[i]
+        plt.savefig(os.path.join(fig_dir, fig_name))
+        plt.close()
 
 
 if __name__ == "__main__":

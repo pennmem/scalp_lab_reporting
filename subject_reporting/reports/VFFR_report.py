@@ -70,6 +70,25 @@ def subject_report_VFFR(subj):
             data_table.add_row([''] * len(header))
             data_table.add_hline()
             data_table.add_row([''] * len(header))
+
+            # Add a row containing the cross-session average ERPs
+            sesstext = ltx.Command('raisebox', arguments=[ltx.NoEscape('0.067\\textwidth'), 'Average'])
+            fz_path = os.path.join(subj_dir, 'figs', 'Fz_erp.pdf')
+            cz_path = os.path.join(subj_dir, 'figs', 'Cz_erp.pdf')
+            pz_path = os.path.join(subj_dir, 'figs', 'Pz_erp.pdf')
+            fz = cz = pz = ''
+            if os.path.exists(fz_path):
+                fz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.3\\textwidth'),
+                                 arguments=ltx.NoEscape(fz_path))
+            if os.path.exists(cz_path):
+                cz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.3\\textwidth'),
+                                 arguments=ltx.NoEscape(cz_path))
+            if os.path.exists(pz_path):
+                pz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.3\\textwidth'),
+                                 arguments=ltx.NoEscape(pz_path))
+            data_table.add_row([sesstext, fz, cz, pz])
+
+            # Add one row of ERPs for each session
             for i, sess in enumerate(sessions):
                 sesstext = ltx.Command('raisebox', arguments=[ltx.NoEscape('0.067\\textwidth'), sess])
                 fz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'Fz_erp.pdf')
@@ -77,11 +96,11 @@ def subject_report_VFFR(subj):
                 pz_path = os.path.join(subj_dir, 'session_%s' % sess, 'figs', 'Pz_erp.pdf')
                 fz = cz = pz = ''
                 if os.path.exists(fz_path):
-                    fz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'), arguments=ltx.NoEscape(fz_path))
+                    fz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.3\\textwidth'), arguments=ltx.NoEscape(fz_path))
                 if os.path.exists(cz_path):
-                    cz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'), arguments=ltx.NoEscape(cz_path))
+                    cz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.3\\textwidth'), arguments=ltx.NoEscape(cz_path))
                 if os.path.exists(pz_path):
-                    pz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.27\\textwidth'), arguments=ltx.NoEscape(pz_path))
+                    pz = ltx.Command('includegraphics', options=ltx.NoEscape('width=0.3\\textwidth'), arguments=ltx.NoEscape(pz_path))
 
                 data_table.add_row([sesstext, fz, cz, pz])
 
