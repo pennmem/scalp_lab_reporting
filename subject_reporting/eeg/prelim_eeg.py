@@ -8,31 +8,28 @@ from math import ceil
 from subject_reporting.eeg.get_scalp_data import get_scalp_data
 
 matplotlib.rc('font', size=18)  # default text sizes
-matplotlib.rc('axes', titlesize=18)  # font size of the axes title
-matplotlib.rc('axes', labelsize=18)  # font size of the x and y labels
-matplotlib.rc('xtick', labelsize=18)  # font size of the x-axis tick labels
-matplotlib.rc('ytick', labelsize=18)  # font size of the y-axis tick labels
-matplotlib.rc('figure', titlesize=20)  # font size of the figure title
+matplotlib.rc('axes', titlesize=18)  # fontsize of the axes title
+matplotlib.rc('axes', labelsize=18)  # fontsize of the x and y labels
+matplotlib.rc('xtick', labelsize=18)  # fontsize of the x-axis tick labels
+matplotlib.rc('ytick', labelsize=18)  # fontsize of the y-axis tick labels
+matplotlib.rc('figure', titlesize=20)  # fontsize of the figure title
 
 
-def eeg_VFFR(subj):
+def eeg_prelim(subj):
     """
-    Plots ERPs for word presentation events during each of a subject's sessions at three regions of interest
-    (Fz, Cz, Pz). In generating ERPs, data is common average re-referenced with bad channels excluded. Then the data
-    is baseline corrected and averaged across trials. Data is plotted in microvolts, and is displayed for 300 ms before
-    word onset to 1200 ms post-onset (the minimum duration for which a word can be displayed).
+    TBA
 
     :param subj: The participant for whom ERPs will be plotted.
     :return: None
     """
     # Settings
-    exp = 'VFFR'
-    n_sess = 10  # Max number of sessions in experiment
-    fz_chans = ['C12', 'C13', 'C20', 'C21', 'C25', 'C26']  # Fz channels
-    cz_chans = ['A1', 'A2', 'B1', 'C1', 'D1', 'D15']  # Cz channels
-    pz_chans = ['A5', 'A18', 'A19', 'A20', 'A31', 'A32']  # Pz channels
-    tmin = -.3  # Start time of ERP in seconds
-    tmax = 1.2  # End time of ERP in seconds
+    exp = 'prelim'
+    n_sess = 1  # Max number of sessions in experiment
+    fz_chans = ['C12', 'C13', 'C20', 'C21', 'C25', 'C26']
+    cz_chans = ['A1', 'A2', 'B1', 'C1', 'D1', 'D15']
+    pz_chans = ['A5', 'A18', 'A19', 'A20', 'A31', 'A32']
+    tmin = -.5  # Start time of ERP in seconds
+    tmax = 2.1  # End time of ERP in seconds
 
     for sess in range(n_sess):
 
@@ -49,8 +46,8 @@ def eeg_VFFR(subj):
         # Apply common average reference (automatically excludes bad channels)
         eeg.set_eeg_reference(ref_channels='average', projection=False)
 
-        # Baseline correct event data based on the 300 ms prior to word onset
-        eeg.apply_baseline((None, 0))
+        # Baseline correct event data based on the 500 ms prior to word onset
+        eeg.apply_baseline((-.25, 0))
 
         names = ['Fz', 'Cz', 'Pz']
         erps = np.zeros((len(names), len(eeg.times)))
@@ -83,4 +80,4 @@ def eeg_VFFR(subj):
 
 if __name__ == "__main__":
     s = input('Enter a subject ID: ')
-    eeg_VFFR(s)
+    eeg_prelim(s)
