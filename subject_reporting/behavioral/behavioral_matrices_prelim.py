@@ -3,6 +3,7 @@ import os
 import json
 import numpy as np
 from pybeh.create_intrusions import intrusions as make_intrusions_matrix
+from .blinks_matrix import make_blinks_matrix
 
 
 def make_recalls_matrix(pres_nos, rec_nos):
@@ -57,8 +58,9 @@ def make_data_matrices_prelim(subj):
     # Define parameters of experiment
     #
     ###############
-    exp_dir = '/data/eeg/scalp/ltp/prelim/'
-    out_dir = '/data/eeg/scalp/ltp/prelim/behavioral/data/'
+    exp = 'prelim'
+    exp_dir = '/data/eeg/scalp/ltp/%s/' % exp
+    out_dir = '/data/eeg/scalp/ltp/%s/behavioral/data/' % exp
     list_length = 15
     n_lists = 16
     n_sess = 1
@@ -107,6 +109,7 @@ def make_data_matrices_prelim(subj):
     recalled = np.zeros((total_lists, list_length), dtype='float16')
     times = np.zeros((total_lists, recalls_allowed), dtype='int32')
     recalls = np.zeros((total_lists, recalls_allowed), dtype='int16')
+    blinks = np.zeros((total_lists, list_length), dtype='int16')
 
     # Create data matrices for each session
     for sess_num, session_dir in enumerate(sess_dirs):
@@ -115,6 +118,7 @@ def make_data_matrices_prelim(subj):
         sess_rec_nos = np.zeros((n_lists, recalls_allowed), dtype='int16')
         sess_recalled = np.zeros((n_lists, list_length), dtype='float16')
         sess_times = np.zeros((n_lists, recalls_allowed), dtype='int32')
+        sess_blinks = make_blinks_matrix(exp, subj, sess_num, n_lists, list_length)
 
         # Load presented and recalled words from that session's .lst and .par files, respectively
         for i in range(n_lists):
@@ -165,7 +169,7 @@ def make_data_matrices_prelim(subj):
         end_row = start_row + n_lists
 
         mat_pairs = [(pres_words, sess_pres_words), (pres_nos, sess_pres_nos), (rec_words, sess_rec_words),
-                     (rec_nos, sess_rec_nos), (recalled, sess_recalled), (times, sess_times)]
+                     (rec_nos, sess_rec_nos), (recalled, sess_recalled), (times, sess_times), (blinks, sess_blinks)]
         # sess_recalls == None occurs only if a word was presented multiple times. If this happens, mark the
         # whole session as bad and leave the serialpos matrix as zeros.
         if sess_recalls is None:
@@ -212,7 +216,8 @@ def make_data_matrices_prelim(subj):
         recalled=recalled.tolist(),
         times=times.tolist(),
         recalls=recalls.tolist(),
-        intrusions=intrusions.tolist()
+        intrusions=intrusions.tolist(),
+        blinks=blinks.tolist()
     )
 
     # Define location where the subject's data will be saved. Participants without 24 sessions will have their data

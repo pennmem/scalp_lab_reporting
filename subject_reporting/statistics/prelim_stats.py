@@ -11,6 +11,7 @@ from pybeh.crl import crl
 from pybeh.pli import pli
 from pybeh.xli import xli
 from pybeh.reps import reps
+from .blink_rate import calc_blink_rate
 from subject_reporting.statistics.p_rec import p_rec
 
 
@@ -26,6 +27,7 @@ def run_stats_prelim(subj, data=None):
     - Prior-List Intrusions (pli_perlist)
     - Extra-List Intrusions (xli_perlist)
     - Repetitions (rep_perlist)
+    - Blink Rate (blink_rate)
 
     An array called num_good_trials is also added to the dictionary, which indicates how many trials from each session
     were used to generate the stats for that session. Lastly, an array called session indicates which session each row
@@ -45,8 +47,9 @@ def run_stats_prelim(subj, data=None):
     # Define parameters of experiment
     #
     ###############
-    data_dir = '/data/eeg/scalp/ltp/prelim/behavioral/data/'
-    out_dir = '/data/eeg/scalp/ltp/prelim/behavioral/stats/'
+    exp = 'prelim'
+    data_dir = '/data/eeg/scalp/ltp/%s/behavioral/data/' % exp
+    out_dir = '/data/eeg/scalp/ltp/%s/behavioral/stats/' % exp
     n_sess = 1
 
     ###############
@@ -80,6 +83,7 @@ def run_stats_prelim(subj, data=None):
     times = np.array(data['times'])[good_trials]
     intru = np.array(data['intrusions'])[good_trials]
     recw = np.array(data['rec_words'])[good_trials]
+    blinks = np.array(data['blinks'])
     ll = np.array(data['pres_nos']).shape[1]
     # If participant never made any recalls, don't try to calculate stats
     if recw.shape[1] == 0:
@@ -101,6 +105,7 @@ def run_stats_prelim(subj, data=None):
     stats['pli_perlist'] = pli(intru, sessions, recw, exclude_reps=True, per_list=True)
     stats['xli_perlist'] = xli(intru, sessions, recw, exclude_reps=True, per_list=True)
     stats['rep_perlist'] = reps(recalls, sessions, unique_reps=False, per_list=True)
+    stats['blink_rate'] = calc_blink_rate(blinks, sessions)
 
     ###############
     #

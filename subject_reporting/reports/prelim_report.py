@@ -16,9 +16,10 @@ def subject_report_prelim(subj):
     # Define parameters of experiment
     #
     ###############
-    stat_dir = '/data/eeg/scalp/ltp/prelim/behavioral/stats/'
-    subj_dir = '/data/eeg/scalp/ltp/prelim/%s/' % subj
-    tex_outfile = '/data/eeg/scalp/ltp/prelim/%s/%s_report' % (subj, subj)
+    exp = 'prelim'
+    stat_dir = '/data/eeg/scalp/ltp/%s/behavioral/stats/' % exp
+    subj_dir = '/data/eeg/scalp/ltp/%s/%s/' % (exp, subj)
+    tex_outfile = '/data/eeg/scalp/ltp/%s/%s/%s_report' % (exp, subj, subj)
 
     ###############
     #
@@ -39,6 +40,7 @@ def subject_report_prelim(subj):
         pli_perlist = np.array(stats['pli_perlist'])
         xli_perlist = np.array(stats['xli_perlist'])
         rep_perlist = np.array(stats['rep_perlist'])
+        blink_rate = np.array(stats['blink_rate']) * 100
 
     ###############
     #
@@ -61,7 +63,7 @@ def subject_report_prelim(subj):
         # Create first table (PRec, PLIs, XLIs, Reps, Trials)
         #
         ###############
-        header = ['Sess', 'PRec', 'PLI', 'ELI', 'Rep', 'Trials']
+        header = ['Sess', 'PRec', 'PLI', 'ELI', 'Rep', 'Blink Rate', 'Trials']
         fmt = '|c' * len(header) + '|'
         with centered.create(ltx.Tabu(fmt)) as data_table:
             data_table.add_hline()
@@ -71,8 +73,10 @@ def subject_report_prelim(subj):
             data_table.add_hline()
             data_table.add_row([''] * len(header))
             for i, sess in enumerate(sessions):
+                blink_rate_string = str(round(blink_rate[i, 0], 2)) + '% / ' + str(round(blink_rate[i, 1], 2)) + '% / '\
+                                    + str(round(blink_rate[i, 2], 2)) + '%'
                 data_table.add_row([sess, round(p_rec[i], 2), round(pli_perlist[i], 2), round(xli_perlist[i], 2),
-                                    round(rep_perlist[i], 2), num_good_trials[i]])
+                                    round(rep_perlist[i], 2), blink_rate_string, num_good_trials[i]])
             data_table.add_row([''] * len(header))
             data_table.add_hline()
 
