@@ -167,7 +167,7 @@ def identify_modified_participants(day_limit=7):
         experiments = [s.strip() for s in f.readlines() if s.strip() in IDENTIFIERS]
 
     for exp in experiments:
-        if type(IDENTIFIERS[exp]) == function:
+        if callable(IDENTIFIERS[exp]):
             modified = IDENTIFIERS[exp](day_limit)
         else:
             func = IDENTIFIERS[exp][0]
