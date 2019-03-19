@@ -30,7 +30,7 @@ def subject_report_VFFR(subj):
     if not os.path.exists(data_file):
         data_file = os.path.join(stat_dir, 'stats_%s_incomplete.json' % subj)
         if not os.path.exists(data_file):
-            return dict()
+            return None
     with open(data_file, 'r') as f:
         stats = json.load(f)
 

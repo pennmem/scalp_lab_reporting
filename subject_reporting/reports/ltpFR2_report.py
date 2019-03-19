@@ -30,7 +30,7 @@ def subject_report_ltpFR2(subj):
     if not os.path.exists(data_file):
         data_file = os.path.join(stat_dir, 'stats_%s_incomplete.json' % subj)
         if not os.path.exists(data_file):
-            return dict()
+            return None
     with open(data_file, 'r') as f:
         stats = json.load(f)
 
@@ -48,7 +48,6 @@ def subject_report_ltpFR2(subj):
     )
     doc = ltx.Document(page_numbers=False, geometry_options=geometry_options)
     doc.preamble.append(ltx.Package('graphicx'))  # Load graphicx package so that we can use \includegraphics
-
 
     with doc.create(ltx.Center()) as centered:
         doc.append(ltx.LargeText(ltx.Command('underline', arguments='Subject Report: %s' % subj)))

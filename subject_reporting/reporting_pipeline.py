@@ -133,7 +133,7 @@ def run_pipeline(experiment=None, subjects=None):
             report_path = report_func(s)
 
             # Upload report to memory.psych.upenn.edu
-            if upload:
+            if upload and report_path is not None:
                 upload_subject_report(report_path, exp)
 
 
