@@ -99,6 +99,7 @@ def run_pipeline(experiment=None, subjects=None):
     ###############
     # Use REPORTING_SCRIPTS dictionary to select the functions that should be run on participants from each experiment
     for exp in experiments:
+        print('Creating reports for %s' % exp)
         behavioral_func = REPORTING_SCRIPTS[exp][0]
         statistics_func = REPORTING_SCRIPTS[exp][1]
         eeg_func = REPORTING_SCRIPTS[exp][2]
@@ -117,6 +118,7 @@ def run_pipeline(experiment=None, subjects=None):
 
         # Run reporting pipeline on each participant
         for s in subj_list:
+            print('Processing %s' % s)
             # Create behavioral data matrices
             beh_data = behavioral_func(s)
 

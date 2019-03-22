@@ -15,6 +15,7 @@ def load_data(exp, subj):
     if not os.path.exists(data_file):
         data_file = os.path.join(data_dir, 'beh_data_%s_incomplete.json' % subj)
         if not os.path.exists(data_file):
+            print('Warning: No stats file available for %s!' % subj)
             return False
 
     with open(data_file, 'r') as f:
