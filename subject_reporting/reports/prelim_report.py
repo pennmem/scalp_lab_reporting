@@ -86,6 +86,8 @@ def subject_report_prelim(subj):
         doc.append(ltx.Command('break'))
         doc.append(ltx.Command('break'))
         doc.append(ltx.Command('break'))
+        doc.append(ltx.Command('break'))
+        doc.append(ltx.Command('break'))
         doc.append(ltx.MediumText('Dynamics of Recall'))
         header = ['Session', 'SPC', 'PFR', 'CRP']
         fmt = 'c' * len(header)
@@ -119,7 +121,7 @@ def subject_report_prelim(subj):
         # Create third table (ERP plots)
         #
         ###############
-        doc.append(ltx.NewPage())
+        doc.append(ltx.Command('break'))
         doc.append(ltx.Command('break'))
         doc.append(ltx.Command('break'))
         doc.append(ltx.Command('break'))
