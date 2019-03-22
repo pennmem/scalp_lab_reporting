@@ -19,7 +19,6 @@ def subject_report_prelim(subj):
     exp = 'prelim'
     subj_dir = '/data/eeg/scalp/ltp/%s/%s/' % (exp, subj)
     tex_outfile = '/data/eeg/scalp/ltp/%s/%s/%s_report' % (exp, subj, subj)
-    tex_outfile = '/Users/jpazdera/Desktop/%s_report' % subj
 
     ###############
     #
