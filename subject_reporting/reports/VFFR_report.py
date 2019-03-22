@@ -16,9 +16,9 @@ def subject_report_VFFR(subj):
     # Define parameters of experiment
     #
     ###############
-    stat_dir = '/data/eeg/scalp/ltp/VFFR/behavioral/stats/'
-    subj_dir = '/data/eeg/scalp/ltp/VFFR/%s/' % subj
-    tex_outfile = '/data/eeg/scalp/ltp/VFFR/%s/%s_report' % (subj, subj)
+    exp = 'VFFR'
+    subj_dir = '/data/eeg/scalp/ltp/%s/%s/' % (exp, subj)
+    tex_outfile = '/data/eeg/scalp/ltp/%s/%s/%s_report' % (exp, subj, subj)
 
     ###############
     #
@@ -26,7 +26,7 @@ def subject_report_VFFR(subj):
     #
     ###############
 
-    stats = load_stats(stat_dir, subj)
+    stats = load_stats(exp, subj)
     if not stats:
         return None
     sessions = np.array(stats['session'])

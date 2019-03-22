@@ -17,7 +17,6 @@ def subject_report_prelim(subj):
     #
     ###############
     exp = 'prelim'
-    stat_dir = '/data/eeg/scalp/ltp/%s/behavioral/stats/' % exp
     subj_dir = '/data/eeg/scalp/ltp/%s/%s/' % (exp, subj)
     tex_outfile = '/data/eeg/scalp/ltp/%s/%s/%s_report' % (exp, subj, subj)
 
@@ -27,7 +26,7 @@ def subject_report_prelim(subj):
     #
     ###############
 
-    stats = load_stats(stat_dir, subj)
+    stats = load_stats(exp, subj)
     if not stats:
         return None
     sessions = np.array(stats['session'])

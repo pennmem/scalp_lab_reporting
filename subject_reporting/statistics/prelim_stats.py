@@ -49,7 +49,6 @@ def run_stats_prelim(subj, data=None):
     #
     ###############
     exp = 'prelim'
-    data_dir = '/data/eeg/scalp/ltp/%s/behavioral/data/' % exp
     out_dir = '/data/eeg/scalp/ltp/%s/behavioral/stats/' % exp
     n_sess = 1
 
@@ -59,7 +58,7 @@ def run_stats_prelim(subj, data=None):
     #
     ###############
     if data is None:
-        data = load_data(data_dir, subj)
+        data = load_data(exp, subj)
         if not data:
             return dict()
 

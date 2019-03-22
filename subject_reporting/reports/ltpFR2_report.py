@@ -16,7 +16,6 @@ def subject_report_ltpFR2(subj):
     # Define parameters of experiment
     #
     ###############
-    stat_dir = '/data/eeg/scalp/ltp/ltpFR2/behavioral/stats/'
     subj_dir = '/data/eeg/scalp/ltp/ltpFR2/%s/' % subj
     tex_outfile = '/data/eeg/scalp/ltp/ltpFR2/%s/%s_report' % (subj, subj)
 
@@ -26,7 +25,7 @@ def subject_report_ltpFR2(subj):
     #
     ###############
 
-    stats = load_stats(stat_dir, subj)
+    stats = load_stats(exp, subj)
     if not stats:
         return None
     sessions = np.array(stats['session'])

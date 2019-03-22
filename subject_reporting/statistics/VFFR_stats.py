@@ -34,9 +34,9 @@ def run_stats_VFFR(subj, data=None):
     # Define parameters of experiment
     #
     ###############
-    data_dir = '/data/eeg/scalp/ltp/VFFR/behavioral/data/'
-    #bonus_dir = '/data/eeg/scalp/ltp/VFFR/bonus/'
-    out_dir = '/data/eeg/scalp/ltp/VFFR/behavioral/stats/'
+    exp = 'VFFR'
+    # bonus_dir = '/data/eeg/scalp/ltp/%s/bonus/' % exp
+    out_dir = '/data/eeg/scalp/ltp/%s/behavioral/stats/' % exp
     n_sess = 10
 
     ###############
@@ -45,15 +45,15 @@ def run_stats_VFFR(subj, data=None):
     #
     ###############
     if data is None:
-        data = load_data(data_dir, subj)
+        data = load_data(exp, subj)
         if not data:
             return dict()
 
     # Load bonus data so we can plot blink rates
-    #bonus_data = None
-    #bonus_data_file = os.path.join(bonus_dir, '%s_bonus_report.tsv' % subj)
-    #if os.path.exists(bonus_data_file):
-    #    bonus_data = read_csv(bonus_data_file, delimiter='\t')
+    # bonus_data = None
+    # bonus_data_file = os.path.join(bonus_dir, '%s_bonus_report.tsv' % subj)
+    # if os.path.exists(bonus_data_file):
+    #     bonus_data = read_csv(bonus_data_file, delimiter='\t')
 
     ###############
     #

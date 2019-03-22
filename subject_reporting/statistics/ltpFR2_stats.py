@@ -48,9 +48,9 @@ def run_stats_ltpFR2(subj, data=None):
     # Define parameters of experiment
     #
     ###############
-    data_dir = '/data/eeg/scalp/ltp/ltpFR2/behavioral/data/'
-    bonus_dir = '/data/eeg/scalp/ltp/ltpFR2/bonus/'
-    out_dir = '/data/eeg/scalp/ltp/ltpFR2/behavioral/stats/'
+    exp = 'ltpFR2'
+    bonus_dir = '/data/eeg/scalp/ltp/%s/bonus/' % exp
+    out_dir = '/data/eeg/scalp/ltp/%s/behavioral/stats/' % exp
     n_sess = 24
 
     ###############
@@ -59,7 +59,7 @@ def run_stats_ltpFR2(subj, data=None):
     #
     ###############
     if data is None:
-        data = load_data(data_dir, subj)
+        data = load_data(exp, subj)
         if not data:
             return dict()
 
