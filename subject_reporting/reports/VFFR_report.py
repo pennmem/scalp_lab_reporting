@@ -1,7 +1,7 @@
 import os
-import json
 import numpy as np
 import pylatex as ltx
+from .load_stats import load_stats
 
 
 def subject_report_VFFR(subj):
@@ -25,15 +25,10 @@ def subject_report_VFFR(subj):
     # Load session numbers from stats file
     #
     ###############
-    # Data may either be in beh_data_LTP###.json or beh_data_LTP###_incomplete.json
-    data_file = os.path.join(stat_dir, 'stats_%s.json' % subj)
-    if not os.path.exists(data_file):
-        data_file = os.path.join(stat_dir, 'stats_%s_incomplete.json' % subj)
-        if not os.path.exists(data_file):
-            return None
-    with open(data_file, 'r') as f:
-        stats = json.load(f)
 
+    stats = load_stats(stat_dir, subj)
+    if not stats:
+        return None
     sessions = np.array(stats['session'])
 
     ###############

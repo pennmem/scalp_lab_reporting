@@ -1,6 +1,7 @@
 import os
 import json
 import numpy as np
+from .load_data import load_data
 # import matplotlib
 # matplotlib.use('agg')
 # import matplotlib.pyplot as plt
@@ -44,14 +45,9 @@ def run_stats_VFFR(subj, data=None):
     #
     ###############
     if data is None:
-        # Data may either be in beh_data_LTP###.json or beh_data_LTP###_incomplete.json
-        data_file = os.path.join(data_dir, 'beh_data_%s.json' % subj)
-        if not os.path.exists(data_file):
-            data_file = os.path.join(data_dir, 'beh_data_%s_incomplete.json' % subj)
-            if not os.path.exists(data_file):
-                return dict()
-        with open(data_file, 'r') as f:
-            data = json.load(f)
+        data = load_data(data_dir, subj)
+        if not data:
+            return dict()
 
     # Load bonus data so we can plot blink rates
     #bonus_data = None

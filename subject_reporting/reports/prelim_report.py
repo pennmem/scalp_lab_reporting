@@ -1,7 +1,7 @@
 import os
-import json
 import numpy as np
 import pylatex as ltx
+from .load_stats import load_stats
 
 
 def subject_report_prelim(subj):
@@ -26,22 +26,17 @@ def subject_report_prelim(subj):
     # Load performance stats from file
     #
     ###############
-    # Data may either be in beh_data_PLTP###.json or beh_data_PLTP###_incomplete.json
-    data_file = os.path.join(stat_dir, 'stats_%s.json' % subj)
-    if not os.path.exists(data_file):
-        data_file = os.path.join(stat_dir, 'stats_%s_incomplete.json' % subj)
-        if not os.path.exists(data_file):
-            return None
 
-    with open(data_file, 'r') as f:
-        stats = json.load(f)
-        sessions = np.array(stats['session'])
-        num_good_trials = np.array(stats['num_good_trials'])
-        p_rec = np.array(stats['p_rec'])
-        pli_perlist = np.array(stats['pli_perlist'])
-        xli_perlist = np.array(stats['xli_perlist'])
-        rep_perlist = np.array(stats['rep_perlist'])
-        blink_rate = np.array(stats['blink_rate']) * 100
+    stats = load_stats(stat_dir, subj)
+    if not stats:
+        return None
+    sessions = np.array(stats['session'])
+    num_good_trials = np.array(stats['num_good_trials'])
+    p_rec = np.array(stats['p_rec'])
+    pli_perlist = np.array(stats['pli_perlist'])
+    xli_perlist = np.array(stats['xli_perlist'])
+    rep_perlist = np.array(stats['rep_perlist'])
+    blink_rate = np.array(stats['blink_rate']) * 100
 
     ###############
     #
@@ -58,6 +53,9 @@ def subject_report_prelim(subj):
 
     with doc.create(ltx.Center()) as centered:
         doc.append(ltx.LargeText(ltx.Command('underline', arguments='Subject Report: %s' % subj)))
+        doc.append(ltx.Command('break'))
+        doc.append(ltx.Command('break'))
+        doc.append(ltx.Command('break'))
 
         ###############
         #
@@ -86,8 +84,6 @@ def subject_report_prelim(subj):
         # Create second table (SPC, PFR, CRP plots)
         #
         ###############
-        doc.append(ltx.NewPage())
-        doc.append(ltx.Command('break'))
         doc.append(ltx.Command('break'))
         doc.append(ltx.Command('break'))
         doc.append(ltx.Command('break'))

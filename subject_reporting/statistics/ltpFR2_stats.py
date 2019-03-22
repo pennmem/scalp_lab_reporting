@@ -12,7 +12,8 @@ from pybeh.crl import crl
 from pybeh.pli import pli
 from pybeh.xli import xli
 from pybeh.reps import reps
-from subject_reporting.statistics.p_rec import p_rec
+from .p_rec import p_rec
+from .load_data import load_data
 
 
 def run_stats_ltpFR2(subj, data=None):
@@ -58,14 +59,9 @@ def run_stats_ltpFR2(subj, data=None):
     #
     ###############
     if data is None:
-        # Data may either be in beh_data_LTP###.json or beh_data_LTP###_incomplete.json
-        data_file = os.path.join(data_dir, 'beh_data_%s.json' % subj)
-        if not os.path.exists(data_file):
-            data_file = os.path.join(data_dir, 'beh_data_%s_incomplete.json' % subj)
-            if not os.path.exists(data_file):
-                return dict()
-        with open(data_file, 'r') as f:
-            data = json.load(f)
+        data = load_data(data_dir, subj)
+        if not data:
+            return dict()
 
     bonus_data = None
     bonus_data_file = os.path.join(bonus_dir, '%s_bonus_report.tsv' % subj)

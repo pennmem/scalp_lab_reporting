@@ -12,7 +12,8 @@ from pybeh.pli import pli
 from pybeh.xli import xli
 from pybeh.reps import reps
 from .blink_rate import calc_blink_rate
-from subject_reporting.statistics.p_rec import p_rec
+from .p_rec import p_rec
+from .load_data import load_data
 
 
 def run_stats_prelim(subj, data=None):
@@ -58,14 +59,9 @@ def run_stats_prelim(subj, data=None):
     #
     ###############
     if data is None:
-        # Data may either be in beh_data_PLTP###.json or beh_data_PLTP###_incomplete.json
-        data_file = os.path.join(data_dir, 'beh_data_%s.json' % subj)
-        if not os.path.exists(data_file):
-            data_file = os.path.join(data_dir, 'beh_data_%s_incomplete.json' % subj)
-            if not os.path.exists(data_file):
-                return dict()
-        with open(data_file, 'r') as f:
-            data = json.load(f)
+        data = load_data(data_dir, subj)
+        if not data:
+            return dict()
 
     ###############
     #
@@ -168,9 +164,9 @@ def run_stats_prelim(subj, data=None):
     plt.title('%s -- Average' % subj)
     plt.xlabel('Serial Position')
     plt.ylabel('Recall Probability')
-    plt.xlim(1, ll)
+    plt.xlim(.5, ll+.5)
     plt.ylim(0, 1)
-    plt.xticks([0, 6, 12, 18, 24])
+    plt.xticks([1, 4, 8, 12, 16])
     plt.tight_layout()
     fig.savefig(os.path.join(fig_dir, 'spc.pdf'))
     plt.close(fig)
@@ -182,7 +178,7 @@ def run_stats_prelim(subj, data=None):
     plt.title('%s -- Average' % subj)
     plt.xlabel('Serial Position')
     plt.ylabel('Probability of First Recall')
-    plt.xlim(1, ll)
+    plt.xlim(.5, ll+.5)
     plt.ylim(0, 1)
     plt.xticks([0, 6, 12, 18, 24])
     plt.tight_layout()
