@@ -124,8 +124,6 @@ def subject_report_prelim(subj):
         doc.append(ltx.Command('break'))
         doc.append(ltx.Command('break'))
         doc.append(ltx.Command('break'))
-        doc.append(ltx.Command('break'))
-        doc.append(ltx.Command('break'))
         doc.append(ltx.MediumText('Event-Related Potentials'))
         header = ['Session', 'Fz', 'Cz', 'Pz']
         fmt = 'c' * len(header)
