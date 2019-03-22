@@ -86,8 +86,6 @@ def subject_report_prelim(subj):
         doc.append(ltx.Command('break'))
         doc.append(ltx.Command('break'))
         doc.append(ltx.Command('break'))
-        doc.append(ltx.Command('break'))
-        doc.append(ltx.Command('break'))
         doc.append(ltx.MediumText('Dynamics of Recall'))
         header = ['Session', 'SPC', 'PFR', 'CRP']
         fmt = 'c' * len(header)
