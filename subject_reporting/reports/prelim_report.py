@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import pylatex as ltx
-from .load_stats import load_stats
+from subject_reporting.reports.load_stats import load_stats
 
 
 def subject_report_prelim(subj):
@@ -19,6 +19,7 @@ def subject_report_prelim(subj):
     exp = 'prelim'
     subj_dir = '/data/eeg/scalp/ltp/%s/%s/' % (exp, subj)
     tex_outfile = '/data/eeg/scalp/ltp/%s/%s/%s_report' % (exp, subj, subj)
+    tex_outfile = '/Users/jpazdera/Desktop/%s_report' % subj
 
     ###############
     #
@@ -119,9 +120,6 @@ def subject_report_prelim(subj):
         # Create third table (ERP plots)
         #
         ###############
-        doc.append(ltx.Command('break'))
-        doc.append(ltx.Command('break'))
-        doc.append(ltx.Command('break'))
         doc.append(ltx.MediumText('Event-Related Potentials'))
         header = ['Session', 'Fz', 'Cz', 'Pz']
         fmt = 'c' * len(header)
