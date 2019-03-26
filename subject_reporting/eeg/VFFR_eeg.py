@@ -38,6 +38,8 @@ def eeg_VFFR(subj):
     n_samples = ceil(samp_rate * (tmax - tmin)) + 1
     erps = np.zeros((n_sess, 3, n_samples))
     erps.fill(np.nan)
+    names = ['Fz', 'Cz', 'Pz']
+    
     for sess in range(n_sess):
 
         # Get data from each word presentation event; skip session if no events or no EEG data
@@ -51,7 +53,6 @@ def eeg_VFFR(subj):
         # Baseline correct event data based on the 300 ms prior to word onset
         eeg.apply_baseline((None, 0))
 
-        names = ['Fz', 'Cz', 'Pz']
         for i, erp_chs in enumerate((fz_chans, cz_chans, pz_chans)):
 
             try:
