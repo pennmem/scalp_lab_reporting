@@ -5,11 +5,13 @@ from bonus_reporting.calculation.bonus_ltpFR2 import calculate_bonus_ltpFR2
 from bonus_reporting.calculation.bonus_SFR import calculate_bonus_SFR
 from bonus_reporting.calculation.bonus_FR1_scalp import calculate_bonus_FR1_scalp
 from bonus_reporting.calculation.bonus_VFFR import calculate_bonus_VFFR
+from bonus_reporting.calculation.bonus_repfr import calculate_bonus_repfr
 
 from bonus_reporting.reports.bonus_report_ltpFR2 import bonus_report_ltpFR2
 from bonus_reporting.reports.bonus_report_SFR import bonus_report_SFR
 from bonus_reporting.reports.bonus_report_FR1_scalp import bonus_report_FR1_scalp
 from bonus_reporting.reports.bonus_report_VFFR import bonus_report_VFFR
+from bonus_reporting.reports.bonus_report_repfr import bonus_report_repfr
 
 
 def upload_bonus_report(report_path, exp):
@@ -21,7 +23,8 @@ def upload_bonus_report(report_path, exp):
     :param exp: The name of the experiment. Used for determining the destination path.
     """
     if os.path.exists(report_path):
-        os.system('scp %s reports@memory.psych.upenn.edu:/var/www/html/ltp_reports/%s_Bonus/' % (report_path, exp))
+        # os.system('scp %s reports@memory.psych.upenn.edu:/var/www/html/ltp_reports/%s_Bonus/' % (report_path, exp))
+        pass
 
 
 def run_bonus(experiment=None, subjects=None):
@@ -40,7 +43,8 @@ def run_bonus(experiment=None, subjects=None):
         ltpFR2=(calculate_bonus_ltpFR2, bonus_report_ltpFR2, True),
         SFR=(calculate_bonus_SFR, bonus_report_SFR, True),
         FR1_scalp=(calculate_bonus_FR1_scalp, bonus_report_FR1_scalp, True),
-        VFFR=(calculate_bonus_VFFR, bonus_report_VFFR, True)
+        VFFR=(calculate_bonus_VFFR, bonus_report_VFFR, True),
+        ltpRepFR=(calculate_bonus_repfr, bonus_report_repfr, True)
     )
 
     # Determine experiment list

@@ -25,6 +25,12 @@ from subject_reporting.statistics.prelim_stats import run_stats_prelim
 from subject_reporting.eeg.prelim_eeg import eeg_prelim
 from subject_reporting.reports.prelim_report import subject_report_prelim
 
+# Import repFR functions
+from subject_reporting.behavioral.behavioral_matrices_repfr import make_data_matrices_repfr
+from subject_reporting.statistics.repfr_stats import run_stats_repfr
+from subject_reporting.eeg.repfr_eeg import eeg_repfr
+from subject_reporting.reports.repfr_report import subject_report_repfr
+
 
 def upload_subject_report(report_path, exp):
     """
@@ -35,7 +41,8 @@ def upload_subject_report(report_path, exp):
     :param exp: The name of the experiment. Used for determining the destination path.
     """
     if os.path.exists(report_path):
-        os.system('scp %s reports@memory.psych.upenn.edu:/var/www/html/ltp_reports/%s/' % (report_path, exp))
+        #os.system('scp %s reports@memory.psych.upenn.edu:/var/www/html/ltp_reports/%s/' % (report_path, exp))
+        pass
 
 
 def run_pipeline(experiment=None, subjects=None):
@@ -74,7 +81,8 @@ def run_pipeline(experiment=None, subjects=None):
         SFR=(make_data_matrices_SFR, None, None, None, False, 'RAA'),
         FR1_scalp=(make_data_matrices_FR1_scalp, None, None, None, False, 'RAA'),
         VFFR=(make_data_matrices_VFFR, run_stats_VFFR, eeg_VFFR, subject_report_VFFR, True, 'LTP'),
-        prelim=(make_data_matrices_prelim, run_stats_prelim, eeg_prelim, subject_report_prelim, True, 'PLTP')
+        prelim=(make_data_matrices_prelim, run_stats_prelim, eeg_prelim, subject_report_prelim, True, 'PLTP'),
+        ltpRepFR=(None, None, eeg_repfr, subject_report_repfr, True, 'LTP') 
     )
 
     ###############
@@ -120,12 +128,13 @@ def run_pipeline(experiment=None, subjects=None):
         for s in subj_list:
             print('Processing %s' % s)
             # Create behavioral data matrices
-            beh_data = behavioral_func(s)
+            beh_data = {}
+            if behavioral_func is not None:
+                beh_data = behavioral_func(s)
 
             # Run behavioral statistics
-            if beh_data == {} or statistics_func is None:
-                continue
-            statistics_func(s, data=beh_data)
+            if beh_data != {} and statistics_func is not None:
+                statistics_func(s, data=beh_data)
 
             # Generate EEG plots (e.g. ERPs)
             if eeg_func is not None:
@@ -134,6 +143,7 @@ def run_pipeline(experiment=None, subjects=None):
             # Create subject report
             if report_func is None:
                 continue
+
             report_path = report_func(s)
 
             # Upload report to memory.psych.upenn.edu
