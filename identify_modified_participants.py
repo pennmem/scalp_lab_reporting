@@ -161,7 +161,11 @@ def identify_modified_participants(day_limit=7):
         FR1_scalp=[identify_modified_participants_RAA, 'FR1_scalp'],
         VFFR=[identify_modified_participants_unity, 'VFFR', 'LTP[0-9][0-9][0-9]', 10],
         prelim=[identify_modified_participants_unity, 'prelim', 'PLTP[0-9][0-9][0-9]', 1],
-        ltpRepFR=[identify_modified_participants_unity, 'ltpRepFR', 'LTP[0-8][0-9][0-9]', 20]
+        ltpRepFR=[identify_modified_participants_unity, 'ltpRepFR', 'LTP[0-8][0-9][0-9]', 10],
+        NiclsCourierReadOnly=[identify_modified_participants_unity,
+            'NiclsCourierReadOnly', 'LTP[0-8][0-9][0-9]', 8],
+        NiclsCourierClosedLoop=[identify_modified_participants_unity,
+            'NiclsCourierClosedLoop', 'LTP[0-8][0-9][0-9]', 8]
     )
 
     with open('/data/eeg/scalp/ltp/ACTIVE_EXPERIMENTS.txt', 'r') as f:
@@ -179,6 +183,6 @@ def identify_modified_participants(day_limit=7):
 
 
 if __name__ == "__main__":
-    #day_limit = 5
-    day_limit = 92
+    day_limit = 40
+    #day_limit = 270
     identify_modified_participants(day_limit)
