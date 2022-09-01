@@ -208,6 +208,7 @@ def identify_modified_participants(day_limit=7):
     :return: A dictionary with experiment names mapped to their individual modified session dictionaries.
     """
     IDENTIFIERS = dict(
+        ltpFR=identify_modified_participants_ltpFR,
         ltpFR2=identify_modified_participants_ltpFR2,
         SFR=[identify_modified_participants_RAA, 'SFR'],
         FR1_scalp=[identify_modified_participants_RAA, 'FR1_scalp'],
