@@ -16,7 +16,7 @@ def identify_modified_participants_ltpFR(day_limit=7):
     """
     # Define parameters of experiment
     exp_dir = '/data/eeg/scalp/ltp/ltpFR/'
-    naming_scheme = 'LTP[0-9][0-9][0-9]*'
+    naming_scheme = 'LTP[0-9][0-9][0-9](_[0-9][0-9])?'
     n_sess = 20
     sessions = range(n_sess)
 
