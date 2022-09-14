@@ -16,12 +16,13 @@ def identify_modified_participants_ltpFR(day_limit=7):
     """
     # Define parameters of experiment
     exp_dir = '/data/eeg/scalp/ltp/ltpFR/'
-    naming_scheme = 'LTP[0-9][0-9][0-9](_[0-9][0-9])?'
+    naming_scheme = 'LTP[0-9][0-9][0-9]'
+    naming_scheme_return = 'LTP[0-9][0-9][0-9]_[0-9][0-9]'
     n_sess = 20
     sessions = range(n_sess)
 
     # Find all ltpFR2 subject directories
-    subj_dirs = glob(os.path.join(exp_dir, naming_scheme))
+    subj_dirs = glob(os.path.join(exp_dir, naming_scheme)) + glob(os.path.join(exp_dir, naming_scheme_return))
 
     # Get current timestamp
     current_time = dt.datetime.fromtimestamp(time())
