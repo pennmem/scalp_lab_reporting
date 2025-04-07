@@ -221,7 +221,9 @@ def identify_modified_participants(day_limit=7):
         NiclsCourierClosedLoop=[identify_modified_participants_unity,
             'NiclsCourierClosedLoop', 'LTP[0-8][0-9][0-9]', 8],
         ltpDelayRepFRReadOnly=[identify_modified_participants_unity,
-            'ltpDelayRepFRReadOnly', 'LTP[0-8][0-9][0-9]', 10]
+            'ltpDelayRepFRReadOnly', 'LTP[0-8][0-9][0-9]', 10],
+        CourierReinstate1=[identify_modified_participants_unity,
+            'CourierReinstate1', 'LTP[0-8][0-9][0-9]', 10]
     )
 
     with open('/data/eeg/scalp/ltp/ACTIVE_EXPERIMENTS.txt', 'r') as f:
