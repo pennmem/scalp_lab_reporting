@@ -181,6 +181,9 @@ def identify_modified_participants_unity(exp, naming_scheme, n_sess, day_limit=7
         for i in sessions:
             # Locate files to check for modifications
             sess_dir = os.path.join(path, 'session_%d' % i)
+            # Ignore unannotated sessions
+            if not glob(os.path.join(sess_dir, '*.ann')):
+                continue
             files_of_interest = glob(os.path.join(sess_dir, '*.ann')) + \
                                 glob(os.path.join(sess_dir, '*.par')) + \
                                 glob(os.path.join(sess_dir, 'session.jsonl')) + \
