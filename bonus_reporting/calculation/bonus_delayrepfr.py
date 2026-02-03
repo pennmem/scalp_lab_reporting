@@ -44,23 +44,25 @@ def calculate_blink_rate(events, return_percent=False):
 
 def calculate_bonus_delayrepfr(subj):
     """
-    Calculates bonus payments for each of a participant's 24 sessions based on the following performance brackets:
+    Calculates bonus payments for each of a participant's 6 sessions based on the following performance brackets:
 
     P-Recs:
     $0 --> 0% - 19.99%
     $1 --> 20% - 29.99%
     $2 --> 30% - 39.99%
     $3 --> 40% - 49.99%
-    $4 --> 50% - 69.99%
-    $5 --> 70% - 100%
+    $4 --> 50% - 59.99%
+    $5 --> 60% - 69.99%
+    $6 --> 70% - 100%
 
     Blink rates:
-    $0 --> > 50%
-    $1 --> 40% - 49.99%
-    $2 --> 30% - 39.99%
-    $3 --> 20% - 29.99%
-    $4 --> 10% - 19.99%
-    $5 --> 0% - 9.99%
+    $0 --> > 60%
+    $1 --> 50% - 59.99%
+    $2 --> 40% - 49.99%
+    $3 --> 30% - 39.99%
+    $4 --> 20% - 29.99%
+    $5 --> 10% - 19.99%
+    $6 --> 0% - 9.99%
 
     Recall scores and bonuses can only be calculated once the session has been annotated. Blink rates can only be
     calculated if the session has been successfully aligned and blink detection has been run. If not all presentation
@@ -73,14 +75,14 @@ def calculate_bonus_delayrepfr(subj):
     """
 
     # Set experiment parameters and performance bracket boundaries
-    n_sessions = 24
+    n_sessions = 6
     brackets = dict(
-        prec=[20, 30, 40, 50, 70],
-        br=[10, 20, 30, 40, 50],
+        prec=[20, 30, 40, 50, 60, 70],
+        br=[10, 20, 30, 40, 50, 60],
     )
 
-    scores = np.zeros((24, 4))
-    bonuses = np.zeros((24, 3))
+    scores = np.zeros((6, 4))
+    bonuses = np.zeros((6, 3))
     # Calculate scores and bonuses for each session
     for sess in range(n_sessions):
         print(subj, sess)
@@ -120,7 +122,7 @@ def calculate_bonus_delayrepfr(subj):
 
         # Calculate bonuses based on performance brackets
         prec_bonus = np.searchsorted(brackets['prec'], prec, side='right') if not np.isnan(prec) else np.nan
-        blink_bonus = 5 - np.searchsorted(brackets['br'], br, side='right') if not np.isnan(br) else np.nan
+        blink_bonus = 6 - np.searchsorted(brackets['br'], br, side='right') if not np.isnan(br) else np.nan
         total_bonus = prec_bonus + blink_bonus
 
         # Record scores and bonuses from session

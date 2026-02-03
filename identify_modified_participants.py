@@ -226,21 +226,31 @@ def identify_modified_participants(day_limit=7):
         ltpDelayRepFRReadOnly=[identify_modified_participants_unity,
             'ltpDelayRepFRReadOnly', 'LTP[0-8][0-9][0-9]', 10],
         CourierReinstate1=[identify_modified_participants_unity,
-            'CourierReinstate1', 'LTP[0-8][0-9][0-9]', 10]
+            'CourierReinstate1', 'LTP[0-8][0-9][0-9]', 10],
+        ValueCourier=[identify_modified_participants_unity,
+                      'ValueCourier', 'LTP[0-9]+', 10],
+    
+        VCBehOnly=[identify_modified_participants_unity,
+                                'VCBehOnly', 'LTP[0-9]+', 10]
     )
 
     with open('/data/eeg/scalp/ltp/ACTIVE_EXPERIMENTS.txt', 'r') as f:
         experiments = [s.strip() for s in f.readlines() if s.strip() in IDENTIFIERS]
 
     for exp in experiments:
+        print(f"\n=== Checking experiment: {exp} ===")
+
         if callable(IDENTIFIERS[exp]):
             modified = IDENTIFIERS[exp](day_limit)
         else:
             func = IDENTIFIERS[exp][0]
             inputs = IDENTIFIERS[exp][1:]
             modified = func(*inputs, day_limit)
+        print(f"Found {len(modified)} modified participants in {exp}.")
+
         with open('/data/eeg/scalp/ltp/%s/recently_modified.json' % exp, 'w') as f:
             json.dump(modified, f)
+        print(f"Wrote results to /data/eeg/scalp/ltp/{exp}/recently_modified.json")
 
 
 if __name__ == "__main__":
