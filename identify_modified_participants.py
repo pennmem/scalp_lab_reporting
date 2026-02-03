@@ -228,10 +228,10 @@ def identify_modified_participants(day_limit=7):
         CourierReinstate1=[identify_modified_participants_unity,
             'CourierReinstate1', 'LTP[0-8][0-9][0-9]', 10],
         ValueCourier=[identify_modified_participants_unity,
-                      'ValueCourier', 'LTP[0-9]+', 10],
+                      'ValueCourier', 'LTP[0-9]*', 10],
     
         VCBehOnly=[identify_modified_participants_unity,
-                                'VCBehOnly', 'LTP[0-9]+', 10]
+                                'VCBehOnly', 'LTP[0-9]*', 10]
     )
 
     with open('/data/eeg/scalp/ltp/ACTIVE_EXPERIMENTS.txt', 'r') as f:
