@@ -231,7 +231,9 @@ def identify_modified_participants(day_limit=7):
                       'ValueCourier', 'LTP[0-9]*', 10],
     
         VCBehOnly=[identify_modified_participants_unity,
-                                'VCBehOnly', 'LTP[0-9]*', 10]
+                                'VCBehOnly', 'LTP[0-9]*', 10],
+        VCFROP=[identify_modified_participants_unity,
+                                'VCFROP', 'LTP[0-9]*', 10],
     )
 
     with open('/data/eeg/scalp/ltp/ACTIVE_EXPERIMENTS.txt', 'r') as f:
